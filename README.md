@@ -1,16 +1,24 @@
 # SalvaGuadagno Host 🏠
 
-Calcolatore in un **singolo file HTML** (zero dipendenze, funziona offline) che aiuta gli host Airbnb italiani a **non perdere guadagni** con il passaggio alla **commissione unica del 15,5% a carico dell'host**, annunciato per l'Italia (host senza channel manager) il **13 ottobre 2026**.
+Calcolatori in **singoli file HTML** (zero dipendenze, funzionano offline) che aiutano gli host Airbnb italiani a **non perdere guadagni** con il passaggio alla **commissione unica del 15,5% a carico dell'host**, annunciato per l'Italia (host senza channel manager) il **13 ottobre 2026**.
 
-## Come si usa
+## Due versioni
 
-Apri `index.html` in qualsiasi browser (anche da file locale, anche su smartphone). Nessun dato viene raccolto o inviato: tutto il calcolo avviene nel browser.
+### `index.html` — versione semplice (per tutti)
 
-1. Inserisci la tua prenotazione tipo (prezzo/notte, notti, pulizie).
-2. Scegli il tuo regime fiscale (cedolare 21%/26%, IRPEF, forfettario 15%/5%, impresa).
-3. Scegli cosa proteggere: il **netto dopo le tasse** (consigliato), il payout Airbnb, o il prezzo totale per l'ospite.
+Due domande, una risposta: *«Quanto costa una notte da te oggi?»* e *«Quante case affitti?»* (una / due / ho la P.IVA) → **«Metti il prezzo a X €/notte»**, con quanto perdi se non fai nulla e la rassicurazione sul prezzo visto dagli ospiti. Zero gergo fiscale: il regime viene dedotto dal numero di case (1 → cedolare 21%, 2 → cedolare 26%, P.IVA → forfettario).
 
-Il tool restituisce il **nuovo prezzo consigliato**, il confronto prima/dopo, la proiezione annua, i calcoli passo-passo e un confronto tra regimi fiscali.
+### `avanzato.html` — versione avanzata
+
+Per chi vuole il dettaglio completo:
+
+1. Prenotazione tipo (prezzo/notte, notti, pulizie, notti/anno).
+2. Regime fiscale esplicito (cedolare 21%/26%, IRPEF con aliquota marginale, forfettario 15%/5%, impresa).
+3. Obiettivo: proteggere il **netto dopo le tasse** (consigliato), il payout Airbnb, o il prezzo totale per l'ospite.
+
+Restituisce prezzo consigliato, confronto prima/dopo, proiezione annua, calcoli passo-passo, confronto tra regimi e opzioni avanzate (commissioni modificabili, IVA sulla fee).
+
+Le due pagine si linkano a vicenda. Nessun dato viene raccolto o inviato: tutto il calcolo avviene nel browser, anche da file locale su smartphone.
 
 ## Perché «+15,5%» non basta
 
