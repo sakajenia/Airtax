@@ -89,6 +89,10 @@
   }
   .result .clean{font-size:.92rem; margin-top:10px; font-weight:700;}
   .result .note{font-size:.85rem; opacity:.92; margin-top:8px;}
+  .result.bump{animation:bump .45s ease;}
+  @keyframes bump{0%{transform:scale(1);}30%{transform:scale(1.035);}100%{transform:scale(1);}}
+  #whyText p{font-size:.9rem; margin-bottom:8px;}
+  #whyText p:last-child{margin-bottom:0;}
   .copybtn{
     background:#fff; color:var(--coral-dark); border:none; border-radius:12px; padding:12px 20px;
     font-size:.95rem; font-weight:800; cursor:pointer; margin-top:14px; min-height:48px; font-family:inherit;
@@ -237,6 +241,11 @@
     <div class="box ok" id="guestBox"></div>
 
     <div class="card">
+      <span class="q">🤔 Perché proprio questo prezzo?</span>
+      <div id="whyText"></div>
+    </div>
+
+    <div class="card">
       <span class="q">📊 In pratica, a soggiorno</span>
       <table>
         <thead><tr><th>Situazione</th><th>Prezzo /notte</th><th>Ti resta in tasca*</th></tr></thead>
@@ -289,6 +298,8 @@
   var $=function(id){return document.getElementById(id);};
   var fmt = new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',maximumFractionDigits:2});
   var fmt0 = new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',maximumFractionDigits:0});
+  var n1 = function(x){ return x.toLocaleString('it-IT',{minimumFractionDigits:0,maximumFractionDigits:2}); };
+  var lastNp = null;
 
   function params(){
     // commissioni effettive (per i forfettari l'IVA sulla commissione non si recupera)
@@ -334,9 +345,15 @@
     // HERO
     var lbls={net:'👉 Metti il prezzo a', guest:'👉 Per non far pagare di più gli ospiti, metti', payout:'👉 Per avere lo stesso bonifico, metti'};
     $('heroLbl').textContent=lbls[goal];
-    $('newPrice').innerHTML=fmt0.format(np).replace(' €',' €')+'<small> /notte</small>';
+    $('newPrice').innerHTML=fmt0.format(np)+'<small> /notte</small>';
     $('pct').textContent='+'+pct+'%';
     $('cleanLine').textContent = cleaning>0 ? '🧹 E le pulizie a '+fmt0.format(nc) : '';
+    // feedback visivo quando il numero cambia
+    if(lastNp!==null && lastNp!==np){
+      var rc=document.querySelector('.result');
+      rc.classList.remove('bump'); void rc.offsetWidth; rc.classList.add('bump');
+    }
+    lastNp=np;
 
     // goal warning
     var gw=$('goalWarn');
@@ -358,9 +375,36 @@
     // guest reassurance
     var guestOld=S0*(1+G_OLD), guestNew=S2;
     var gd=guestNew/guestOld-1;
-    $('guestBox').innerHTML = gd<=0.001
+    $('guestBox').innerHTML = gd<=0.01
       ? '<b>Tranquillo per gli ospiti:</b> col nuovo prezzo pagano '+fmt.format(guestNew)+', cioè non più di oggi ('+fmt.format(guestOld)+' con le commissioni nascoste).'
-      : '<b>Tranquillo per gli ospiti:</b> oggi al checkout pagano già '+fmt.format(guestOld)+' (c’è un ~14% di commissioni nascoste). Col nuovo prezzo pagherebbero '+fmt.format(guestNew)+': solo il '+(gd*100).toFixed(0)+'% in più.';
+      : '<b>Tranquillo per gli ospiti:</b> oggi al checkout pagano già '+fmt.format(guestOld)+' (c’è un ~14% di commissioni nascoste). Col nuovo prezzo pagherebbero '+fmt.format(guestNew)+': solo circa il '+(gd*100).toFixed(0)+'% in più.';
+
+    // PERCHÉ QUESTO PREZZO — spiegazione "ogni 100 €"
+    var oldKeep=(1-p.effO-p.t)*100, newKeep=(1-p.effN-p.t)*100, per100=k*100;
+    var taxWord = regime==='ced21' ? '21 € di tasse (cedolare secca)' :
+                  regime==='ced26' ? '26 € di tasse (cedolare secca)' :
+                  regime==='irpef' ? n1(p.t*100)+' € di tasse (IRPEF)' :
+                  regime==='forf'  ? n1(p.t*100)+' € di tasse (forfettario)' : '';
+    var w=[];
+    if(goal==='net'){
+      if(regime==='impresa'){
+        w.push('Oggi, ogni <b>100 €</b> che incassi, <b>3 €</b> vanno ad Airbnb: margine <b>97 €</b>. Con la nuova commissione ne andranno <b>15,50 €</b>: margine <b>84,50 €</b>.');
+        w.push('Per tornare a <b>97 €</b> devi chiedere <b>'+n1(per100)+' €</b> invece di 100, cioè <b>+'+n1((k-1)*100)+'%</b>. Per le imprese la commissione si scarica dai costi, quindi basta recuperarla: le tasse sul profitto le valuta il commercialista.');
+      } else {
+        w.push('Oggi, ogni <b>100 €</b> che incassi: <b>'+n1(p.effO*100)+' €</b> vanno ad Airbnb e <b>'+taxWord+'</b> → in tasca <b>'+n1(oldKeep)+' €</b>.');
+        w.push('Con la nuova commissione Airbnb ne prenderà <b>'+n1(p.effN*100)+' €</b> → in tasca resterebbero solo <b>'+n1(newKeep)+' €</b>.');
+        w.push('Per tornare a <b>'+n1(oldKeep)+' €</b> devi chiedere <b>'+n1(per100)+' €</b> ogni 100 di oggi: ecco il <b>+'+pct+'%</b>. Alzare solo del 15,5% non basta, perché le tasse crescono insieme al prezzo.');
+      }
+    } else if(goal==='payout'){
+      w.push('Con <b>+'+pct+'%</b> il bonifico di Airbnb resta identico a oggi: ogni 100 € di oggi diventano <b>'+n1(per100)+' €</b>, Airbnb trattiene il suo 15,5% e a te arriva la stessa cifra di prima.');
+      if(p.t>0) w.push('Però le tasse si pagano sul prezzo, che ora è più alto: quindi paghi <b>più tasse di oggi</b> e in tasca resta un po’ meno. È per questo che sopra c’è l’avviso arancione.');
+      w.push('ℹ️ Con questo obiettivo il regime fiscale non cambia il prezzo consigliato (contano solo le commissioni): cambia però quanto ti resta in tasca — guarda le tabelle qui sotto.');
+    } else {
+      w.push('Oggi l’ospite paga il tuo prezzo <b>più ~14% di commissioni nascoste</b> al checkout. Col nuovo sistema le commissioni nascoste spariscono: il tuo prezzo è tutto quello che paga.');
+      w.push('Alzando di circa il <b>14%</b> l’ospite spende esattamente come prima. Tu però recuperi solo una parte della nuova commissione: in tasca ti resta un po’ meno di oggi (vedi l’avviso arancione).');
+      w.push('ℹ️ Con questo obiettivo il regime fiscale non cambia il prezzo consigliato: cambia però quanto ti resta in tasca — guarda le tabelle qui sotto.');
+    }
+    $('whyText').innerHTML = w.map(function(x){return '<p>'+x+'</p>';}).join('');
 
     // table
     var isImp=(regime==='impresa');
