@@ -6,7 +6,13 @@ Calcolatori in **singoli file HTML** (zero dipendenze, funzionano offline) che a
 
 ### `index.html` — versione semplice (per tutti)
 
-Due domande, una risposta: *«Quanto costa una notte da te oggi?»* e *«Quante case affitti?»* (una / due / ho la P.IVA) → **«Metti il prezzo a X €/notte»**, con quanto perdi se non fai nulla e la rassicurazione sul prezzo visto dagli ospiti. Zero gergo fiscale: il regime viene dedotto dal numero di case (1 → cedolare 21%, 2 → cedolare 26%, P.IVA → forfettario).
+Tre passi guidati con bottoni grandi ed emoji, zero gergo fiscale, ma con tutta la sostanza:
+
+1. **💶 Prezzo, notti, pulizie, notti/anno** — campi grandi con default sensati.
+2. **🧾 «Come paghi le tasse sull'affitto?»** — cinque bottoni in linguaggio umano: una casa (cedolare 21%), due case (26%), dichiarazione normale (IRPEF, con la domanda *«quanto guadagni in totale all'anno?»* al posto dell'aliquota marginale), P.IVA forfettaria (con domanda start-up 5%/15%), impresa.
+3. **🎯 «Cosa è più importante per te?»** — non perdere niente (netto invariato) / non spaventare gli ospiti / fare come dice Airbnb (con avviso su quanto ci perdi).
+
+Risposta: numero gigante col nuovo prezzo (+ pulizie adeguate), quanto perdi se non fai nulla, rassicurazione sul prezzo visto dagli ospiti, tabelle «a soggiorno» e «in un anno», e i conti voce per voce in una sezione richiudibile.
 
 ### `avanzato.html` — versione avanzata
 
