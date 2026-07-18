@@ -51,3 +51,23 @@ Le imposte italiane sugli affitti brevi (cedolare secca, IRPEF, forfettario) si 
 ## Limiti
 
 Strumento indicativo, **non è consulenza fiscale**. Non modella: imposta di soggiorno (partita di giro), contributi INPS fissi (forfettari/imprese), IMU e costi di gestione, sconti settimanali/mensili, co-hosting. Le aliquote sono costanti modificabili nelle «Opzioni avanzate». Non affiliato ad Airbnb.
+
+## Metterla online
+
+### GitHub Pages (gratis, automatico)
+
+Il workflow `.github/workflows/deploy.yml` pubblica il sito a ogni push del branch. URL: **https://sakajenia.github.io/Airtax/** (e `…/Airtax/avanzato.html`).
+
+> Nota: con un repo **privato** GitHub Pages richiede un piano a pagamento. Se il deploy fallisce, rendi pubblico il repo (Settings → General → Danger Zone → Change visibility) e rilancia il workflow: i file sono solo HTML, non c'è nulla di segreto.
+
+### Dokploy (sul tuo server)
+
+[Dokploy](https://github.com/dokploy/dokploy) è una piattaforma self-hosted: serve un tuo VPS (da ~4 €/mese).
+
+1. Sul VPS: `curl -sSL https://dokploy.com/install.sh | sh`, poi apri `http://IP-DEL-SERVER:3000` e crea l'account admin.
+2. **Create Project** → **Create Service → Application**.
+3. Provider **GitHub** (autorizza l'app GitHub di Dokploy sul repo `sakajenia/Airtax`), branch `claude/airbnb-host-calculator-wdw8ws`.
+4. Build type: **Dockerfile** (lo trova da solo nella root).
+5. **Deploy**. Poi in *Domains* aggiungi il tuo dominio: certificato HTTPS automatico.
+
+Il `Dockerfile` incluso serve le due pagine con nginx: nessuna configurazione extra.
