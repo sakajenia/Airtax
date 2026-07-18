@@ -6,13 +6,15 @@ Calcolatori in **singoli file HTML** (zero dipendenze, funzionano offline) che a
 
 ### `index.html` — versione semplice (per tutti)
 
-Tre passi guidati con bottoni grandi ed emoji, zero gergo fiscale, ma con tutta la sostanza:
+Tutta la logica ragiona **sulla notte singola**: scrivi il prezzo a notte di oggi, esce il prezzo a notte nuovo. Tre passi guidati, zero gergo:
 
-1. **💶 Prezzo, notti, pulizie, notti/anno** — campi grandi con default sensati.
-2. **🧾 «Come paghi le tasse sull'affitto?»** — cinque bottoni in linguaggio umano: una casa (cedolare 21%), due case (26%), dichiarazione normale (IRPEF, con la domanda *«quanto guadagni in totale all'anno?»* al posto dell'aliquota marginale), P.IVA forfettaria (con domanda start-up 5%/15%), impresa.
-3. **🎯 «Cosa è più importante per te?»** — non perdere niente (netto invariato) / non spaventare gli ospiti / fare come dice Airbnb (con avviso su quanto ci perdi).
+1. **💶 «Quanto costa una notte da te oggi?»** — un campo solo (pulizie e notti/anno facoltativi).
+2. **🧾 «Come paghi le tasse?»** — cinque bottoni in linguaggio umano: una casa (cedolare 21%), due case (26%), dichiarazione dei redditi (IRPEF, chiedendo *«quanto guadagni all'anno?»* al posto dell'aliquota), P.IVA forfettaria (con domanda start-up 5%/15%), azienda.
+3. **🎯 «Cosa conta di più per te?»** — guadagnare come oggi / non far spendere di più agli ospiti / fare il minimo indispensabile (con avviso su quanto ci perdi).
 
-Risposta: numero gigante col nuovo prezzo (+ pulizie adeguate), quanto perdi se non fai nulla, rassicurazione sul prezzo visto dagli ospiti, tabelle «a soggiorno» e «in un anno», e i conti voce per voce in una sezione richiudibile.
+Risposta: numerone col nuovo prezzo, badge «Tasse già contate», riga-verdetto (*«Oggi ti restano 76 € a notte → con questo prezzo, ancora 76 €»*), spiegazione in 3 frasi coi numeri dell'utente, **barre visive prima/dopo** (la parte verde — la tua — resta uguale), tabella per notte, proiezione annua e conti voce per voce dietro due toggle.
+
+La correttezza è verificata con una matrice automatica in Chromium contro una tabella di riferimento calcolata indipendentemente (24/24 combinazioni regime × obiettivo).
 
 ### `avanzato.html` — versione avanzata
 

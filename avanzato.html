@@ -7,10 +7,10 @@
 <meta name="description" content="Calcola a quanto alzare il prezzo del tuo annuncio per non perdere guadagni con la nuova commissione unica Airbnb del 15,5% a carico dell'host, tenendo conto del tuo regime fiscale italiano (cedolare secca, forfettario, IRPEF).">
 <style>
   :root{
-    --coral:#FF385C; --coral-dark:#D9304F; --coral-bg:#FFF0F3;
-    --ink:#222226; --ink-soft:#6A6A70; --line:#E8E8EC;
+    --coral:#FF385C; --coral-dark:#C22645; --coral-bg:#FFF0F3;
+    --ink:#222226; --ink-soft:#63636B; --line:#E8E8EC;
     --bg:#F7F7F9; --card:#FFFFFF;
-    --ok:#0E8A5F; --ok-bg:#E8F6F0; --warn:#B54708; --warn-bg:#FFF4E5; --bad:#C0263C; --bad-bg:#FDEDEF;
+    --ok:#0A6B4A; --ok-bg:#E8F6F0; --warn:#B54708; --warn-bg:#FFF4E5; --bad:#C0263C; --bad-bg:#FDEDEF;
   }
   @media (prefers-color-scheme: dark){
     :root{
@@ -37,8 +37,9 @@
     display:inline-block; background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.35);
     border-radius:999px; padding:3px 12px; font-size:.8rem; margin-bottom:12px; font-weight:600;
   }
-  .cols{display:grid; grid-template-columns:1fr; gap:20px;}
-  @media(min-width:880px){ .cols{grid-template-columns:400px 1fr; align-items:start;} .sticky{position:sticky; top:16px;} }
+  .cols{display:grid; grid-template-columns:minmax(0,1fr); gap:20px;}
+  .cols > div{min-width:0;}
+  @media(min-width:880px){ .cols{grid-template-columns:400px minmax(0,1fr); align-items:start;} .sticky{position:sticky; top:16px;} }
   .card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; margin-bottom:16px;}
   .card h2{font-size:1.05rem; margin-bottom:14px;}
   label{display:block; font-weight:600; font-size:.88rem; margin-bottom:4px;}
@@ -369,6 +370,12 @@
     $('regimeHint').textContent = R.hint;
     $('irpefRow').hidden = (s.regime!=='irpef');
 
+    if(s.nightly<=0){
+      $('heroPrice').textContent='—';
+      $('heroSub').textContent='Inserisci il prezzo a notte per vedere il calcolo.';
+      $('chips').innerHTML='';
+      return;
+    }
     var S0 = s.nightly*s.nights + s.cleaning;
     if(S0<=0){ return; }
 
