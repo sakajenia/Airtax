@@ -58,7 +58,7 @@ Strumento indicativo, **non è consulenza fiscale**. Non modella: imposta di sog
 
 Il workflow `.github/workflows/deploy.yml` pubblica il sito a ogni push del branch. URL: **https://sakajenia.github.io/Airtax/** (e `…/Airtax/avanzato.html`).
 
-> Nota: con un repo **privato** GitHub Pages richiede un piano a pagamento. Se il deploy fallisce, rendi pubblico il repo (Settings → General → Danger Zone → Change visibility) e rilancia il workflow: i file sono solo HTML, non c'è nulla di segreto.
+Il repo è pubblico, quindi Pages è attivo sul piano gratuito.
 
 ### Dokploy (sul tuo server)
 
