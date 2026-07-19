@@ -1,0 +1,84 @@
+<style>
+  :root{
+    --coral:#FF385C; --coral-dark:#C22645; --coral-bg:#FFF0F3;
+    --ink:#222226; --ink-soft:#63636B; --line:#E8E8EC;
+    --bg:#FFF8F9; --card:#FFFFFF;
+    --ok:#0A6B4A; --ok-bg:#E8F6F0;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --coral:#FF5A78; --coral-dark:#FF8296; --coral-bg:#3A1F26;
+      --ink:#F0F0F4; --ink-soft:#A8A8B0; --line:#3C3C44;
+      --bg:#1A1518; --card:#26222A;
+      --ok:#4CC79A; --ok-bg:#173328;
+    }
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.5;
+    display:flex; flex-direction:column; align-items:center; padding:32px 14px 40px;
+  }
+  .wrap{width:100%; max-width:560px; min-width:0; text-align:center;}
+  .checkwrap{
+    width:88px; height:88px; margin:0 auto 20px; border-radius:50%;
+    background:linear-gradient(135deg, var(--coral) 0%, #E31C5F 100%);
+    display:flex; align-items:center; justify-content:center; font-size:2.6rem; color:#fff;
+    box-shadow:0 8px 24px rgba(255,56,92,.35);
+  }
+  h1{font-size:clamp(1.5rem,6vw,2rem); line-height:1.2; margin-bottom:10px;}
+  .sub{color:var(--ink-soft); font-size:1rem; margin-bottom:24px;}
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:20px;
+    padding:22px 18px; margin-bottom:16px; box-shadow:0 2px 12px rgba(0,0,0,.05); text-align:left;
+  }
+  .steps{list-style:none; display:grid; gap:14px;}
+  .steps li{display:flex; gap:12px; align-items:flex-start; font-size:.95rem;}
+  .steps .e{font-size:1.5rem; flex:none; width:34px; text-align:center;}
+  .steps b{display:block;}
+  .steps span.d{color:var(--ink-soft); font-size:.85rem;}
+  .cta{
+    background:linear-gradient(135deg, var(--coral) 0%, #E31C5F 100%); color:#fff;
+    border-radius:20px; padding:24px 20px; margin-bottom:16px;
+  }
+  .cta h2{font-size:1.2rem; margin-bottom:6px;}
+  .cta p{font-size:.92rem; opacity:.95; margin-bottom:16px;}
+  .cta .btn{
+    display:inline-block; background:#fff; color:var(--coral-dark); text-decoration:none;
+    border-radius:14px; padding:15px 26px; font-size:1.02rem; font-weight:800; min-height:52px;
+  }
+  .cta .btn:hover{background:var(--coral-bg);}
+  .redo{display:block; text-align:center; margin:8px 0 18px; font-size:.95rem;}
+  .redo a{color:var(--coral-dark); font-weight:700;}
+  footer{color:var(--ink-soft); font-size:.78rem; text-align:center; max-width:560px; line-height:1.6;}
+  footer a{color:var(--coral-dark); font-weight:700;}
+</style>
+<div class="wrap">
+
+  <div class="checkwrap" aria-hidden="true">✅</div>
+  <h1>Perfetto! Il tuo report personalizzato sta arrivando.</h1>
+  <p class="sub">Abbiamo ricevuto la tua richiesta. Tieni d'occhio Email e WhatsApp: tra pochi minuti trovi il calcolo completo con il tuo nuovo prezzo consigliato.</p>
+
+  <div class="card">
+    <ul class="steps">
+      <li><span class="e">📩</span><span><b>Controlla i tuoi messaggi</b><span class="d">Ti abbiamo inviato il report sul canale che hai scelto: Email o WhatsApp. Se non lo vedi in Email, guarda anche nello Spam o nelle Promozioni.</span></span></li>
+      <li><span class="e">📌</span><span><b>Applica il tuo nuovo prezzo</b><span class="d">Segui il numero consigliato per non perdere guadagni dal 13 ottobre 2026.</span></span></li>
+      <li><span class="e">🔔</span><span><b>Resti aggiornato</b><span class="d">Se le regole Airbnb o le tasse cambiano, ti avvisiamo per primo.</span></span></li>
+    </ul>
+  </div>
+
+  <div class="cta">
+    <h2>Vuoi essere sicuro al 100%?</h2>
+    <p>Prenota una call gratuita di 15 minuti con un nostro esperto di affitti brevi a Roma: rivediamo insieme il tuo prezzo, il regime fiscale e la strategia.</p>
+    <!-- Sostituire href con il link al calendario GHL (Calendars > il tuo calendario > "Permalink/Scheduling link") -->
+    <a class="btn" href="/call">📅 Prenota una call gratuita</a>
+  </div>
+
+  <p class="redo">Vuoi provare un altro scenario? <a href="/calcolatore">→ Rifai il calcolo</a></p>
+
+  <footer>
+    Strumento indicativo, non è consulenza fiscale. Non affiliato ad Airbnb.<br>
+    Titolare del trattamento: [Ragione Sociale del Titolare] · <a href="/privacy">Informativa privacy</a>
+  </footer>
+
+</div>

@@ -1,0 +1,258 @@
+<!--
+  ============================================================================
+  INFORMATIVA PRIVACY — tool.affittibreviaroma.com
+  Blocco Custom Code HTML per GHL (pagina /privacy).
+  ATTENZIONE LEGALE: bozza tecnica NON validata. I contenuti tra parentesi
+  quadre [ ] sono placeholder da compilare. DA FAR VALIDARE A UN LEGALE /
+  DPO prima della pubblicazione. Vedi funnel/consensi-e-note-legali.md.
+  ============================================================================
+-->
+<style>
+  :root{
+    --coral:#FF385C; --coral-dark:#C22645; --coral-bg:#FFF0F3;
+    --ink:#222226; --ink-soft:#63636B; --line:#E8E8EC;
+    --bg:#FFF8F9; --card:#FFFFFF;
+    --ok:#0A6B4A; --ok-bg:#E8F6F0; --warn:#B54708; --warn-bg:#FFF4E5; --bad:#C0263C; --bad-bg:#FDEDEF;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --coral:#FF5A78; --coral-dark:#FF8296; --coral-bg:#3A1F26;
+      --ink:#F0F0F4; --ink-soft:#A8A8B0; --line:#3C3C44;
+      --bg:#1A1518; --card:#26222A;
+      --ok:#4CC79A; --ok-bg:#173328; --warn:#F0A75A; --warn-bg:#332617; --bad:#F26D84; --bad-bg:#361B20;
+    }
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.6;
+    display:flex; flex-direction:column; align-items:center; padding:20px 14px 48px;
+  }
+  .wrap{width:100%; max-width:680px; min-width:0;}
+  .pill{
+    display:inline-block; background:var(--coral-bg); color:var(--coral-dark);
+    border:1px solid color-mix(in srgb, var(--coral) 30%, transparent);
+    border-radius:999px; padding:5px 14px; font-size:.8rem; font-weight:800; margin-bottom:14px;
+  }
+  h1{font-size:clamp(1.5rem,6vw,2rem); line-height:1.2; margin:6px 0 8px;}
+  h1 .accent{color:var(--coral);}
+  .updated{color:var(--ink-soft); font-size:.85rem; margin-bottom:20px;}
+  .updated b{color:var(--ink);}
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:20px;
+    padding:20px 20px; margin-bottom:16px; box-shadow:0 2px 12px rgba(0,0,0,.05);
+  }
+  h2{font-size:1.12rem; margin:2px 0 10px; color:var(--ink); display:flex; align-items:baseline; gap:8px;}
+  h2 .num{
+    display:inline-flex; align-items:center; justify-content:center; flex:none;
+    min-width:24px; height:24px; padding:0 6px; border-radius:8px;
+    background:var(--coral); color:#fff; font-size:.8rem; font-weight:800;
+  }
+  h3{font-size:.98rem; margin:14px 0 6px; color:var(--coral-dark);}
+  p{font-size:.94rem; margin-bottom:10px;}
+  p:last-child{margin-bottom:0;}
+  ul{margin:6px 0 10px 4px; padding-left:20px;}
+  li{font-size:.93rem; margin-bottom:6px;}
+  a{color:var(--coral-dark); font-weight:700;}
+  b, strong{color:var(--ink);}
+  .ph{
+    background:var(--warn-bg); color:var(--warn); border-radius:5px;
+    padding:1px 6px; font-weight:800; font-size:.86em; white-space:normal; overflow-wrap:anywhere;
+  }
+  .tbl{width:100%; border-collapse:collapse; margin:6px 0 4px; font-size:.88rem; display:block; overflow-x:auto;}
+  .tbl table{width:100%; border-collapse:collapse; min-width:520px;}
+  .tbl th, .tbl td{border:1px solid var(--line); padding:9px 11px; text-align:left; vertical-align:top;}
+  .tbl th{background:var(--bg); font-weight:800; font-size:.82rem;}
+  .disclaimer{
+    background:var(--warn-bg); border:1px solid color-mix(in srgb, var(--warn) 35%, transparent);
+    border-radius:16px; padding:14px 16px; margin-bottom:16px; font-size:.9rem;
+  }
+  .disclaimer b{color:var(--warn);}
+  .rights{display:grid; gap:8px; margin:6px 0 4px;}
+  .rights .r{display:flex; gap:10px; align-items:flex-start; font-size:.92rem;}
+  .rights .e{flex:none; width:26px; text-align:center; font-size:1.15rem;}
+  .rights b{display:inline;}
+  .backlink{display:inline-block; margin-top:6px; font-size:.9rem;}
+  footer{color:var(--ink-soft); font-size:.78rem; text-align:center; max-width:680px; line-height:1.6; margin-top:14px;}
+  footer a{color:var(--coral-dark); font-weight:700;}
+</style>
+<div class="wrap">
+
+  <span class="pill">🔒 Privacy &amp; dati personali</span>
+  <h1>Informativa sul trattamento dei <span class="accent">dati personali</span></h1>
+  <p class="updated">Resa ai sensi degli artt. 13-14 del Regolamento UE 2016/679 (GDPR) e del D.lgs. 196/2003 (Codice Privacy) come modificato dal D.lgs. 101/2018.<br>Ultimo aggiornamento: <b>19 luglio 2026</b> · Versione 1.0</p>
+
+  <div class="disclaimer">
+    ⚠️ <b>Nota.</b> Questo documento è una bozza tecnica predisposta per il funnel del calcolatore e <b>deve essere verificata e adattata da un consulente legale / DPO</b> prima della pubblicazione. I dati tra parentesi quadre (es. <span class="ph">[Ragione Sociale]</span>) sono da completare con le informazioni reali del Titolare.
+  </div>
+
+  <div class="card">
+    <h2><span class="num">1</span> Titolare del trattamento</h2>
+    <p>Il Titolare del trattamento dei dati è:</p>
+    <ul>
+      <li><b>Ragione sociale:</b> <span class="ph">[Ragione Sociale del Titolare]</span> (di seguito anche &laquo;Titolare&raquo;)</li>
+      <li><b>Sede / indirizzo:</b> <span class="ph">[Indirizzo completo — via, CAP, città]</span></li>
+      <li><b>P.IVA / C.F.:</b> <span class="ph">[Partita IVA]</span></li>
+      <li><b>Email di contatto privacy:</b> <span class="ph">[privacy@affittibreviaroma.com]</span></li>
+      <li><b>PEC (se disponibile):</b> <span class="ph">[PEC del Titolare]</span></li>
+    </ul>
+    <p>Il Titolare non ha nominato un Responsabile della protezione dei dati (DPO). <span class="ph">[Se nominato, indicare i recapiti del DPO.]</span> Per qualsiasi richiesta relativa al trattamento dei dati è possibile scrivere ai recapiti sopra indicati.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">2</span> Quali dati raccogliamo</h2>
+    <p>Attraverso questo sito (calcolatore e moduli di contatto) trattiamo le seguenti categorie di dati personali:</p>
+    <h3>a) Dati conferiti volontariamente</h3>
+    <ul>
+      <li><b>Dati anagrafici e di contatto:</b> nome, cognome, indirizzo email, numero di telefono/cellulare.</li>
+      <li><b>Dati d'uso del calcolatore:</b> i valori che inserisci e che il calcolatore elabora (es. prezzo a notte attuale e consigliato, percentuale di aumento, regime fiscale selezionato, obiettivo, netto stimato oggi e domani, perdita annua stimata) e il canale scelto per ricevere il report (Email o WhatsApp).</li>
+      <li><b>Contenuto delle comunicazioni:</b> eventuali messaggi che ci invii via email, WhatsApp o modulo.</li>
+    </ul>
+    <h3>b) Dati raccolti automaticamente</h3>
+    <ul>
+      <li><b>Dati di navigazione e tecnici:</b> indirizzo IP, tipo di dispositivo e browser, pagine visitate, data/ora di accesso e dati raccolti tramite cookie e tecnologie simili (vedi § 9).</li>
+    </ul>
+    <p>I dati d'uso del calcolatore sono <b>stime indicative</b> basate su quanto inserisci e <b>non costituiscono consulenza fiscale</b> (vedi § 10). Non raccogliamo intenzionalmente categorie particolari di dati (art. 9 GDPR): ti invitiamo a non inserirne.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">3</span> Finalità e basi giuridiche del trattamento</h2>
+    <p>Trattiamo i tuoi dati per le finalità indicate di seguito, ciascuna con la relativa base giuridica ai sensi dell'art. 6 GDPR:</p>
+    <div class="tbl">
+      <table>
+        <thead>
+          <tr><th>Finalità</th><th>Base giuridica</th><th>Conferimento</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>A.</b> Fornirti il calcolatore e generare/inviarti il report personalizzato che hai richiesto, via Email o WhatsApp.</td>
+            <td>Art. 6.1.b — esecuzione di un servizio/misure precontrattuali richieste dall'interessato.</td>
+            <td>Necessario: senza questi dati non possiamo inviarti il report.</td>
+          </tr>
+          <tr>
+            <td><b>B.</b> Riscontrare le tue richieste di contatto e gestire l'eventuale relazione (es. fissare una call).</td>
+            <td>Art. 6.1.b — misure precontrattuali / esecuzione del rapporto.</td>
+            <td>Necessario per rispondere.</td>
+          </tr>
+          <tr>
+            <td><b>C.</b> Inviarti comunicazioni di marketing: aggiornamenti sulle regole degli affitti brevi, consigli, offerte e servizi, via Email e/o WhatsApp.</td>
+            <td>Art. 6.1.a — <b>consenso</b> libero, specifico e revocabile.</td>
+            <td>Facoltativo: se non lo presti, riceverai comunque il report.</td>
+          </tr>
+          <tr>
+            <td><b>D.</b> Adempiere a obblighi di legge (contabili, fiscali) e gestire eventuali contenziosi.</td>
+            <td>Art. 6.1.c — obbligo legale; art. 6.1.f — legittimo interesse alla difesa dei diritti.</td>
+            <td>Necessario ove applicabile.</td>
+          </tr>
+          <tr>
+            <td><b>E.</b> Garantire sicurezza, corretto funzionamento e statistiche aggregate del sito.</td>
+            <td>Art. 6.1.f — legittimo interesse a un sito sicuro e funzionante.</td>
+            <td>Cookie non essenziali: solo previo consenso (§ 9).</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Il consenso al marketing (finalità C) è <b>facoltativo</b>, non è pre-selezionato ed è <b>revocabile in qualsiasi momento</b> senza pregiudicare la liceità del trattamento effettuato prima della revoca.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">4</span> Come inviamo il report (Email / WhatsApp)</h2>
+    <p>Al termine del calcolo puoi scegliere di ricevere il report personalizzato tramite:</p>
+    <ul>
+      <li><b>Email:</b> inviata al tuo indirizzo tramite la piattaforma di marketing e CRM <b>GoHighLevel</b> (vedi § 6).</li>
+      <li><b>WhatsApp:</b> inviato al tuo numero di cellulare tramite l'infrastruttura di messaggistica <b>Twilio Inc.</b>, integrata in GoHighLevel. Scegliendo questo canale acconsenti a essere contattato su WhatsApp al numero fornito per l'invio del report richiesto.</li>
+    </ul>
+    <p>La scelta del canale (campo <i>canale_report</i>) viene conservata insieme alla richiesta. L'invio del report rientra nella finalità A (esecuzione del servizio richiesto) e non richiede il consenso marketing.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">5</span> Periodo di conservazione</h2>
+    <ul>
+      <li><b>Dati per l'erogazione del servizio / report</b> (finalità A-B): conservati per il tempo necessario a evadere la richiesta e successivamente per <span class="ph">[es. 24 mesi]</span> dall'ultimo contatto utile, salvo diversa richiesta di cancellazione.</li>
+      <li><b>Dati per marketing</b> (finalità C): fino a revoca del consenso e comunque non oltre <span class="ph">[es. 24 mesi]</span> dall'ultima interazione, dopodiché i dati vengono cancellati o anonimizzati.</li>
+      <li><b>Dati per obblighi di legge</b> (finalità D): per i termini di legge previsti (es. 10 anni per la documentazione contabile/fiscale).</li>
+      <li><b>Dati di navigazione e cookie</b> (finalità E): secondo le durate indicate nella cookie policy (§ 9).</li>
+    </ul>
+    <p>Al termine del periodo di conservazione i dati sono cancellati o resi anonimi in modo irreversibile.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">6</span> Comunicazione dei dati e Responsabili del trattamento</h2>
+    <p>I tuoi dati sono trattati da personale autorizzato del Titolare e possono essere comunicati a soggetti terzi che agiscono come <b>Responsabili del trattamento</b> (art. 28 GDPR), nominati con apposito accordo (DPA). In particolare:</p>
+    <div class="tbl">
+      <table>
+        <thead>
+          <tr><th>Fornitore</th><th>Ruolo / servizio</th><th>Trattamento</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>GoHighLevel</b> (HighLevel Inc., USA)</td>
+            <td>Piattaforma CRM, landing page, moduli, invio email e automazioni del funnel.</td>
+            <td>Responsabile del trattamento — ospita e gestisce i dati di contatto e i dati d'uso del calcolatore.</td>
+          </tr>
+          <tr>
+            <td><b>Twilio Inc.</b> (USA)</td>
+            <td>Infrastruttura di messaggistica per l'invio dei messaggi WhatsApp/SMS.</td>
+            <td>(Sub-)Responsabile — tratta numero di telefono e contenuto del messaggio per la consegna.</td>
+          </tr>
+          <tr>
+            <td><span class="ph">[Provider email/SMTP, se distinto]</span></td>
+            <td><span class="ph">[Recapito email transazionali, se applicabile]</span></td>
+            <td>Responsabile del trattamento.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>I dati possono inoltre essere comunicati a consulenti (legali, fiscali) e alle autorità competenti, ove richiesto dalla legge. I tuoi dati <b>non sono diffusi</b> né ceduti a terzi per loro autonome finalità di marketing.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">7</span> Trasferimento dei dati fuori dall'Unione Europea</h2>
+    <p>Alcuni fornitori (in particolare <b>GoHighLevel</b> e <b>Twilio</b>) hanno sede negli <b>Stati Uniti</b>: l'utilizzo dei loro servizi può comportare un trasferimento dei dati al di fuori dello Spazio Economico Europeo.</p>
+    <p>Tali trasferimenti avvengono nel rispetto degli artt. 44 e ss. del GDPR, sulla base di adeguate garanzie, quali le <b>Clausole Contrattuali Standard (SCC)</b> approvate dalla Commissione Europea e/o l'adesione del fornitore al <b>EU-U.S. Data Privacy Framework</b>, ove applicabile. <span class="ph">[Confermare con ciascun fornitore la base giuridica del trasferimento e citarla.]</span> Puoi richiedere copia delle garanzie adottate scrivendo ai recapiti del Titolare.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">8</span> I tuoi diritti</h2>
+    <p>In qualità di interessato, ai sensi degli artt. 15-22 GDPR, hai diritto di:</p>
+    <div class="rights">
+      <div class="r"><span class="e">👁️</span><span><b>Accesso:</b> sapere se trattiamo i tuoi dati e ottenerne copia.</span></div>
+      <div class="r"><span class="e">✏️</span><span><b>Rettifica:</b> correggere dati inesatti o integrarli.</span></div>
+      <div class="r"><span class="e">🗑️</span><span><b>Cancellazione ("oblio"):</b> ottenere la cancellazione dei dati nei casi previsti.</span></div>
+      <div class="r"><span class="e">⏸️</span><span><b>Limitazione:</b> chiedere la limitazione del trattamento.</span></div>
+      <div class="r"><span class="e">🚫</span><span><b>Opposizione:</b> opporti al trattamento basato sul legittimo interesse e, in ogni momento, al marketing diretto.</span></div>
+      <div class="r"><span class="e">📦</span><span><b>Portabilità:</b> ricevere i dati in formato strutturato e leggibile e trasmetterli ad altro titolare.</span></div>
+      <div class="r"><span class="e">🔄</span><span><b>Revoca del consenso:</b> revocare in qualsiasi momento i consensi prestati (es. marketing), senza pregiudizio per i trattamenti precedenti.</span></div>
+      <div class="r"><span class="e">⚖️</span><span><b>Reclamo:</b> proporre reclamo all'Autorità Garante per la protezione dei dati personali (<a href="https://www.garanteprivacy.it" target="_blank" rel="noopener">www.garanteprivacy.it</a>).</span></div>
+    </div>
+    <h3>Come esercitare i diritti</h3>
+    <p>Puoi esercitare i tuoi diritti scrivendo a <span class="ph">[privacy@affittibreviaroma.com]</span>, indicando la richiesta e allegando un documento d'identità se necessario a verificare la tua identità. Risponderemo senza ingiustificato ritardo e comunque entro <b>1 mese</b>. Per disiscriverti dalle comunicazioni marketing puoi anche usare il link di annullamento presente in ogni email o rispondere <b>STOP</b> ai messaggi WhatsApp.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">9</span> Cookie e tecnologie di tracciamento</h2>
+    <p>Il sito utilizza:</p>
+    <ul>
+      <li><b>Cookie tecnici / necessari:</b> indispensabili per il funzionamento del sito e dei moduli. Non richiedono consenso.</li>
+      <li><b>Cookie di funzionalità/analitici e di marketing</b> (es. quelli di GoHighLevel e di eventuali strumenti di analisi o advertising): installati <b>solo previo tuo consenso</b> espresso tramite il banner cookie. <span class="ph">[Elencare gli strumenti effettivamente attivi: es. Google Analytics, Meta Pixel, ecc.]</span></li>
+    </ul>
+    <p>Puoi gestire o revocare le preferenze in ogni momento tramite il banner/pannello cookie. Per il dettaglio di nomi, finalità e durate dei singoli cookie consulta la <span class="ph">[Cookie Policy dedicata]</span>, che integra la presente informativa.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">10</span> Natura del servizio — non è consulenza fiscale</h2>
+    <p>Il calcolatore e il report forniscono <b>stime indicative e automatizzate</b> a scopo informativo, basate sui dati inseriti dall'utente e su assunzioni generali sui regimi fiscali italiani. Non costituiscono consulenza fiscale, legale o professionale personalizzata, non sostituiscono il parere di un commercialista e non generano decisioni con effetti giuridici automatici sull'interessato. Il Titolare non è affiliato ad Airbnb.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">11</span> Modifiche all'informativa</h2>
+    <p>Il Titolare può aggiornare la presente informativa per adeguarla a modifiche normative o organizzative. La versione vigente è sempre pubblicata su questa pagina con la relativa data di ultimo aggiornamento. Ti invitiamo a consultarla periodicamente.</p>
+    <a class="backlink" href="/calcolatore">← Torna al calcolatore</a>
+  </div>
+
+  <footer>
+    Strumento indicativo, non è consulenza fiscale. Non affiliato ad Airbnb.<br>
+    Titolare del trattamento: <span class="ph">[Ragione Sociale del Titolare]</span>
+  </footer>
+
+</div>

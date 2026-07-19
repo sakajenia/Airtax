@@ -1,0 +1,46 @@
+======================================================================
+REPORT CALCOLATORE AIRBNB - Messaggio WhatsApp (GHL / Twilio)
+======================================================================
+Da usare in GoHighLevel come corpo messaggio WhatsApp/SMS nel workflow
+"Funnel Calcolatore" quando canale_report = WhatsApp.
+
+MERGE TAG GHL (chiavi canoniche dei custom field del contatto):
+  {{contact.first_name}}         nome contatto
+  {{contact.prezzo_consigliato}} nuovo prezzo/notte consigliato
+  {{contact.aumento_pct}}        aumento %
+  {{contact.netto_oggi}}         quanto resta a notte oggi
+  {{contact.netto_nuovo}}        quanto resta a notte col nuovo prezzo
+  {{contact.perdita_anno}}       perdita stimata su un anno
+  {{contact.regime_calc}}        regime fiscale scelto
+
+NOTE FALLBACK:
+- I numeri arrivano interi, senza simbolo: l'unita' (EUR, %) e' scritta nel
+  testo, cosi' se un campo e' vuoto la frase resta leggibile.
+- first_name: in GHL usa {{contact.first_name | Host}} per il default "Host".
+- Tieni il messaggio in un solo blocco: WhatsApp non impagina bene i testi
+  lunghi. Questo sta sotto le ~1000 battute.
+- Il link della call punta al sottodominio del funnel (pagina /grazie con CTA).
+======================================================================
+
+--- TESTO DA INCOLLARE IN GHL (dall'inizio del blocco qui sotto) -------------
+
+Ciao {{contact.first_name | Host}}! 👋 Ecco il tuo report SalvaGuadagno Host.
+
+📌 Con la nuova commissione Airbnb 15,5% (dal 13/10/2026) il tuo prezzo consigliato e':
+
+💶 *{{contact.prezzo_consigliato}} EUR/notte* (+{{contact.aumento_pct}}%)
+
+Cosi' in tasca ti resta come oggi:
+• Oggi: {{contact.netto_oggi}} EUR/notte
+• Col nuovo prezzo: {{contact.netto_nuovo}} EUR/notte
+
+⚠️ Se non fai nulla rischi di perdere circa *{{contact.perdita_anno}} EUR all'anno*.
+
+Calcolo fatto per il tuo caso ({{contact.regime_calc}}). Alzare solo del 15,5% non basta: piu' prezzo = piu' tasse, e la commissione non si scarica.
+
+📞 Vuoi rivedere i numeri insieme? Prenota una call gratuita di 15 min:
+👉 https://tool.affittibreviaroma.com/grazie
+
+Strumento indicativo, non e' consulenza fiscale. Rispondi STOP per non ricevere piu' messaggi.
+
+--- FINE TESTO ---------------------------------------------------------------
