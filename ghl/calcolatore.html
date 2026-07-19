@@ -1,0 +1,614 @@
+<style>
+  :root{
+    --coral:#FF385C; --coral-dark:#C22645; --coral-bg:#FFF0F3;
+    --ink:#222226; --ink-soft:#63636B; --line:#E8E8EC;
+    --bg:#FFF8F9; --card:#FFFFFF;
+    --ok:#0A6B4A; --ok-bg:#E8F6F0; --warn:#B54708; --warn-bg:#FFF4E5; --bad:#C0263C; --bad-bg:#FDEDEF;
+    --tax:#9A9AA2;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --coral:#FF5A78; --coral-dark:#FF8296; --coral-bg:#3A1F26;
+      --ink:#F0F0F4; --ink-soft:#A8A8B0; --line:#3C3C44;
+      --bg:#1A1518; --card:#26222A;
+      --ok:#4CC79A; --ok-bg:#173328; --warn:#F0A75A; --warn-bg:#332617; --bad:#F26D84; --bad-bg:#361B20;
+      --tax:#6E6E78;
+    }
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.5;
+    display:flex; flex-direction:column; align-items:center; padding:20px 14px 40px;
+  }
+  .wrap{width:100%; max-width:560px; min-width:0;}
+  h1{font-size:clamp(1.5rem,6vw,2rem); line-height:1.2; text-align:center; margin:10px 0 8px;}
+  h1 .accent{color:var(--coral);}
+  .tagline{text-align:center; color:var(--ink-soft); font-size:.95rem; margin-bottom:22px;}
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:20px;
+    padding:20px 18px; margin-bottom:14px; box-shadow:0 2px 12px rgba(0,0,0,.05);
+  }
+  .q{font-size:1.02rem; font-weight:800; margin-bottom:12px; display:block;}
+  .q .n{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:26px; height:26px; border-radius:50%; background:var(--coral); color:#fff;
+    font-size:.85rem; margin-right:8px; vertical-align:middle;
+  }
+  .hint{color:var(--ink-soft); font-size:.8rem; margin-top:8px;}
+  .priceRow{display:flex; align-items:center; gap:10px;}
+  .priceRow .euro{font-size:1.8rem; font-weight:800; color:var(--ink-soft);}
+  input[type=number]{
+    width:100%; padding:12px; font-size:1.6rem; font-weight:800;
+    border:2px solid var(--line); border-radius:14px; background:var(--card); color:var(--ink);
+    min-height:56px; text-align:center;
+  }
+  input[type=number]:focus{outline:3px solid var(--coral); outline-offset:1px; border-color:var(--coral);}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px;}
+  .row2 label{font-size:.78rem; font-weight:700; display:block; margin-bottom:5px; text-align:center;}
+  .row2 input{font-size:1.1rem; min-height:46px; padding:8px;}
+  .choices{display:grid; gap:8px;}
+  .choices button{
+    display:flex; align-items:center; gap:12px; text-align:left; width:100%;
+    padding:12px 14px; border:2px solid var(--line); border-radius:16px; background:var(--card);
+    color:var(--ink); cursor:pointer; font-family:inherit; min-height:60px;
+  }
+  .choices button .e{font-size:1.7rem; flex:none; width:40px; text-align:center;}
+  .choices button .t{font-weight:800; font-size:.92rem; display:block;}
+  .choices button .d{color:var(--ink-soft); font-size:.76rem; display:block;}
+  .choices button[aria-pressed="true"]{border-color:var(--coral); background:var(--coral-bg);}
+  .choices button[aria-pressed="true"] .t{color:var(--coral-dark);}
+  .subq{margin-top:12px; padding:12px; border-radius:14px; background:var(--bg); border:1px dashed var(--line);}
+  .subq .sq{font-weight:800; font-size:.88rem; margin-bottom:8px; display:block;}
+  .pillrow{display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;}
+  .pillrow.two{grid-template-columns:1fr 1fr;}
+  .pillrow button{
+    padding:10px 6px; border:2px solid var(--line); border-radius:12px; background:var(--card);
+    color:var(--ink); cursor:pointer; font-family:inherit; font-weight:700; font-size:.82rem; min-height:48px;
+  }
+  .pillrow button[aria-pressed="true"]{border-color:var(--coral); background:var(--coral); color:#fff;}
+  /* result */
+  .result{
+    background:linear-gradient(135deg, var(--coral) 0%, #E31C5F 100%);
+    color:#fff; border-radius:24px; padding:26px 20px; text-align:center; margin-bottom:14px;
+  }
+  .result .lbl{font-size:.95rem; font-weight:700; opacity:.95;}
+  .result .big{font-size:clamp(2.8rem,14vw,4rem); font-weight:900; line-height:1.05; margin:4px 0;}
+  .result .big small{font-size:.34em; font-weight:700; opacity:.9;}
+  .result .up{
+    display:inline-block; background:rgba(255,255,255,.22); border-radius:999px;
+    padding:4px 14px; font-weight:800; font-size:1rem; margin:2px 4px 0;
+  }
+  .result .chip{
+    display:inline-block; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.35);
+    border-radius:999px; padding:3px 12px; font-weight:700; font-size:.78rem; margin:8px 2px 0;
+  }
+  .result .clean{font-size:.92rem; margin-top:10px; font-weight:700;}
+  .result .verdict{
+    background:rgba(255,255,255,.16); border-radius:12px; padding:9px 12px;
+    font-size:.9rem; font-weight:700; margin-top:12px;
+  }
+  .result .note{font-size:.82rem; opacity:.92; margin-top:8px;}
+  .result.bump{animation:bump .45s ease;}
+  @keyframes bump{0%{transform:scale(1);}30%{transform:scale(1.035);}100%{transform:scale(1);}}
+  .copybtn{
+    background:#fff; color:var(--coral-dark); border:none; border-radius:12px; padding:12px 20px;
+    font-size:.95rem; font-weight:800; cursor:pointer; margin-top:14px; min-height:48px; font-family:inherit;
+  }
+  .box{border-radius:16px; padding:13px 15px; font-size:.9rem; margin-bottom:10px;}
+  .box.bad{background:var(--bad-bg); border:1px solid color-mix(in srgb, var(--bad) 30%, transparent);}
+  .box.bad b{color:var(--bad);}
+  .box.ok{background:var(--ok-bg); border:1px solid color-mix(in srgb, var(--ok) 30%, transparent);}
+  .box.ok b{color:var(--ok);}
+  .box.warn{background:var(--warn-bg); border:1px solid color-mix(in srgb, var(--warn) 30%, transparent);}
+  .box.warn b{color:var(--warn);}
+  #whyText p{font-size:.9rem; margin-bottom:8px;}
+  #whyText p:last-child{margin-bottom:0;}
+  /* before/after bars */
+  .barrow{margin-bottom:10px; min-width:0;}
+  .barlbl{font-size:.78rem; font-weight:800; margin-bottom:3px;}
+  .bar{display:flex; height:34px; border-radius:9px; overflow:hidden;}
+  .bar .seg{
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-size:.72rem; font-weight:800; white-space:nowrap; overflow:hidden;
+  }
+  .seg.you{background:var(--ok);}
+  .seg.fee{background:var(--coral);}
+  .seg.tax{background:var(--tax);}
+  .legend{display:flex; gap:14px; font-size:.75rem; color:var(--ink-soft); margin:8px 0 2px; flex-wrap:wrap;}
+  .legend i{display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:4px;}
+  .barcap{font-size:.82rem; font-weight:700; color:var(--ok); margin-top:6px;}
+  table{width:100%; border-collapse:collapse; font-size:.9rem;}
+  th,td{padding:9px 6px; border-bottom:1px solid var(--line); text-align:right;}
+  th:first-child, td:first-child{text-align:left;}
+  th{font-size:.72rem; text-transform:uppercase; letter-spacing:.03em; color:var(--ink-soft);}
+  td.neg{color:var(--bad); font-weight:800;}
+  td.pos{color:var(--ok); font-weight:800;}
+  details{border:1px solid var(--line); border-radius:14px; padding:12px 14px; margin-bottom:14px; background:var(--card);}
+  details summary{cursor:pointer; font-weight:800; font-size:.92rem;}
+  details[open] summary{margin-bottom:10px;}
+  .waterfall li{display:flex; justify-content:space-between; gap:12px; padding:5px 0; border-bottom:1px dashed var(--line); list-style:none; font-size:.85rem;}
+  .waterfall li.total{border-bottom:none; font-weight:800; border-top:2px solid var(--ink); margin-top:4px; padding-top:8px;}
+  .advlink{display:block; text-align:center; margin:6px 0 18px; font-size:.9rem;}
+  .advlink a{color:var(--coral-dark); font-weight:700;}
+  footer{color:var(--ink-soft); font-size:.78rem; text-align:center; max-width:560px; line-height:1.6;}
+  footer a{color:var(--coral-dark); font-weight:700;}
+
+  /* --- Lead capture GHL --- */
+  .leadbtn{
+    background:#fff; color:var(--coral-dark); border:2px solid #fff; border-radius:12px; padding:13px 20px;
+    font-size:1rem; font-weight:800; cursor:pointer; margin-top:12px; min-height:50px; font-family:inherit; width:100%;
+  }
+  .leadbtn:hover{background:var(--coral-bg);}
+  .lead-note{font-size:.78rem; opacity:.9; margin-top:8px;}
+  .modal{position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; padding:16px; z-index:9999;}
+  .modal.open{display:flex;}
+  .modal-card{background:var(--card); border-radius:18px; width:100%; max-width:460px; max-height:92vh; overflow:auto; position:relative; padding:6px;}
+  .modal-close{position:absolute; top:8px; right:10px; z-index:2; background:var(--bg); border:1px solid var(--line); border-radius:50%; width:34px; height:34px; font-size:1.1rem; cursor:pointer; color:var(--ink);}
+  .modal iframe{width:100%; min-height:560px; border:0; border-radius:14px; display:block;}
+</style>
+<div class="wrap">
+
+  <h1>Airbnb passa al 15,5%.<br>Ecco il tuo nuovo prezzo <span class="accent">a notte</span>.</h1>
+  <p class="tagline">Dal 13 ottobre 2026 la commissione la paghi tutta tu.<br>Scrivi il tuo prezzo di oggi: ti diciamo quello nuovo.</p>
+
+  <!-- STEP 1 -->
+  <div class="card">
+    <label class="q" for="price"><span class="n">1</span>💶 Quanto costa una notte da te oggi?</label>
+    <div class="priceRow">
+      <span class="euro">€</span>
+      <input type="number" id="price" inputmode="decimal" min="1" step="1" value="100" aria-describedby="priceHint">
+    </div>
+    <p class="hint" id="priceHint">Il prezzo a notte che vede l'ospite.</p>
+    <div class="row2">
+      <div>
+        <label for="cleaning">🧹 Pulizie (€ a prenotazione)</label>
+        <input type="number" id="cleaning" inputmode="decimal" min="0" step="1" placeholder="es. 40">
+      </div>
+      <div>
+        <label for="nightsYear">📅 Notti affittate in un anno</label>
+        <input type="number" id="nightsYear" inputmode="numeric" min="0" step="5" value="130">
+      </div>
+    </div>
+    <p class="hint">Facoltativi. Non sai le notti? Lascia 130, è la media italiana.</p>
+  </div>
+
+  <!-- STEP 2: REGIME -->
+  <div class="card">
+    <span class="q"><span class="n">2</span>🧾 Come paghi le tasse su quello che incassi?</span>
+    <div class="choices" id="regimeChoices" role="group" aria-label="Regime fiscale">
+      <button type="button" data-regime="ced21" aria-pressed="true">
+        <span class="e">🏠</span>
+        <span><span class="t">Affitto una casa sola, senza partita IVA</span>
+        <span class="d">Il caso più comune (cedolare secca 21%)</span></span>
+      </button>
+      <button type="button" data-regime="ced26" aria-pressed="false">
+        <span class="e">🏠🏠</span>
+        <span><span class="t">Affitto due case, senza partita IVA</span>
+        <span class="d">Sulla seconda casa le tasse salgono al 26%</span></span>
+      </button>
+      <button type="button" data-regime="irpef" aria-pressed="false">
+        <span class="e">📄</span>
+        <span><span class="t">Metto l'affitto nella dichiarazione dei redditi</span>
+        <span class="d">Niente cedolare secca (IRPEF)</span></span>
+      </button>
+      <button type="button" data-regime="forf" aria-pressed="false">
+        <span class="e">🧾</span>
+        <span><span class="t">Ho la partita IVA forfettaria</span>
+        <span class="d">Affitto come attività, tasse forfettarie</span></span>
+      </button>
+      <button type="button" data-regime="impresa" aria-pressed="false">
+        <span class="e">🏢</span>
+        <span><span class="t">Sono un'azienda</span>
+        <span class="d">Società o ditta, ci pensa il commercialista</span></span>
+      </button>
+    </div>
+
+    <div class="subq" id="irpefSub" hidden>
+      <span class="sq">💼 Quanto guadagni all'anno, tutto compreso?</span>
+      <div class="pillrow" role="group" aria-label="Fascia di reddito">
+        <button type="button" data-irpef="0.23" aria-pressed="false">Fino a<br>28.000 €</button>
+        <button type="button" data-irpef="0.33" aria-pressed="true">28.000 –<br>50.000 €</button>
+        <button type="button" data-irpef="0.43" aria-pressed="false">Più di<br>50.000 €</button>
+      </div>
+    </div>
+
+    <div class="subq" id="forfSub" hidden>
+      <span class="sq">🌱 P.IVA aperta da meno di 5 anni?</span>
+      <div class="pillrow two" role="group" aria-label="Forfettario start-up">
+        <button type="button" data-forf="0.05" aria-pressed="false">Sì (tasse al 5%)</button>
+        <button type="button" data-forf="0.15" aria-pressed="true">No (tasse al 15%)</button>
+      </div>
+    </div>
+
+    <p class="hint" id="regimeHint"></p>
+  </div>
+
+  <!-- STEP 3: OBIETTIVO -->
+  <div class="card">
+    <span class="q"><span class="n">3</span>🎯 Cosa conta di più per te?</span>
+    <div class="choices" id="goalChoices" role="group" aria-label="Obiettivo">
+      <button type="button" data-goal="net" aria-pressed="true">
+        <span class="e">💰</span>
+        <span><span class="t">Guadagnare come oggi</span>
+        <span class="d">Consigliato: in tasca ti resta lo stesso</span></span>
+      </button>
+      <button type="button" data-goal="guest" aria-pressed="false">
+        <span class="e">🛌</span>
+        <span><span class="t">Non far spendere di più agli ospiti</span>
+        <span class="d">Loro pagano come oggi, tu guadagni un po' meno</span></span>
+      </button>
+      <button type="button" data-goal="payout" aria-pressed="false">
+        <span class="e">🤖</span>
+        <span><span class="t">Fare il minimo indispensabile</span>
+        <span class="d">Ricevi da Airbnb gli stessi soldi, ma paghi più tasse</span></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- EMPTY STATE -->
+  <div class="box warn" id="emptyBox" hidden>👆 Scrivi il tuo prezzo a notte nella domanda 1 e il conto appare qui.</div>
+
+  <!-- RESULTS -->
+  <div id="resultsArea" aria-live="polite">
+    <div class="result">
+      <div class="lbl" id="heroLbl">👉 Metti il prezzo a</div>
+      <div class="big" id="newPrice">—</div>
+      <span class="up" id="pct"></span>
+      <span class="chip" id="taxChip"></span>
+      <p class="clean" id="cleanLine" hidden></p>
+      <p class="verdict" id="verdict"></p>
+      <p class="note" id="weekNote"></p>
+      <button type="button" class="copybtn" id="copyBtn">📋 Copia e condividi</button>
+      <button type="button" class="leadbtn" id="leadBtn">📧 Ricevi il report completo via email</button>
+      <p class="lead-note">Ti mandiamo il calcolo e ti avvisiamo se le regole cambiano. Niente spam.</p>
+    </div>
+
+    <div class="box bad" id="lossBox" hidden></div>
+    <div class="box warn" id="goalWarn" hidden></div>
+    <div class="box ok" id="guestBox" hidden></div>
+
+    <div class="card">
+      <span class="q">🤔 Perché proprio questo prezzo?</span>
+      <div id="whyText"></div>
+    </div>
+
+    <div class="card">
+      <span class="q">📊 Una notte, in pratica</span>
+      <div id="bars"></div>
+      <p class="barcap" id="barCap"></p>
+      <div class="legend" aria-hidden="true">
+        <span><i style="background:var(--ok)"></i>Tu</span>
+        <span><i style="background:var(--coral)"></i>Airbnb</span>
+        <span><i style="background:var(--tax)"></i>Tasse</span>
+      </div>
+      <table>
+        <thead><tr><th></th><th>Prezzo a notte</th><th>Ti restano</th></tr></thead>
+        <tbody id="cmpBody"></tbody>
+      </table>
+      <p class="hint" id="tblNote"></p>
+    </div>
+
+    <details id="yearDetails">
+      <summary id="yearTitle">📅 E in un anno?</summary>
+      <table>
+        <thead><tr><th></th><th>In tasca all'anno</th><th>Differenza</th></tr></thead>
+        <tbody id="yearBody"></tbody>
+      </table>
+      <p class="hint">Contiamo le notti, non le pulizie: se alzi anche quelle come indicato, sulle pulizie non ci perdi.</p>
+    </details>
+
+    <details>
+      <summary>🔍 Vedi tutti i conti</summary>
+      <ul class="waterfall" id="calcSteps"></ul>
+    </details>
+  </div>
+
+  <p class="advlink">Vuoi tutte le opzioni (commissioni modificabili, confronto tra regimi)?<br><a href="/avanzato">→ Apri la versione avanzata</a></p>
+
+  <footer>
+    <b>Perché non basta alzare del 15,5%?</b> Perché le tasse si pagano sul prezzo intero: prezzo più alto = più tasse. Il conto giusto è qui sopra.<br>
+    Affitti 3 o più case? Dal 2026 serve la P.IVA: parla col commercialista.<br><br>
+    Strumento indicativo, non è consulenza fiscale. Nessun dato raccolto: funziona tutto sul tuo telefono. Non affiliato ad Airbnb. Aggiornato al 9/7/2026 ·
+    <a href="https://www.airbnb.com/help/article/1857" rel="noopener">fonte commissioni</a> ·
+    <a href="https://www.airbnb.com/help/article/3527" rel="noopener">fonte ritenuta 21%</a>
+  </footer>
+
+</div>
+
+
+<!-- ===== MODALE FORM GHL (il lead entra nella pipeline) ===== -->
+<div class="modal" id="leadModal" role="dialog" aria-modal="true" aria-label="Ricevi il report via email">
+  <div class="modal-card">
+    <button type="button" class="modal-close" id="leadClose" aria-label="Chiudi">×</button>
+    <iframe id="leadFrame" title="Modulo contatto" src="about:blank" loading="lazy"></iframe>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  var VAT=0.22, RIT=0.21, F_OLD=0.03, F_NEW=0.155, G_OLD=0.141, ADDIZ=0.017;
+  var regime='ced21', goal='net', irpefM=0.33, forfRate=0.15;
+
+  var HINTS={
+    ced21:'Airbnb ti toglie già le tasse (21%) prima di pagarti. Non devi fare altro. ✅',
+    ced26:'Airbnb toglie il 21%; il 5% che manca lo paghi con la dichiarazione.',
+    irpef:'Airbnb toglie intanto il 21%; il resto lo sistemi con la dichiarazione.',
+    forf:'Di’ ad Airbnb che hai la P.IVA, così non ti toglie il 21%. Al resto abbiamo pensato noi nel conto.',
+    impresa:'Le tue tasse dipendono dai costi: qui vedi il conto prima delle tasse.'
+  };
+  var CHIPS={
+    ced21:'✔ Tasse già contate: cedolare secca 21%',
+    ced26:'✔ Tasse già contate: cedolare secca 26%',
+    irpef:'✔ Tasse già contate: IRPEF',
+    forf:'✔ Tasse già contate: forfettario',
+    impresa:'⚠ Tasse escluse: le conti col commercialista'
+  };
+  var REG_LABEL={ced21:'una casa (cedolare 21%)',ced26:'due case (cedolare 26%)',irpef:'IRPEF',forf:'P.IVA forfettaria',impresa:'azienda'};
+
+  var $=function(id){return document.getElementById(id);};
+  var fmt = new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',maximumFractionDigits:2});
+  var fmt0 = new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',maximumFractionDigits:0});
+  var lastNp=null;
+
+  function params(){
+    var effO=F_OLD, effN=F_NEW;
+    if(regime==='forf'){ effO=F_OLD*(1+VAT); effN=F_NEW*(1+VAT); }
+    var t = regime==='ced21'?0.21 : regime==='ced26'?0.26 :
+            regime==='irpef'?0.95*(irpefM+ADDIZ) :
+            regime==='forf'?forfRate*0.40 : 0;
+    return {effO:effO, effN:effN, t:t,
+            hasRit:(regime==='ced21'||regime==='ced26'||regime==='irpef')};
+  }
+  function kFor(g,p){
+    if(g==='guest') return 1+G_OLD;
+    if(g==='payout') return (1-p.effO)/(1-p.effN);
+    var den=1-p.effN-p.t;
+    return den>0.01 ? (1-p.effO-p.t)/den : NaN;
+  }
+
+  function render(){
+    var p=params();
+    $('regimeHint').textContent=HINTS[regime];
+    $('irpefSub').hidden=(regime!=='irpef');
+    $('forfSub').hidden=(regime!=='forf');
+
+    var price=parseFloat($('price').value)||0;
+    var cleaning=Math.max(0,parseFloat($('cleaning').value)||0);
+    var nightsYear=Math.max(0,parseFloat($('nightsYear').value)||0);
+
+    var k=kFor(goal,p);
+    if(price<=0 || !isFinite(k)){
+      $('resultsArea').hidden=true;
+      $('emptyBox').hidden=false;
+      window.__summary='';
+      lastNp=null;
+      return;
+    }
+    $('resultsArea').hidden=false;
+    $('emptyBox').hidden=true;
+
+    // ---- tutto A NOTTE ----
+    var np=Math.ceil(price*k);
+    var nc=cleaning>0?Math.ceil(cleaning*k):0;
+    var pct=Math.round((np/price-1)*100);
+    var isImp=(regime==='impresa');
+
+    function net(P,eff){ return P - P*eff - P*p.t; }   // ti restano, a notte
+    var netOld=net(price,p.effO), netNothing=net(price,p.effN), netNew=net(np,p.effN);
+    var loss=netOld-netNothing;
+
+    // HERO
+    var lbls={net:'👉 Metti il prezzo a', guest:'👉 Per non far spendere di più gli ospiti:', payout:'👉 Per ricevere gli stessi soldi:'};
+    $('heroLbl').textContent=lbls[goal];
+    $('newPrice').innerHTML=fmt0.format(np)+'<small> /notte</small>';
+    $('pct').textContent='+'+pct+'%';
+    $('taxChip').textContent=CHIPS[regime];
+    $('cleanLine').hidden=(nc<=0);
+    if(nc>0) $('cleanLine').textContent='🧹 E alza anche le pulizie a '+fmt0.format(nc);
+    var vOld=Math.round(netOld), vNew=Math.round(netNew);
+    var verdicts={
+      net:'✅ Oggi ti restano '+fmt0.format(vOld)+' a notte → con questo prezzo, '+(vNew===vOld?'ancora ':'')+fmt0.format(vNew)+'.',
+      guest:'🛌 L’ospite spende come oggi → a te restano '+fmt0.format(vNew)+' invece di '+fmt0.format(vOld)+'.',
+      payout: isImp
+        ? '🤖 Ricevi da Airbnb gli stessi soldi → il tuo margine resta '+fmt0.format(vNew)+'.'
+        : '🤖 Ricevi da Airbnb gli stessi soldi → ma dopo le tasse ti restano '+fmt0.format(vNew)+' invece di '+fmt0.format(vOld)+'.'
+    };
+    $('verdict').textContent=verdicts[goal];
+    $('weekNote').textContent='Weekend e alta stagione: alza tutto del +'+pct+'%.';
+    if(lastNp!==null && lastNp!==np){
+      var rc=document.querySelector('.result');
+      rc.classList.remove('bump'); void rc.offsetWidth; rc.classList.add('bump');
+    }
+    lastNp=np;
+
+    // ---- UNA sola scatola di avviso ----
+    var diff=netOld-netNew;
+    if(goal==='net'){
+      $('goalWarn').hidden=true;
+      $('lossBox').hidden=false;
+      $('lossBox').innerHTML='❌ <b>Se lasci il prezzo com’è</b>, ti restano <b>'+fmt0.format(Math.round(loss))+' in meno a notte</b>.'+
+        (nightsYear>0?' In un anno ≈ <b>'+fmt0.format(Math.round(loss*nightsYear))+' persi</b>.':'');
+    } else {
+      $('lossBox').hidden=true;
+      if(diff>0.005){
+        $('goalWarn').hidden=false;
+        $('goalWarn').innerHTML='⚠️ Con questa scelta ti restano <b>'+fmt0.format(Math.round(diff))+' in meno a notte</b>'+
+          (nightsYear>0?' (≈ <b>'+fmt0.format(Math.round(diff*nightsYear))+'/anno</b>)':'')+
+          '. Per non perderci, scegli «💰 Guadagnare come oggi».';
+      } else $('goalWarn').hidden=true;
+    }
+
+    // guest box (solo con obiettivo ospiti)
+    var guestOldPN=price*(1+G_OLD);
+    if(goal==='guest'){
+      $('guestBox').hidden=false;
+      $('guestBox').innerHTML = np<=guestOldPN+0.5
+        ? '🛌 <b>Ospiti tranquilli:</b> col nuovo prezzo una notte gli costa '+fmt0.format(np)+', come oggi ('+fmt0.format(Math.round(guestOldPN))+' con le commissioni nascoste). Le commissioni nascoste non ci sono più.'
+        : '🛌 <b>Ospiti tranquilli:</b> oggi una notte gli costa già '+fmt0.format(Math.round(guestOldPN))+' (le commissioni erano nascoste). Col nuovo prezzo: '+fmt0.format(np)+'. Quasi uguale.';
+    } else $('guestBox').hidden=true;
+
+    // ---- PERCHÉ (3 frasi, coi numeri dell'utente) ----
+    var w=[];
+    if(isImp){
+      w.push('Oggi, su una notte da <b>'+fmt0.format(price)+'</b>, Airbnb prende <b>'+fmt.format(price*p.effO)+'</b>: a te restano <b>'+fmt.format(netOld)+'</b>.');
+      w.push('Dal 13 ottobre Airbnb prenderà <b>'+fmt.format(price*p.effN)+'</b>: se non cambi nulla, restano <b>'+fmt.format(netNothing)+'</b>.');
+      w.push('Con una notte a <b>'+fmt0.format(np)+'</b> torni a <b>'+fmt.format(netNew)+'</b>. Per le aziende la commissione si scarica dai costi: le tasse le valuta il commercialista.');
+    } else {
+      w.push('Oggi, su una notte da <b>'+fmt0.format(price)+'</b>, Airbnb prende <b>'+fmt.format(price*p.effO)+'</b> e le tasse <b>'+fmt.format(price*p.t)+'</b>: a te restano <b>'+fmt.format(netOld)+'</b>.');
+      w.push('Dal 13 ottobre Airbnb prenderà <b>'+fmt.format(price*p.effN)+'</b>: se non cambi nulla, ti restano solo <b>'+fmt.format(netNothing)+'</b>.');
+      if(goal==='net'){
+        w.push('Con una notte a <b>'+fmt0.format(np)+'</b> torni a <b>'+fmt.format(netNew)+'</b>. Alzare solo del 15,5% non basta: prezzo più alto = anche più tasse.');
+        w.push('E l’ospite? Oggi una notte gli costa già <b>'+fmt0.format(Math.round(guestOldPN))+'</b> con le commissioni nascoste: col tuo nuovo prezzo quasi non se ne accorge.');
+      } else if(goal==='guest'){
+        w.push('Con una notte a <b>'+fmt0.format(np)+'</b> l’ospite spende come oggi, e a te restano <b>'+fmt.format(netNew)+'</b>. Il regime fiscale qui non cambia il prezzo: cambia solo quanto ti resta.');
+      } else {
+        w.push('Con una notte a <b>'+fmt0.format(np)+'</b> Airbnb ti manda gli stessi soldi di oggi, ma le tasse si pagano sul prezzo più alto: ti restano <b>'+fmt.format(netNew)+'</b>. Il regime fiscale qui non cambia il prezzo: cambia solo quanto ti resta.');
+      }
+    }
+    $('whyText').innerHTML=w.map(function(x){return '<p>'+x+'</p>';}).join('');
+
+    // ---- BARRE prima/dopo ----
+    function bar(label,P,eff){
+      var you=net(P,eff), fee=P*eff, tax=P*p.t;
+      var segs=[['you',you],['fee',fee]]; if(tax>0.005) segs.push(['tax',tax]);
+      var html='<div class="barrow"><div class="barlbl">'+label+'</div><div class="bar">';
+      segs.forEach(function(s){
+        var wPct=s[1]/np*100;
+        html+='<div class="seg '+s[0]+'" style="width:'+wPct.toFixed(2)+'%">'+(wPct>=14?fmt0.format(Math.round(s[1])):'')+'</div>';
+      });
+      return html+'</div></div>';
+    }
+    $('bars').innerHTML = bar('Oggi · '+fmt0.format(price), price, p.effO) + bar('Nuovo · '+fmt0.format(np), np, p.effN);
+    $('barCap').textContent = goal==='net'
+      ? 'La parte verde — la tua — resta uguale 💚'
+      : (diff>0.005 ? 'La parte verde — la tua — si accorcia un po’: è quello a cui rinunci.' : 'La parte verde — la tua — resta uguale 💚');
+
+    // ---- TABELLA a notte ----
+    function row(name,pr,nt,ref){
+      var d=ref===null?null:nt-ref;
+      var cls=d===null?'':(d<-0.005?'neg':'pos');
+      return '<tr><td>'+name+'</td><td>'+fmt0.format(pr)+'</td><td class="'+cls+'">'+fmt0.format(Math.round(nt))+'</td></tr>';
+    }
+    $('cmpBody').innerHTML=
+      row('Oggi', price, netOld, null)+
+      row('Se non fai nulla', price, netNothing, netOld)+
+      row('Col nuovo prezzo', np, netNew, netOld);
+    $('tblNote').textContent = isImp
+      ? 'Prima delle tasse: dipendono dai tuoi costi.'
+      : 'Dopo commissione Airbnb e tasse.';
+
+    // ---- ANNO (dentro il toggle) ----
+    if(nightsYear>0){
+      $('yearTitle').textContent='📅 E in un anno? ('+nightsYear+' notti)';
+      function yrow(name,nt,ref){
+        var v=nt*nightsYear, d=ref===null?null:(nt-ref)*nightsYear;
+        var cls=d===null?'':(d<-0.5?'neg':'pos');
+        return '<tr><td>'+name+'</td><td>'+fmt0.format(Math.round(v))+'</td><td class="'+cls+'">'+(d===null?'—':(d>=0?'+':'−')+fmt0.format(Math.abs(Math.round(d))))+'</td></tr>';
+      }
+      $('yearBody').innerHTML=yrow('Oggi',netOld,null)+yrow('Se non fai nulla',netNothing,netOld)+yrow('Col nuovo prezzo',netNew,netOld);
+    } else {
+      $('yearTitle').textContent='📅 E in un anno?';
+      $('yearBody').innerHTML='<tr><td colspan="3">Scrivi le notti affittate in un anno nella domanda 1.</td></tr>';
+    }
+
+    // ---- CONTI voce per voce (una notte) ----
+    var st=[];
+    function li(l,v,c){ st.push('<li class="'+(c||'')+'"><span>'+l+'</span><span>'+v+'</span></li>'); }
+    li('Una notte al nuovo prezzo', fmt.format(np));
+    li('− Airbnb si prende il 15,5%', '−'+fmt.format(np*F_NEW));
+    if(p.hasRit) li('− Tasse tolte subito da Airbnb (21%)', '−'+fmt.format(np*RIT));
+    li('= Soldi che ti arrivano', fmt.format(np - np*F_NEW - (p.hasRit?np*RIT:0)));
+    if(regime==='forf') li('− IVA sulla commissione (la versi tu dopo)', '−'+fmt.format(np*F_NEW*VAT));
+    if(!isImp){
+      var extra=np*p.t-(p.hasRit?np*RIT:0);
+      if(p.hasRit){
+        li(extra>0.005?'− Tasse ancora da pagare in dichiarazione':'Tasse ancora da pagare: niente, già tolte tutte ✅', extra>0.005?'−'+fmt.format(extra):'0 €');
+      } else {
+        li('− Tasse (forfettario '+(forfRate*100)+'%)', '−'+fmt.format(np*p.t));
+      }
+    }
+    li('TI RESTANO A NOTTE'+(isImp?' (prima delle tasse)':''), fmt.format(netNew),'total');
+    li('Oggi ti restano (per confronto)', fmt.format(netOld));
+    $('calcSteps').innerHTML=st.join('');
+
+    // ---- copia ----
+    window.__summary='Nuova commissione Airbnb 15,5% (dal 13/10/2026)\n'+
+      'Io: '+REG_LABEL[regime]+' — oggi '+fmt0.format(price)+'/notte\n'+
+      '👉 NUOVO PREZZO: '+fmt0.format(np)+'/notte (+'+pct+'%)'+(nc>0?' — pulizie '+fmt0.format(nc):'')+'\n'+
+      'Oggi mi restano ~'+fmt0.format(vOld)+'/notte, col nuovo prezzo ~'+fmt0.format(vNew)+'.\n'+
+      'Se non lo alzo perdo ~'+fmt0.format(Math.round(loss))+' a notte'+(nightsYear>0?' ('+fmt0.format(Math.round(loss*nightsYear))+'/anno)':'')+'.\n'+
+      'Calcolato con SalvaGuadagno Host (non è consulenza fiscale)';
+
+    window.__leadData = {
+      prezzo_attuale: Math.round(price),
+      prezzo_consigliato: np,
+      aumento_pct: pct,
+      regime: REG_LABEL[regime],
+      obiettivo: {net:'Guadagnare come oggi', guest:'Non far spendere di più agli ospiti', payout:'Fare il minimo'}[goal],
+      netto_oggi: vOld,
+      netto_nuovo: vNew,
+      perdita_anno: nightsYear>0 ? Math.round(loss*nightsYear) : ''
+    };
+  }
+
+  // wiring
+  ['price','cleaning','nightsYear'].forEach(function(id){ $(id).addEventListener('input',render); });
+  function wireGroup(sel,attr,fn){
+    document.querySelectorAll(sel).forEach(function(b){
+      b.addEventListener('click',function(){
+        document.querySelectorAll(sel).forEach(function(x){x.setAttribute('aria-pressed','false');});
+        b.setAttribute('aria-pressed','true');
+        fn(b.dataset[attr]);
+        render();
+      });
+    });
+  }
+  wireGroup('#regimeChoices > button','regime',function(v){regime=v;});
+  wireGroup('#goalChoices > button','goal',function(v){goal=v;});
+  wireGroup('#irpefSub .pillrow button','irpef',function(v){irpefM=parseFloat(v);});
+  wireGroup('#forfSub .pillrow button','forf',function(v){forfRate=parseFloat(v);});
+
+
+  /* ====== LEAD CAPTURE GHL ======
+     Incolla qui l'URL del TUO form GHL (Sites > Forms > il tuo form > Integra > "Link").
+     Deve avere la forma: https://api.leadconnectorhq.com/widget/form/XXXXXXXXXXXX
+     Nel form crea dei CAMPI NASCOSTI con "Query Key" = prezzo_attuale, prezzo_consigliato,
+     aumento_pct, regime, obiettivo, netto_oggi, netto_nuovo, perdita_anno */
+  var GHL_FORM_URL = 'INCOLLA-QUI-URL-FORM-GHL';
+
+  function openLead(){
+    if(!window.__leadData) return;
+    var d = window.__leadData;
+    var qs = Object.keys(d).map(function(k){ return encodeURIComponent(k)+'='+encodeURIComponent(d[k]); }).join('&');
+    var frame = document.getElementById('leadFrame');
+    var card = document.querySelector('#leadModal .modal-card');
+    var oldPh = document.getElementById('placeholderMsg'); if(oldPh) oldPh.remove();
+    if(GHL_FORM_URL.indexOf('INCOLLA')===0){
+      frame.style.display='none';
+      var w=document.createElement('div'); w.id='placeholderMsg';
+      w.style.cssText='padding:24px;font-size:.9rem;line-height:1.6';
+      w.innerHTML='<b>Form GHL non ancora collegato.</b><br>Apri questo file, trova <code>GHL_FORM_URL</code> e incolla l\'URL del tuo form GHL: i dati qui sotto passeranno automaticamente come campi nascosti.<br><br><pre style="white-space:pre-wrap;font-size:.8rem;background:var(--bg);padding:10px;border-radius:8px">'+qs.replace(/&/g,'\n').replace(/=/g,' = ')+'</pre>';
+      card.appendChild(w);
+    } else {
+      frame.style.display='block';
+      frame.src = GHL_FORM_URL + (GHL_FORM_URL.indexOf('?')>-1?'&':'?') + qs;
+    }
+    document.getElementById('leadModal').classList.add('open');
+  }
+  var _lb=document.getElementById('leadBtn'); if(_lb) _lb.addEventListener('click', openLead);
+  var _lc=document.getElementById('leadClose'); if(_lc) _lc.addEventListener('click', function(){ document.getElementById('leadModal').classList.remove('open'); });
+  var _lm=document.getElementById('leadModal'); if(_lm) _lm.addEventListener('click', function(e){ if(e.target===this) this.classList.remove('open'); });
+
+  $('copyBtn').addEventListener('click',function(){
+    var t=window.__summary||'';
+    function done(ok){ $('copyBtn').textContent=ok?'✅ Copiato!':'📋 Copia e condividi'; setTimeout(function(){$('copyBtn').textContent='📋 Copia e condividi';},2000); }
+    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(function(){done(true);},function(){done(false);}); }
+    else{ var ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select();
+      try{document.execCommand('copy');done(true);}catch(e){done(false);} document.body.removeChild(ta); }
+  });
+
+  render();
+})();
+</script>
