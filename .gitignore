@@ -1,0 +1,6 @@
+
+# Segreti GHL — MAI committare
+.ghl-token
+.ghl-location
+*.pit
+tools/.env

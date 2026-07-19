@@ -24,6 +24,8 @@ Propromanager (altrimenti GHL ti reindirizza al login/scelta location).
 | **Dark mode leggibile** | Verificata su tutte le pagine (screenshot in `scratchpad/qa-shots/`) |
 | **DIFETTO CORRETTO — overflow privacy.html** | `.ph` aveva `white-space:nowrap` → forzava larghezza pagina a 571px a 320/390. Cambiato in `white-space:normal; overflow-wrap:anywhere`. Ora `ok` a tutte le larghezze. |
 | **Contatto di test GHL creato via MCP** | `Test Calcolatore QA` · email `qa-test+calcolatore@example.com` · tel `+393510000000` · tag `qa-test` · **ID `zPnJzAMdGZVNVCwZAiqJ`** (`new: true`, HTTP 201) |
+| ✅ **9 CUSTOM FIELD CREATI VIA CLI (API REST)** | Creati automaticamente con `tools/ghl-cli.mjs create-fields` — key ESATTE: `prezzo_attuale, prezzo_consigliato, aumento_pct, regime_calc, obiettivo_calc, netto_oggi, netto_nuovo, perdita_anno, canale_report`. Il passo manuale #1 NON serve più. |
+| ✅ **Contatto test popolato coi 9 campi (end-to-end)** | `ghl-cli.mjs test-contact` → rilettura conferma tutti e 9 i valori salvati sul contatto `zPnJzAMdGZVNVCwZAiqJ`. Percorso dati verificato. |
 
 > ⚠️ **Custom field NON valorizzati sul contatto test**: i 9 campi canonici del calcolatore
 > **non esistono ancora** nel sub-account (verificato via MCP `get-custom-fields`: presenti 28 campi,
@@ -38,7 +40,7 @@ Propromanager (altrimenti GHL ti reindirizza al login/scelta location).
 
 | # | Passo | Cap. | Link diretto GHL (dentro Propromanager) |
 |---|---|---|---|
-| **1** | **Creare cartella + 9 custom field** `prezzo_attuale, prezzo_consigliato, aumento_pct, regime_calc, obiettivo_calc, netto_oggi, netto_nuovo, perdita_anno, canale_report`. **Blocca tutto il resto** (form + workflow li usano). Verifica ogni **Field Key**. | **B** | `app.gohighlevel.com/location/E1HO8PRyWf2yGaTFLuLC/settings/custom_fields` |
+| ~~**1**~~ | ✅ **FATTO VIA CLI** — i 9 custom field sono già creati con le key canoniche (`tools/ghl-cli.mjs create-fields`). Nessuna azione. | ~~B~~ | — |
 | **2** | **Creare pipeline `Funnel Calcolatore`** con i 6 stage: 🔵 Registrato → 🟢 Report inviato → 🟡 In contatto → 🟠 Call fissata → ✅ Cliente → ⚫ KO | **F** | `app.gohighlevel.com/location/E1HO8PRyWf2yGaTFLuLC/opportunities/pipelines` |
 | **3** | **Form 1 «Registrazione Calcolatore»**: Nome, Cognome, Telefono, Email + consenso privacy (obbl.) + marketing (facolt.). On-submit → redirect `/calcolatore` | **C** | `app.gohighlevel.com/location/E1HO8PRyWf2yGaTFLuLC/form-builder-v2/list` |
 | **4** | **Form 2 «Report Calcolatore»**: Email+Nome sticky, **8 hidden field** (Query Key = chiavi canoniche, mappati ai custom field), radio **`canale_report`** (email/whatsapp), consenso privacy. On-submit → redirect `/grazie` | **D** | `app.gohighlevel.com/location/E1HO8PRyWf2yGaTFLuLC/form-builder-v2/list` |
