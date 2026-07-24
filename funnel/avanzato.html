@@ -6,30 +6,24 @@
 <title>SalvaGuadagno Host — Calcolatore commissione unica Airbnb 15,5%</title>
 <meta name="description" content="Calcola a quanto alzare il prezzo del tuo annuncio per non perdere guadagni con la nuova commissione unica Airbnb del 15,5% a carico dell'host, tenendo conto del tuo regime fiscale italiano (cedolare secca, forfettario, IRPEF).">
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600;700&display=swap');
   :root{
-    --coral:#FF385C; --coral-dark:#C22645; --coral-bg:#FFF0F3;
-    --ink:#222226; --ink-soft:#63636B; --line:#E8E8EC;
-    --bg:#F7F7F9; --card:#FFFFFF;
-    --ok:#0A6B4A; --ok-bg:#E8F6F0; --warn:#B54708; --warn-bg:#FFF4E5; --bad:#C0263C; --bad-bg:#FDEDEF;
-  }
-  @media (prefers-color-scheme: dark){
-    :root{
-      --coral:#FF5A78; --coral-dark:#FF7A92; --coral-bg:#3A1F26;
-      --ink:#ECECF0; --ink-soft:#A5A5AD; --line:#3A3A42;
-      --bg:#17171B; --card:#222228;
-      --ok:#4CC79A; --ok-bg:#173328; --warn:#F0A75A; --warn-bg:#332617; --bad:#F26D84; --bad-bg:#361B20;
-    }
+    --coral:#801820; --coral-dark:#5f000e; --coral-bg:#ffe1e0;
+    --ink:#1c1b1b; --ink-soft:#574140; --line:#e5e2e1;
+    --bg:#fcf9f8; --card:#ffffff;
+    --ok:#0A6B4A; --ok-bg:#E8F6F0; --warn:#9a5a00; --warn-bg:#FFF4E5; --bad:#ba1a1a; --bad-bg:#FDEDEF;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   html{-webkit-text-size-adjust:100%;}
   body{
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     background:var(--bg); color:var(--ink); line-height:1.5; padding:16px;
   }
+  h1,h2,h3,header.hero h1{font-family:'Poppins', 'Inter', sans-serif;}
   .wrap{max-width:1060px; margin:0 auto;}
   header.hero{
-    background:linear-gradient(135deg, var(--coral) 0%, #E31C5F 100%);
-    color:#fff; border-radius:20px; padding:28px 24px; margin-bottom:20px;
+    background:linear-gradient(135deg, var(--coral) 0%, var(--coral-dark) 100%);
+    color:#fff; border-radius:1.5rem; padding:28px 24px; margin-bottom:20px;
   }
   header.hero h1{font-size:clamp(1.35rem,3.5vw,1.9rem); line-height:1.2; margin-bottom:8px;}
   header.hero p{opacity:.94; max-width:64ch; font-size:.95rem;}
@@ -40,22 +34,23 @@
   .cols{display:grid; grid-template-columns:minmax(0,1fr); gap:20px;}
   .cols > div{min-width:0;}
   @media(min-width:880px){ .cols{grid-template-columns:400px minmax(0,1fr); align-items:start;} .sticky{position:sticky; top:16px;} }
-  .card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px; margin-bottom:16px;}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:1.5rem; padding:20px; margin-bottom:16px;}
   .card h2{font-size:1.05rem; margin-bottom:14px;}
   label{display:block; font-weight:600; font-size:.88rem; margin-bottom:4px;}
   .hint{font-weight:400; color:var(--ink-soft); font-size:.78rem; display:block; margin-top:2px;}
   .field{margin-bottom:14px;}
   input[type=number], select{
-    width:100%; padding:11px 12px; font-size:1rem; border:1.5px solid var(--line); border-radius:10px;
+    width:100%; padding:11px 12px; font-size:1rem; border:1.5px solid var(--line); border-radius:1rem;
     background:var(--card); color:var(--ink); min-height:44px;
   }
   input[type=number]:focus, select:focus{outline:2px solid var(--coral); outline-offset:1px; border-color:var(--coral);}
   .row2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
   .seg{display:grid; gap:8px;}
   .seg button{
-    text-align:left; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; background:var(--card);
+    text-align:left; padding:10px 12px; border:1.5px solid var(--line); border-radius:1rem; background:var(--card);
     color:var(--ink); font-size:.86rem; cursor:pointer; min-height:44px; font-family:inherit;
   }
+  .seg button:active{transform:translateY(1px);}
   .seg button .t{font-weight:700; display:block;}
   .seg button .d{color:var(--ink-soft); font-size:.76rem;}
   .seg button[aria-pressed="true"]{border-color:var(--coral); background:var(--coral-bg);}
@@ -64,7 +59,7 @@
   details summary{cursor:pointer; font-weight:700; font-size:.9rem;}
   details[open] summary{margin-bottom:12px;}
   .heroNum{
-    background:var(--card); border:2px solid var(--coral); border-radius:16px; padding:22px 20px; margin-bottom:16px;
+    background:var(--card); border:2px solid var(--coral); border-radius:1.5rem; padding:22px 20px; margin-bottom:16px;
   }
   .heroNum .lbl{font-size:.85rem; font-weight:700; color:var(--coral-dark); text-transform:uppercase; letter-spacing:.04em;}
   .heroNum .big{font-size:clamp(2rem,6vw,2.9rem); font-weight:800; line-height:1.1; margin:6px 0 2px;}
@@ -94,14 +89,18 @@
   footer a{color:var(--coral-dark);}
   footer h3{font-size:.85rem; color:var(--ink); margin:14px 0 4px;}
   .copybtn{
-    background:var(--coral); color:#fff; border:none; border-radius:10px; padding:11px 16px;
+    background:var(--coral); color:#fff; border:none; border-radius:1rem; padding:11px 16px;
     font-size:.9rem; font-weight:700; cursor:pointer; margin-top:12px; min-height:44px; font-family:inherit;
   }
   .copybtn:hover{background:var(--coral-dark);}
+  .copybtn:active{transform:translateY(1px);}
   .visually-hidden{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);}
 </style>
 </head>
 <body>
+<header style="position:sticky;top:0;z-index:50;background:#fcf9f8;border-bottom:1px solid #e5e2e1;padding:12px 16px;display:flex;align-items:center;">
+  <a href="https://tools.affittibreviaroma.com/"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/b99a11a9-9a35-410d-a09f-3f9d026b22fd.webp" alt="Pro Pro Manager" height="34" style="height:34px;width:auto;display:block;"></a>
+</header>
 <div class="wrap">
 
 <header class="hero">
@@ -110,7 +109,7 @@
   <p>Airbnb passa alla <strong>commissione unica del 15,5% a carico dell'host</strong> (oggi paghi il 3%, e l'ospite ~14% in più al checkout).
   Questo calcolatore ti dice <strong>a quanto alzare il prezzo per non perdere un euro</strong> — tenendo conto del tuo regime fiscale italiano,
   perché le imposte si pagano sul prezzo lordo esposto e la commissione <em>non è deducibile</em>: il classico «+15,5%» non basta.</p>
-  <p style="margin-top:10px;"><a href="/calcolatore" style="color:#fff; font-weight:700;">← Ti basta la risposta veloce? Torna al calcolatore</a></p>
+  <p style="margin-top:10px;"><a href="https://tools.affittibreviaroma.com/calcolatore" style="color:#fff; font-weight:700;">← Ti basta la risposta veloce? Torna al calcolatore</a></p>
 </header>
 
 <div class="cols">
@@ -291,6 +290,10 @@
     <a href="https://www.agenziaentrate.gov.it/portale/le-locazioni-brevi-e-la-cedolare-secca" rel="noopener">Agenzia delle Entrate — Locazioni brevi</a>
   </p>
   <p style="margin-top:10px;"><strong>⚠️ Questo strumento è indicativo e non costituisce consulenza fiscale.</strong> Verifica sempre la tua situazione con un commercialista. Nessun dato viene raccolto o inviato: tutto il calcolo avviene nel tuo browser. Strumento indipendente, non affiliato ad Airbnb.</p>
+  <p style="margin-top:14px; padding-top:14px; border-top:1px solid var(--line);">© Pro Pro Manager ·
+    <a href="https://tools.affittibreviaroma.com/privacypolicy" rel="noopener">Privacy Policy</a> ·
+    <a href="https://tools.affittibreviaroma.com/cookiepolicy" rel="noopener">Cookie Policy</a>
+  </p>
 </footer>
 
 </div>

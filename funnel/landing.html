@@ -1,36 +1,38 @@
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600;700&display=swap');
   :root{
-    --coral:#FF385C; --coral-dark:#C22645; --coral-bg:#FFF0F3;
-    --ink:#222226; --ink-soft:#63636B; --line:#E8E8EC;
-    --bg:#FFF8F9; --card:#FFFFFF;
-    --ok:#0A6B4A; --ok-bg:#E8F6F0; --warn:#B54708; --warn-bg:#FFF4E5; --bad:#C0263C; --bad-bg:#FDEDEF;
+    --coral:#801820; --coral-dark:#5f000e; --coral-bg:#ffe1e0;
+    --ink:#1c1b1b; --ink-soft:#574140; --line:#e5e2e1;
+    --bg:#fcf9f8; --card:#ffffff; --surface-alt:#f0eded;
+    --ok:#0A6B4A; --ok-bg:#e6f2ec; --warn:#9a5a00; --warn-bg:#fbeddb; --bad:#ba1a1a; --bad-bg:#ffe4e0;
   }
   @media (prefers-color-scheme: dark){
     :root{
-      --coral:#FF5A78; --coral-dark:#FF8296; --coral-bg:#3A1F26;
-      --ink:#F0F0F4; --ink-soft:#A8A8B0; --line:#3C3C44;
-      --bg:#1A1518; --card:#26222A;
-      --ok:#4CC79A; --ok-bg:#173328; --warn:#F0A75A; --warn-bg:#332617; --bad:#F26D84; --bad-bg:#361B20;
+      --coral:#801820; --coral-dark:#5f000e; --coral-bg:#ffe1e0;
+      --ink:#1c1b1b; --ink-soft:#574140; --line:#e5e2e1;
+      --bg:#fcf9f8; --card:#ffffff; --surface-alt:#f0eded;
+      --ok:#0A6B4A; --ok-bg:#e6f2ec; --warn:#9a5a00; --warn-bg:#fbeddb; --bad:#ba1a1a; --bad-bg:#ffe4e0;
     }
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   body{
-    font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family:'Inter',-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background:var(--bg); color:var(--ink); line-height:1.5;
-    display:flex; flex-direction:column; align-items:center; padding:20px 14px 40px;
+    display:flex; flex-direction:column; align-items:center; padding:0 0 40px;
   }
-  .wrap{width:100%; max-width:560px; min-width:0;}
+  h1,h2,h3{font-family:'Poppins','Inter',sans-serif; letter-spacing:-0.01em;}
+  .wrap{width:100%; max-width:560px; min-width:0; padding:24px 14px 0;}
   .pill{
     display:inline-block; background:var(--coral-bg); color:var(--coral-dark);
     border:1px solid color-mix(in srgb, var(--coral) 30%, transparent);
-    border-radius:999px; padding:5px 14px; font-size:.8rem; font-weight:800; margin-bottom:14px;
+    border-radius:999px; padding:5px 14px; font-size:.8rem; font-weight:700; margin-bottom:14px;
   }
-  h1{font-size:clamp(1.6rem,6.5vw,2.2rem); line-height:1.18; margin:6px 0 10px;}
+  h1{font-size:clamp(1.6rem,6.5vw,2.2rem); font-weight:700; line-height:1.18; margin:6px 0 10px;}
   h1 .accent{color:var(--coral);}
   .sub{color:var(--ink-soft); font-size:1rem; margin-bottom:22px;}
   .card{
-    background:var(--card); border:1px solid var(--line); border-radius:20px;
-    padding:22px 18px; margin-bottom:16px; box-shadow:0 2px 12px rgba(0,0,0,.05);
+    background:var(--card); border:1px solid var(--line); border-radius:1.5rem;
+    padding:22px 18px; margin-bottom:16px;
   }
   .valuelist{list-style:none; display:grid; gap:14px; margin:4px 0;}
   .valuelist li{display:flex; gap:12px; align-items:flex-start; font-size:.96rem;}
@@ -39,32 +41,40 @@
   .valuelist span.d{color:var(--ink-soft); font-size:.86rem;}
   .proof{
     background:var(--warn-bg); border:1px solid color-mix(in srgb, var(--warn) 30%, transparent);
-    border-radius:16px; padding:14px 16px; margin-bottom:16px; font-size:.92rem; font-weight:600;
+    border-radius:1.5rem; padding:14px 16px; margin-bottom:16px; font-size:.92rem; font-weight:600;
   }
   .proof b{color:var(--warn);}
-  .formcard h2{font-size:1.15rem; margin-bottom:4px;}
+  .formcard h2{font-family:'Poppins','Inter',sans-serif; font-weight:600; letter-spacing:-0.01em; font-size:1.15rem; margin-bottom:4px;}
   .formcard .lead{color:var(--ink-soft); font-size:.9rem; margin-bottom:16px;}
   label.fl{display:block; font-weight:700; font-size:.85rem; margin:12px 0 5px;}
   input[type=text], input[type=tel], input[type=email]{
-    width:100%; padding:13px 14px; font-size:1rem; border:2px solid var(--line);
-    border-radius:12px; background:var(--card); color:var(--ink); min-height:50px;
+    width:100%; padding:13px 14px; font-size:1rem; border:1px solid var(--line);
+    border-radius:1rem; background:#f7f7f7; color:var(--ink); min-height:50px;
   }
-  input:focus{outline:3px solid var(--coral); outline-offset:1px; border-color:var(--coral);}
+  input:focus{outline:none; border-color:var(--coral); box-shadow:0 0 0 3px var(--coral-bg);}
   .row2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
   .consent{display:flex; gap:10px; align-items:flex-start; margin-top:16px; font-size:.82rem; color:var(--ink-soft);}
   .consent input[type=checkbox]{margin-top:3px; width:20px; height:20px; flex:none; accent-color:var(--coral);}
   .consent a{color:var(--coral-dark); font-weight:700;}
   .submit{
-    width:100%; background:linear-gradient(135deg, var(--coral) 0%, #E31C5F 100%); color:#fff;
-    border:none; border-radius:14px; padding:16px; font-size:1.05rem; font-weight:800;
+    width:100%; background:var(--coral); color:#fff;
+    border:none; border-radius:1rem; padding:16px; font-size:1.05rem; font-weight:700;
     cursor:pointer; margin-top:20px; min-height:56px; font-family:inherit;
+    transition:background .15s ease;
   }
-  .submit:hover{filter:brightness(1.05);}
+  .submit:hover{background:var(--coral-dark);}
+  .submit:active{transform:translateY(1px);}
   .err{color:var(--bad); font-size:.82rem; margin-top:8px; font-weight:700; display:none;}
   .reassure{text-align:center; color:var(--ink-soft); font-size:.78rem; margin-top:12px;}
-  footer{color:var(--ink-soft); font-size:.78rem; text-align:center; max-width:560px; line-height:1.6; margin-top:8px;}
-  footer a{color:var(--coral-dark); font-weight:700;}
+  footer{color:var(--ink-soft); font-size:.78rem; text-align:center; max-width:560px; line-height:1.6; margin-top:8px; padding:0 14px;}
+  footer a{color:var(--ink-soft); font-weight:600; text-decoration:underline;}
+  .footlinks{margin-bottom:8px;}
 </style>
+
+<header style="position:sticky;top:0;z-index:50;background:#fcf9f8;border-bottom:1px solid #e5e2e1;padding:12px 16px;display:flex;align-items:center;">
+  <a href="https://tools.affittibreviaroma.com/"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/b99a11a9-9a35-410d-a09f-3f9d026b22fd.webp" alt="Pro Pro Manager" height="34" style="height:34px;width:auto;display:block;"></a>
+</header>
+
 <div class="wrap">
 
   <span class="pill">⏳ Cambio commissioni Airbnb · dal 13 ottobre 2026</span>
@@ -90,9 +100,9 @@
          (Sites > Forms). Il form GHL raccoglie: Nome, Cognome, Telefono, Email
          + consenso privacy (obbligatorio) + consenso marketing (opzionale),
          crea/aggiorna il contatto, lo mette nella pipeline «Funnel Calcolatore»
-         allo stage 🔵 Registrato e reindirizza a /calcolatore.
+         allo stage 🔵 Registrato e reindirizza a https://tools.affittibreviaroma.com/calcolatore.
          Il markup qui sotto è un fallback dimostrativo: al submit valida i
-         consensi e reindirizza a /calcolatore. -->
+         consensi e reindirizza a https://tools.affittibreviaroma.com/calcolatore. -->
     <form id="regForm" novalidate>
       <div class="row2">
         <div>
@@ -111,7 +121,7 @@
 
       <label class="consent">
         <input type="checkbox" id="privacy" name="consenso_privacy" required>
-        <span>Ho letto e accetto l'<a href="/privacy" target="_blank" rel="noopener">informativa sulla privacy</a> e acconsento al trattamento dei miei dati per ricevere il report richiesto. <b>(obbligatorio)</b></span>
+        <span>Ho letto e accetto l'<a href="https://tools.affittibreviaroma.com/privacypolicy" target="_blank" rel="noopener">informativa sulla privacy</a> e acconsento al trattamento dei miei dati per ricevere il report richiesto. <b>(obbligatorio)</b></span>
       </label>
       <label class="consent">
         <input type="checkbox" id="marketing" name="consenso_marketing">
@@ -125,8 +135,12 @@
   </div>
 
   <footer>
+    <div class="footlinks">
+      <a href="https://tools.affittibreviaroma.com/privacypolicy" target="_blank" rel="noopener">Privacy Policy</a> ·
+      <a href="https://tools.affittibreviaroma.com/cookiepolicy" target="_blank" rel="noopener">Cookie Policy</a>
+    </div>
     Strumento indicativo, non è consulenza fiscale. Non affiliato ad Airbnb.<br>
-    Titolare del trattamento: [Ragione Sociale del Titolare] · <a href="/privacy">Informativa privacy</a>
+    Titolare del trattamento: [Ragione Sociale del Titolare]
   </footer>
 
 </div>
@@ -150,8 +164,8 @@
     }
     document.getElementById('regErr').style.display='none';
     // Demo: reindirizza al calcolatore. Con il form GHL vero il redirect
-    // è configurato nelle impostazioni del form (On Submit > Redirect a /calcolatore).
-    window.location.href = '/calcolatore';
+    // è configurato nelle impostazioni del form (On Submit > Redirect a https://tools.affittibreviaroma.com/calcolatore).
+    window.location.href = 'https://tools.affittibreviaroma.com/calcolatore';
   });
 })();
 </script>
