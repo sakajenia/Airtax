@@ -1,7 +1,7 @@
-# PROMPT per il CLI GHL — Crea 3 Workflow (Funnel Calcolatore)
+# PROMPT per il CLI GHL — Crea 3 Workflow (Funnel Calcolatore) — COMPLETO, zero sostituzioni
 
-Copia tutto il blocco sotto e dallo al tuo CLI GHL (quello con accesso all'API interna).
-Tutti gli ID sono reali e verificati sul sub-account Propromanager.
+Copia tutto il blocco sotto e dallo al tuo CLI GHL. Tutti i valori sono già compilati coi dati
+reali del sub-account: **non devi sostituire niente**.
 
 ---
 
@@ -9,7 +9,7 @@ Tutti gli ID sono reali e verificati sul sub-account Propromanager.
 Sei connesso al sub-account GoHighLevel "Propromanager".
 locationId = E1HO8PRyWf2yGaTFLuLC
 
-Crea 3 workflow nella automation, usando ESATTAMENTE questi ID già esistenti (NON crearli di nuovo):
+Crea 3 workflow, usando ESATTAMENTE questi ID già esistenti (NON ricrearli):
 
 PIPELINE "Funnel Calcolatore":
   pipelineId = V82v8bJ18wJqkFXSXk8K
@@ -23,15 +23,14 @@ PIPELINE "Funnel Calcolatore":
 FORM registrazione = oRexxrmMwWz2ablBAUoz  ("Registrazioni Calcolatore tasse AIrbnb")
 FORM report        = Ompsev6jK1yZDrvBrKz8  ("Invio Report Calcolatore tasse AIrbnb")
 CALENDARIO call    = TlY0OLMYg4To6FNk0AGg  ("AIRTAX - Call Strategica Affitti Brevi")
-EMAIL TEMPLATE     = "Report Calcolatore Airbnb" (id 6a5c91c8eb3d45e6ff0fb5fb)
+EMAIL TEMPLATE     = "Report Calcolatore Airbnb"  (id 6a5c91c8eb3d45e6ff0fb5fb)
+CUSTOM FIELD condizione = contact.canale_report  (id cFOteyweDLD6j1u66xPW; opzioni: email | whatsapp)
 
-CUSTOM FIELD chiave per la condizione:
-  canale_report (id cFOteyweDLD6j1u66xPW, fieldKey contact.canale_report, opzioni: email | whatsapp)
-
-DATI DA COMPLETARE (sostituisci prima di eseguire):
-  MITTENTE_EMAIL = [es. info@affittibreviaroma.com — deve essere verificato in GHL]
-  MITTENTE_NOME  = [es. Affitti Brevi Roma]
-  EMAIL_TEAM     = [email interna per le notifiche]
+IMPOSTAZIONI MITTENTE E NOTIFICHE (già definite):
+  Mittente email: usa il SENDER PREDEFINITO del sub-account (default location sender);
+                  From Name = "Affitti Brevi Roma". Non impostare un from-email custom.
+  Notifiche interne: invia all'utente admin GIANLUCA BIONDI
+                     (userId WUX8ztdcfKfCXePW9C5I, email blionbg+1@gmail.com).
 
 =================================================================
 WORKFLOW 1 — "WF - Registrazione Calcolatore"   (Publish: ON)
@@ -44,11 +43,10 @@ Azioni (in ordine):
        stageId    = 83f80977-075d-4266-bbd9-27cac1224a25   (🔵 Registrato)
        name       = "Calcolatore — {{contact.first_name}} {{contact.last_name}}"
        status     = open
-  3) Send Email:
-       from = MITTENTE_NOME <MITTENTE_EMAIL>
+  3) Send Email (sender predefinito, From Name "Affitti Brevi Roma"):
        subject = "Il tuo calcolatore è pronto 👉 scopri il prezzo giusto"
-       body (HTML) = saluto {{contact.first_name}} + bottone/link a
-                     https://tool.affittibreviaroma.com/calcolatore
+       body (HTML): saluto a {{contact.first_name}} + bottone/link a
+                    https://tool.affittibreviaroma.com/calcolatore
 
 =================================================================
 WORKFLOW 2 — "WF - Report Calcolatore"   (Publish: ON)
@@ -61,14 +59,14 @@ Azioni (in ordine):
        stageId    = 2f0066a4-06b4-4f05-955e-c79aea406b03   (🟢 Report inviato)
        name       = "Calcolatore — {{contact.first_name}} {{contact.last_name}}"
        status     = open
-  3) If/Else condizione su custom field contact.canale_report:
+  3) If/Else su custom field contact.canale_report:
        RAMO A (contact.canale_report EQUALS "email"):
-           Send Email → usa il template "Report Calcolatore Airbnb"
-                        (from = MITTENTE_NOME <MITTENTE_EMAIL>)
+           Send Email → template "Report Calcolatore Airbnb"
+                        (sender predefinito, From Name "Affitti Brevi Roma")
        RAMO B / ELSE (contact.canale_report EQUALS "whatsapp"):
            Send WhatsApp (canale Twilio) → corpo = TESTO_WHATSAPP (vedi sotto)
-  4) (dopo l'If/Else, ramo comune) Send Internal Notification:
-       to = EMAIL_TEAM
+  4) (ramo comune, dopo l'If/Else) Internal Notification:
+       to = utente WUX8ztdcfKfCXePW9C5I (Gianluca Biondi)
        message = "Nuovo report richiesto da {{contact.first_name}} {{contact.last_name}} —
                   canale {{contact.canale_report}} — prezzo consigliato
                   {{contact.prezzo_consigliato}}€ (+{{contact.aumento_pct}}%). Tel {{contact.phone}}."
@@ -84,17 +82,17 @@ Azioni (in ordine):
        stageId    = e4cc602a-cc02-43ba-b830-8b2f69ff17f7   (🟡 Call fissata)
        name       = "Calcolatore — {{contact.first_name}} {{contact.last_name}}"
        status     = open
-  3) Send Internal Notification:
-       to = EMAIL_TEAM
+  3) Internal Notification:
+       to = utente WUX8ztdcfKfCXePW9C5I (Gianluca Biondi)
        message = "{{contact.first_name}} {{contact.last_name}} ha prenotato una call
                   ({{contact.email}}, {{contact.phone}})."
 
-Al termine: metti tutti e 3 i workflow in stato PUBLISHED e conferma gli ID creati.
+Al termine: metti tutti e 3 i workflow in stato PUBLISHED e stampa gli ID creati.
 ```
 
 ---
 
-## TESTO_WHATSAPP (per il Ramo B del Workflow 2)
+## TESTO_WHATSAPP (Ramo B del Workflow 2)
 
 ```
 Ciao {{contact.first_name | Host}}! 🏠 Ecco il tuo report SalvaGuadagno Host.
@@ -111,7 +109,9 @@ https://tool.affittibreviaroma.com/grazie
 (Strumento indicativo, non è consulenza fiscale. Rispondi STOP per non ricevere più messaggi.)
 ```
 
-## Note
-- Il **template email** "Report Calcolatore Airbnb" è ancora una shell: incolla dentro l'HTML di `funnel/report-email.html` (Marketing → Emails → Templates), altrimenti l'email parte vuota.
-- Se il CLI non trova l'azione "Send WhatsApp", verifica che il canale Twilio/WhatsApp sia connesso nel sub-account.
-- Dopo la creazione, verifico io via API (lettura) che i 3 workflow risultino `published` e collegati ai form/calendario giusti.
+## Note tecniche
+- Il **template email** "Report Calcolatore Airbnb" è ancora una shell: va riempito con l'HTML di
+  `funnel/report-email.html`, altrimenti l'email parte vuota.
+- Se il CLI non trova l'azione "Send WhatsApp", il canale Twilio/WhatsApp non è connesso: in quel caso
+  crea comunque il ramo con un placeholder e connettilo dopo.
+- Dopo la creazione, verifico io via API (lettura) che i 3 workflow risultino `published`.
