@@ -334,9 +334,11 @@
          con opzioni Email / WhatsApp + email e nome (sticky, precompilati dalla registrazione).
          I valori dei campi nascosti arrivano in querystring da window.__leadData (stessi nomi).
          Il form sposta il contatto allo stage 🟢 Report inviato. -->
-    <iframe id="leadFrame" title="Modulo report" src="about:blank" loading="lazy"></iframe>
+    <iframe id="leadFrame" data-form-id="Ompsev6jK1yZDrvBrKz8" title="Modulo report" src="about:blank" loading="lazy"></iframe>
   </div>
 </div>
+<!-- Script ufficiale GHL: gestisce il redirect a pagina intera e l'auto-resize del form -->
+<script src="https://link.msgsndr.com/js/form_embed.js"></script>
 
 <script>
 (function(){
@@ -592,7 +594,7 @@
      aumento_pct, regime_calc, obiettivo_calc, netto_oggi, netto_nuovo, perdita_anno,
      più un campo (radio) "canale_report" con opzioni Email / WhatsApp,
      e i campi email/nome sticky (precompilati dalla registrazione). */
-  var GHL_FORM_URL = 'INCOLLA-QUI-URL-FORM-REPORT-GHL';
+  var GHL_FORM_URL = 'https://api.leadconnectorhq.com/widget/form/Ompsev6jK1yZDrvBrKz8';
 
   function openLead(){
     if(!window.__leadData) return;
