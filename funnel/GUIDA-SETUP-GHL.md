@@ -38,9 +38,9 @@ netto_nuovo, perdita_anno, canale_report`. Nessun conflitto di nome/chiave.
 
 ---
 
-## A. DOMINIO — collegare `tool.affittibreviaroma.com`
+## A. DOMINIO — collegare `tools.affittibreviaroma.com`
 
-Obiettivo: il funnel vive su **tool.affittibreviaroma.com** (5 pagine).
+Obiettivo: il funnel vive su **tools.affittibreviaroma.com** (5 pagine).
 
 **A1 — DNS (pannello di chi gestisce `affittibreviaroma.com`)**
 1. Entra nel pannello DNS del dominio `affittibreviaroma.com` (Aruba/GoDaddy/Cloudflare…).
@@ -53,13 +53,13 @@ Obiettivo: il funnel vive su **tool.affittibreviaroma.com** (5 pagine).
 **A2 — Aggiungere il dominio in GHL**
 1. In alto a sinistra assicurati di essere nel sub-account **Propromanager**.
 2. **Settings** (rotella in basso a sinistra) → **Domains** → **Add Domain**.
-3. Digita `tool.affittibreviaroma.com` → **Continue**.
+3. Digita `tools.affittibreviaroma.com` → **Continue**.
 4. GHL mostra il record CNAME da creare: **copia il valore** e usalo nel passo A1 (se non l'hai già fatto).
 5. Torna qui e premi **Verify** / **Add Domain**. La propagazione DNS può richiedere da minuti ad alcune ore. SSL si attiva da solo.
 
 **A3 — Assegnare il dominio al funnel e impostare la home**
 1. **Sites → Funnels** (o **Websites**) → apri il funnel `Funnel Calcolatore` (creato al cap. E).
-2. **Settings** del funnel → **Domain** → seleziona `tool.affittibreviaroma.com`.
+2. **Settings** del funnel → **Domain** → seleziona `tools.affittibreviaroma.com`.
 3. Path della prima pagina = `/` (vuoto). Imposta la pagina **landing** come **default/home** del dominio.
 4. **Save**.
 
@@ -128,7 +128,7 @@ Serve a raccogliere il lead prima di mostrargli il calcolatore.
 
 **C3 — On-submit → redirect**
 1. In alto: **Settings / Options** del form → **On Submit** → **Redirect to URL**.
-2. URL: `https://tool.affittibreviaroma.com/calcolatore` (oppure path relativo `/calcolatore`).
+2. URL: `https://tools.affittibreviaroma.com/calcolatore` (oppure path relativo `/calcolatore`).
 3. **Save**.
 
 **C4 — Micro-nota sotto il bottone** (opzionale, testo da sez. c del file consensi):
@@ -185,7 +185,7 @@ ESATTAMENTE come sotto (senza prefisso `contact.`) → **mappa il campo al Custo
 **D5 — Consenso privacy** (obbligatorio, non pre-spuntato) — stesso testo del cap. C5/sez. a.
 
 **D6 — On-submit → redirect**
-- **On Submit → Redirect to URL** → `https://tool.affittibreviaroma.com/grazie`.
+- **On Submit → Redirect to URL** → `https://tools.affittibreviaroma.com/grazie`.
 
 **D7 — Collegare il form al calcolatore (GHL_FORM_URL)**
 1. **Forms → `Report Calcolatore` → Integrate → Link**: copia l'URL, forma:
@@ -264,7 +264,7 @@ sezione full-width senza padding → elemento **Custom Code/HTML** → incolla T
 4. **Action — Send Email** (benvenuto):
    - From name: `[Nome mittente]` · From email: `[email mittente verificata]`
    - Subject: `Il tuo calcolatore è pronto 👉 apri e scopri il prezzo giusto`
-   - Corpo: saluto + link `https://tool.affittibreviaroma.com/calcolatore`. Merge tag disponibile: `{{contact.first_name}}`.
+   - Corpo: saluto + link `https://tools.affittibreviaroma.com/calcolatore`. Merge tag disponibile: `{{contact.first_name}}`.
 5. **Save** e imposta il workflow su **Publish** (toggle in alto).
 
 ---
@@ -314,7 +314,7 @@ sezione full-width senza padding → elemento **Custom Code/HTML** → incolla T
 Gli stessi (sono le stesse chiavi contatto). Il testo pronto in `funnel/report-whatsapp.txt` usa:
 `{{contact.first_name | Host}}`, `{{contact.prezzo_consigliato}}`, `{{contact.aumento_pct}}`,
 `{{contact.netto_oggi}}`, `{{contact.netto_nuovo}}`, `{{contact.perdita_anno}}`, `{{contact.regime_calc}}`.
-Il link CTA punta a `https://tool.affittibreviaroma.com/grazie`. Includi l'opt-out "rispondi STOP".
+Il link CTA punta a `https://tools.affittibreviaroma.com/grazie`. Includi l'opt-out "rispondi STOP".
 
 > WhatsApp/Twilio: il mittente/template devono essere approvati (WhatsApp Business API). Se GHL
 > non mostra l'azione "Send WhatsApp", verifica che il canale WhatsApp sia connesso in
@@ -346,7 +346,7 @@ Due livelli, incolla in entrambi se ti servono:
    → poi **D7**: incolla `GHL_FORM_URL` in `calcolatore.html`.
 5. **H-bis** — Template email `Report Calcolatore Airbnb`.
 6. **E** — Funnel `Funnel Calcolatore` con le 5 pagine (incolla gli HTML; `/calcolatore` con URL aggiornato).
-7. **A** — Dominio `tool.affittibreviaroma.com` (DNS CNAME → GHL → assegna al funnel → home `/`).
+7. **A** — Dominio `tools.affittibreviaroma.com` (DNS CNAME → GHL → assegna al funnel → home `/`).
 8. **G** — Workflow A (registrazione).
 9. **H** — Workflow B (report, ramo Email/WhatsApp, notifica interna). **Publish** entrambi.
 10. **I** — Tracking (dopo cookie banner) + impostare **Currency = EUR** e valutare **Timezone Europe/Rome**.

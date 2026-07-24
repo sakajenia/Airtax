@@ -46,7 +46,7 @@ Azioni (in ordine):
   3) Send Email (sender predefinito, From Name "Affitti Brevi Roma"):
        subject = "Il tuo calcolatore è pronto 👉 scopri il prezzo giusto"
        body (HTML): saluto a {{contact.first_name}} + bottone/link a
-                    https://tool.affittibreviaroma.com/calcolatore
+                    https://tools.affittibreviaroma.com/calcolatore
 
 =================================================================
 WORKFLOW 2 — "WF - Report Calcolatore"   (Publish: ON)
@@ -104,7 +104,7 @@ Oggi ti restano ~{{contact.netto_oggi}} €/notte; col nuovo prezzo continui a t
 Se non lo alzi, rischi di perdere ~{{contact.perdita_anno}} €/anno.
 
 Vuoi rivederlo insieme in 15 min? Prenota qui la call gratuita:
-https://tool.affittibreviaroma.com/grazie
+https://tools.affittibreviaroma.com/grazie
 
 (Strumento indicativo, non è consulenza fiscale. Rispondi STOP per non ricevere più messaggi.)
 ```

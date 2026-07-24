@@ -1,7 +1,7 @@
 # Consensi e note legali — Funnel Calcolatore
 
 Testi **esatti** da incollare nei form e nelle pagine GHL del funnel
-(`tool.affittibreviaroma.com`). Italiano, coerenti con GDPR / Reg. UE 2016/679
+(`tools.affittibreviaroma.com`). Italiano, coerenti con GDPR / Reg. UE 2016/679
 e Codice Privacy (D.lgs. 196/2003 agg. 101/2018).
 
 > ⚠️ **AVVISO DI VALIDAZIONE LEGALE — leggere prima dell'uso.**

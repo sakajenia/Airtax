@@ -85,7 +85,7 @@ Scopo: chi si registra entra in pipeline e riceve il link al calcolatore.
 4. **Send Email** (benvenuto):
    - From: `[mittente verificato]` (es. noreply@affittibreviaroma.com)
    - Oggetto: `Il tuo calcolatore è pronto 👉 scopri il prezzo giusto`
-   - Corpo: saluto + bottone/link a `https://tool.affittibreviaroma.com/calcolatore`
+   - Corpo: saluto + bottone/link a `https://tools.affittibreviaroma.com/calcolatore`
 5. **Save** → **Publish** (toggle in alto a destra).
 
 ## WORKFLOW B — «WF - Report Calcolatore»
