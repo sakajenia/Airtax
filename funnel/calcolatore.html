@@ -262,7 +262,6 @@
       <p class="clean" id="cleanLine" hidden></p>
       <p class="verdict" id="verdict"></p>
       <p class="note" id="weekNote"></p>
-      <button type="button" class="copybtn" id="copyBtn">📋 Copia e condividi</button>
       <button type="button" class="leadbtn" id="leadBtn">📩 Ricevi il report personalizzato</button>
       <p class="lead-note">Scegli tu dove riceverlo: 📧 Email o 💬 WhatsApp. Niente spam.</p>
     </div>
@@ -618,14 +617,6 @@
   var _lb=document.getElementById('leadBtn'); if(_lb) _lb.addEventListener('click', openLead);
   var _lc=document.getElementById('leadClose'); if(_lc) _lc.addEventListener('click', function(){ document.getElementById('leadModal').classList.remove('open'); });
   var _lm=document.getElementById('leadModal'); if(_lm) _lm.addEventListener('click', function(e){ if(e.target===this) this.classList.remove('open'); });
-
-  $('copyBtn').addEventListener('click',function(){
-    var t=window.__summary||'';
-    function done(ok){ $('copyBtn').textContent=ok?'✅ Copiato!':'📋 Copia e condividi'; setTimeout(function(){$('copyBtn').textContent='📋 Copia e condividi';},2000); }
-    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(function(){done(true);},function(){done(false);}); }
-    else{ var ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select();
-      try{document.execCommand('copy');done(true);}catch(e){done(false);} document.body.removeChild(ta); }
-  });
 
   render();
 })();
