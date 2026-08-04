@@ -1,34 +1,41 @@
 ======================================================================
 REPORT CALCOLATORE AIRBNB - Messaggio WhatsApp (GHL / Twilio)
 ======================================================================
-Da usare in GoHighLevel come corpo messaggio WhatsApp/SMS nel workflow
-"Funnel Calcolatore" quando canale_report = WhatsApp.
+DOVE VA INCOLLATO
+  Workflow «WF - Report Calcolatore» → ramo canale_report = whatsapp
+  → azione "Send WhatsApp" → corpo del messaggio.
 
-MERGE TAG GHL (chiavi canoniche dei custom field del contatto):
+  ATTENZIONE: ad oggi questo ramo NON invia nulla al lead (verificato sui
+  contatti reali che hanno scelto WhatsApp: nessun report ricevuto).
+  Va aggiunta l'azione di invio con il testo qui sotto.
+
+MERGE TAG GHL (custom field già esistenti, chiavi canoniche):
   {{contact.first_name}}         nome contatto
+  {{contact.prezzo_attuale}}     prezzo/notte di oggi
   {{contact.prezzo_consigliato}} nuovo prezzo/notte consigliato
   {{contact.aumento_pct}}        aumento %
   {{contact.netto_oggi}}         quanto resta a notte oggi
   {{contact.netto_nuovo}}        quanto resta a notte col nuovo prezzo
-  {{contact.perdita_anno}}       perdita stimata su un anno
+  {{contact.perdita_anno}}       perdita stimata in un anno
   {{contact.regime_calc}}        regime fiscale scelto
+  {{contact.obiettivo_calc}}     obiettivo scelto
 
-NOTE FALLBACK:
+NOTE
 - I numeri arrivano interi, senza simbolo: l'unita' (EUR, %) e' scritta nel
-  testo, cosi' se un campo e' vuoto la frase resta leggibile.
-- first_name: in GHL usa {{contact.first_name | Host}} per il default "Host".
-- Tieni il messaggio in un solo blocco: WhatsApp non impagina bene i testi
-  lunghi. Questo sta sotto le ~1000 battute.
-- Il link della call punta al sottodominio del funnel (pagina /grazie con CTA).
+  testo, cosi' se un campo fosse vuoto la frase resta leggibile.
+- first_name: {{contact.first_name | Host}} usa il fallback nativo GHL.
+- Su WhatsApp *testo* = grassetto. Niente HTML.
+- Il link della call punta al calendario reale (verificato HTTP 200).
 ======================================================================
 
 --- TESTO DA INCOLLARE IN GHL (dall'inizio del blocco qui sotto) -------------
 
 Ciao {{contact.first_name | Host}}! 👋 Ecco il tuo report SalvaGuadagno Host.
 
-📌 Con la nuova commissione Airbnb 15,5% (dal 13/10/2026) il tuo prezzo consigliato e':
+Con la nuova commissione Airbnb del 15,5% (dal 13/10/2026) il prezzo giusto per te e':
 
 💶 *{{contact.prezzo_consigliato}} EUR/notte* (+{{contact.aumento_pct}}%)
+Oggi il tuo prezzo e' {{contact.prezzo_attuale}} EUR/notte.
 
 Cosi' in tasca ti resta come oggi:
 • Oggi: {{contact.netto_oggi}} EUR/notte
@@ -36,10 +43,12 @@ Cosi' in tasca ti resta come oggi:
 
 ⚠️ Se non fai nulla rischi di perdere circa *{{contact.perdita_anno}} EUR all'anno*.
 
-Calcolo fatto per il tuo caso ({{contact.regime_calc}}). Alzare solo del 15,5% non basta: piu' prezzo = piu' tasse, e la commissione non si scarica.
+Calcolo fatto sul tuo caso: {{contact.regime_calc}}, obiettivo "{{contact.obiettivo_calc}}".
+
+Perche' non basta alzare del 15,5%? Perche' in Italia le tasse si pagano sul prezzo intero e la commissione non si scarica: piu' prezzo = piu' tasse. Il conto giusto tiene dentro tutte e due le cose.
 
 📞 Vuoi rivedere i numeri insieme? Prenota una call gratuita di 15 min:
-👉 https://tools.affittibreviaroma.com/grazie
+👉 https://api.leadconnectorhq.com/widget/bookings/call-strategica-affitti
 
 Strumento indicativo, non e' consulenza fiscale. Rispondi STOP per non ricevere piu' messaggi.
 

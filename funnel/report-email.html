@@ -1,84 +1,98 @@
 <!--
   ============================================================================
-  REPORT CALCOLATORE AIRBNB — Email HTML personalizzata (GHL)
+  REPORT CALCOLATORE AIRBNB — Email HTML completa (GHL) — brand Pro Pro Manager
   ============================================================================
-  Template email da usare in GoHighLevel (sub-account ProProManager,
-  Location E1HO8PRyWf2yGaTFLuLC) come "Report Calcolatore Airbnb".
+  DOVE VA INCOLLATA
+    Workflow «WF - Report Calcolatore» → ramo canale_report = email
+    → azione Send Email → editor → "Code / Import HTML" → incolla TUTTO questo file.
+    (In alternativa: Marketing → Emails → Templates → il template
+     "Il tuo report SalvaGuadagno Host" → Import HTML → poi punta il workflow al template.)
 
-  MERGE TAG GHL usati (custom field del contatto, chiavi canoniche):
-    {{contact.first_name}}        -> nome del contatto (campo standard GHL)
-    {{contact.prezzo_attuale}}    -> prezzo/notte di oggi (numero, es. 100)
-    {{contact.prezzo_consigliato}}-> nuovo prezzo/notte consigliato (es. 122)
-    {{contact.aumento_pct}}       -> aumento percentuale (numero, es. 22)
-    {{contact.regime_calc}}       -> regime fiscale scelto (testo)
-    {{contact.obiettivo_calc}}    -> obiettivo scelto (testo)
-    {{contact.netto_oggi}}        -> quanto resta a notte oggi (es. 58)
-    {{contact.netto_nuovo}}       -> quanto resta a notte col nuovo prezzo (es. 58)
-    {{contact.perdita_anno}}      -> perdita stimata su un anno se non fa nulla (es. 3640)
-    {{unsubscribe_link}}          -> link di disiscrizione (merge tag standard GHL)
+  OGGETTO CONSIGLIATO
+    Il tuo report: {{contact.prezzo_consigliato}} €/notte è il tuo nuovo prezzo 🏠
 
-  NOTE FALLBACK (impostare in GHL -> Custom Values / default field):
-  - Se un custom field e' vuoto, il merge tag stampa stringa vuota. Per evitare
-    frasi mozze, ogni numero e' seguito dall'unita' ("EUR/notte", "%") scritta
-    FUORI dal merge tag: se il valore manca resta comunque leggibile.
-  - I numeri arrivano SENZA simbolo valuta (li scrive il calcolatore come interi):
-    l'unita' "EUR" e' aggiunta qui nel template.
-  - Consiglio: nel form di raccolta impostare i campi come OBBLIGATORI (sono
-    precompilati dai campi nascosti del calcolatore) cosi' non arrivano mai vuoti.
-  - {{contact.first_name}}: se vuoto, il saluto "Ciao ," resterebbe strano ->
-    in GHL usare il fallback nativo scrivendo nel builder "Ciao {{contact.first_name | Host}}"
-    (la pipe + default e' supportata dal merge builder GHL). Qui sotto e' gia' applicato.
+  PREHEADER (se GHL lo chiede a parte)
+    Prezzo consigliato, quanto ti resta a notte e quanto rischi di perdere in un anno.
+
+  MERGE TAG USATI (custom field già esistenti nel sub-account, chiavi canoniche):
+    {{contact.first_name}}         nome           (standard GHL)
+    {{contact.prezzo_attuale}}     prezzo/notte di oggi          es. 250
+    {{contact.prezzo_consigliato}} nuovo prezzo/notte consigliato es. 314
+    {{contact.aumento_pct}}        aumento %                      es. 26
+    {{contact.regime_calc}}        regime fiscale scelto (testo)
+    {{contact.obiettivo_calc}}     obiettivo scelto (testo)
+    {{contact.netto_oggi}}         quanto resta a notte oggi      es. 188
+    {{contact.netto_nuovo}}        quanto resta a notte col nuovo es. 189
+    {{contact.perdita_anno}}       perdita stimata in un anno     es. 4956
+
+  NOTE
+  - I numeri arrivano SENZA simbolo: "€" e "%" sono scritti FUORI dal merge tag,
+    così se un campo fosse vuoto la frase resta comunque leggibile.
+  - {{contact.first_name | Host}} usa il fallback nativo GHL (pipe + default).
+  - Il logo è .webp: Gmail/Apple Mail lo mostrano, Outlook desktop no → l'alt text
+    bianco su fondo rosso resta leggibile anche senza immagine (degrado voluto).
+  - Il link di disiscrizione in fondo lo aggiunge GHL in automatico: la lingua si
+    cambia da Settings → Business Profile → (email footer/compliance).
   ============================================================================
 -->
-<div style="margin:0;padding:0;background-color:#f4f4f6;">
+<div style="margin:0;padding:0;background-color:#f2efee;">
+
   <!-- Preheader nascosto -->
-  <div style="display:none;max-height:0;overflow:hidden;opacity:0;font-size:1px;line-height:1px;color:#f4f4f6;">
-    Il tuo nuovo prezzo consigliato e la perdita che eviti col cambio Airbnb 15,5%.
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;font-size:1px;line-height:1px;color:#f2efee;">
+    Prezzo consigliato, quanto ti resta a notte e quanto rischi di perdere in un anno.
   </div>
 
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f6;padding:0;margin:0;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f2efee;padding:0;margin:0;">
     <tr>
       <td align="center" style="padding:24px 12px;">
 
-        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;background-color:#ffffff;border-radius:16px;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background-color:#ffffff;border-radius:18px;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
 
-          <!-- HEADER -->
+          <!-- ============ HEADER: banda logo (chiara, come il sito) ============ -->
           <tr>
-            <td style="background:linear-gradient(135deg,#FF385C 0%,#E31C5F 100%);background-color:#FF385C;padding:28px 28px 24px;text-align:center;">
-              <div style="font-size:13px;font-weight:700;letter-spacing:.04em;color:#ffe3ea;text-transform:uppercase;margin-bottom:6px;">SalvaGuadagno Host</div>
-              <div style="font-size:22px;font-weight:800;color:#ffffff;line-height:1.25;">Il tuo report personalizzato</div>
-              <div style="font-size:14px;color:#ffe3ea;margin-top:6px;">Airbnb passa alla commissione unica 15,5% (dal 13/10/2026)</div>
+            <td style="background-color:#fcf9f8;border-bottom:1px solid #e5e2e1;padding:16px 28px;text-align:center;">
+              <img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/b99a11a9-9a35-410d-a09f-3f9d026b22fd.webp"
+                   alt="Pro Pro Manager" height="30"
+                   style="height:30px;width:auto;display:inline-block;border:0;outline:none;text-decoration:none;color:#801820;font-size:15px;font-weight:700;">
             </td>
           </tr>
 
-          <!-- SALUTO -->
+          <!-- ============ HEADER: banda titolo ============ -->
           <tr>
-            <td style="padding:26px 28px 4px;">
-              <p style="margin:0 0 14px;font-size:16px;line-height:1.55;color:#222226;">
+            <td style="background-color:#801820;padding:26px 28px 24px;text-align:center;">
+              <div style="font-size:21px;font-weight:800;color:#ffffff;line-height:1.3;">Il tuo report personalizzato</div>
+              <div style="font-size:14px;color:#ffd9d7;margin-top:6px;line-height:1.45;">Airbnb passa alla commissione unica del 15,5% (dal 13 ottobre 2026)</div>
+            </td>
+          </tr>
+
+          <!-- ============ SALUTO ============ -->
+          <tr>
+            <td style="padding:26px 28px 0;">
+              <p style="margin:0 0 12px;font-size:16px;line-height:1.55;color:#1c1b1b;">
                 Ciao {{contact.first_name | Host}},
               </p>
-              <p style="margin:0 0 8px;font-size:16px;line-height:1.55;color:#222226;">
+              <p style="margin:0;font-size:16px;line-height:1.55;color:#574140;">
                 hai usato il calcolatore per capire cosa cambia con la nuova commissione Airbnb.
-                Ecco il tuo risultato, tutto in un colpo d'occhio.
+                Ecco il tuo risultato completo, numero per numero.
               </p>
             </td>
           </tr>
 
-          <!-- NUMERO CHIAVE -->
+          <!-- ============ NUMERO CHIAVE ============ -->
           <tr>
-            <td style="padding:16px 28px 4px;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg,#FF385C 0%,#E31C5F 100%);background-color:#FF385C;border-radius:16px;">
+            <td style="padding:22px 28px 0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#801820;border-radius:18px;">
                 <tr>
-                  <td style="padding:24px 20px;text-align:center;">
-                    <div style="font-size:14px;font-weight:700;color:#ffe3ea;">Il tuo nuovo prezzo consigliato</div>
-                    <div style="font-size:44px;font-weight:900;color:#ffffff;line-height:1.1;margin:6px 0 2px;">
-                      {{contact.prezzo_consigliato}} <span style="font-size:18px;font-weight:700;">EUR/notte</span>
+                  <td style="padding:26px 20px;text-align:center;">
+                    <div style="font-size:13px;font-weight:700;color:#ffd9d7;letter-spacing:.03em;text-transform:uppercase;">Il tuo nuovo prezzo consigliato</div>
+                    <div style="font-size:46px;font-weight:800;color:#ffffff;line-height:1.1;margin:8px 0 2px;">
+                      {{contact.prezzo_consigliato}} <span style="font-size:18px;font-weight:700;">€/notte</span>
                     </div>
-                    <div style="display:inline-block;background-color:rgba(255,255,255,.22);border-radius:999px;padding:5px 16px;font-size:16px;font-weight:800;color:#ffffff;margin-top:6px;">
+                    <div style="display:inline-block;background-color:#5f000e;border-radius:999px;padding:6px 18px;font-size:16px;font-weight:800;color:#ffffff;margin-top:8px;">
                       +{{contact.aumento_pct}}%
                     </div>
-                    <div style="font-size:13px;color:#ffe3ea;margin-top:12px;">
-                      Oggi il tuo prezzo e' {{contact.prezzo_attuale}} EUR/notte
+                    <div style="font-size:13px;color:#ffd9d7;margin-top:14px;line-height:1.5;">
+                      Oggi il tuo prezzo è {{contact.prezzo_attuale}} €/notte
                     </div>
                   </td>
                 </tr>
@@ -86,61 +100,107 @@
             </td>
           </tr>
 
-          <!-- MINI TABELLA PRIMA/DOPO -->
+          <!-- ============ PREZZO: PRIMA / DOPO ============ -->
           <tr>
-            <td style="padding:22px 28px 4px;">
-              <div style="font-size:15px;font-weight:800;color:#222226;margin-bottom:10px;">Quanto ti resta a notte</div>
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+            <td style="padding:26px 28px 0;">
+              <div style="font-size:15px;font-weight:800;color:#1c1b1b;margin-bottom:12px;">Il prezzo da mettere nell'annuncio</div>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;border-spacing:0 8px;">
                 <tr>
-                  <td style="padding:12px 14px;background-color:#f4f4f6;border-radius:10px 0 0 10px;font-size:14px;color:#63636b;font-weight:700;">
-                    Oggi (prezzo attuale)
+                  <td style="padding:13px 16px;background-color:#f7f4f3;border-radius:12px 0 0 12px;font-size:14px;color:#574140;font-weight:600;">
+                    Prezzo di oggi
                   </td>
-                  <td style="padding:12px 14px;background-color:#f4f4f6;border-radius:0 10px 10px 0;text-align:right;font-size:18px;font-weight:800;color:#222226;">
-                    {{contact.netto_oggi}} EUR
+                  <td style="padding:13px 16px;background-color:#f7f4f3;border-radius:0 12px 12px 0;text-align:right;font-size:18px;font-weight:800;color:#1c1b1b;white-space:nowrap;">
+                    {{contact.prezzo_attuale}} €
                   </td>
                 </tr>
-                <tr><td colspan="2" style="height:8px;line-height:8px;font-size:8px;">&nbsp;</td></tr>
                 <tr>
-                  <td style="padding:12px 14px;background-color:#E8F6F0;border-radius:10px 0 0 10px;font-size:14px;color:#0A6B4A;font-weight:700;">
-                    Col nuovo prezzo consigliato
+                  <td style="padding:13px 16px;background-color:#ffe1e0;border-radius:12px 0 0 12px;font-size:14px;color:#5f000e;font-weight:700;">
+                    Nuovo prezzo consigliato
                   </td>
-                  <td style="padding:12px 14px;background-color:#E8F6F0;border-radius:0 10px 10px 0;text-align:right;font-size:18px;font-weight:800;color:#0A6B4A;">
-                    {{contact.netto_nuovo}} EUR
+                  <td style="padding:13px 16px;background-color:#ffe1e0;border-radius:0 12px 12px 0;text-align:right;font-size:18px;font-weight:800;color:#5f000e;white-space:nowrap;">
+                    {{contact.prezzo_consigliato}} €
                   </td>
                 </tr>
               </table>
-              <p style="margin:12px 0 0;font-size:13px;line-height:1.5;color:#63636b;">
-                Calcolo fatto per il tuo caso: <b style="color:#222226;">{{contact.regime_calc}}</b>,
-                con obiettivo <b style="color:#222226;">{{contact.obiettivo_calc}}</b>.
-              </p>
             </td>
           </tr>
 
-          <!-- PERCHE' -->
+          <!-- ============ QUANTO TI RESTA A NOTTE ============ -->
           <tr>
-            <td style="padding:22px 28px 4px;">
-              <div style="font-size:15px;font-weight:800;color:#222226;margin-bottom:8px;">Perche' proprio questo prezzo?</div>
-              <p style="margin:0 0 10px;font-size:14px;line-height:1.6;color:#3a3a40;">
-                Dal 13 ottobre 2026 Airbnb applica una commissione unica del <b>15,5%</b> a carico tuo,
-                al posto del vecchio 3%. In piu', in Italia le tasse si pagano sull'intero prezzo dell'annuncio
-                e questa commissione <b>non si scarica</b>.
+            <td style="padding:20px 28px 0;">
+              <div style="font-size:15px;font-weight:800;color:#1c1b1b;margin-bottom:6px;">Quanto ti resta in tasca, a notte</div>
+              <p style="margin:0 0 12px;font-size:13px;line-height:1.55;color:#574140;">
+                Al netto della commissione Airbnb e delle tasse del tuo regime.
               </p>
-              <p style="margin:0 0 10px;font-size:14px;line-height:1.6;color:#3a3a40;">
-                Per questo alzare il prezzo solo del 15,5% <b>non basta</b>: un prezzo piu' alto significa
-                anche piu' tasse. Il conto giusto tiene dentro entrambe le cose, ed e' per questo che
-                per il tuo caso serve un <b>+{{contact.aumento_pct}}%</b>: cosi' in tasca ti resta come oggi.
-              </p>
-            </td>
-          </tr>
-
-          <!-- BOX PERDITA -->
-          <tr>
-            <td style="padding:14px 28px 4px;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FDEDEF;border:1px solid #f3c6ce;border-radius:12px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:separate;border-spacing:0 8px;">
                 <tr>
-                  <td style="padding:16px 18px;font-size:14px;line-height:1.55;color:#7a1220;">
-                    <b style="color:#C0263C;">Se non fai nulla</b> e lasci il prezzo com'e', rischi di perdere circa
-                    <b style="color:#C0263C;font-size:16px;">{{contact.perdita_anno}} EUR all'anno</b>
+                  <td style="padding:13px 16px;background-color:#f7f4f3;border-radius:12px 0 0 12px;font-size:14px;color:#574140;font-weight:600;">
+                    Oggi, col prezzo attuale
+                  </td>
+                  <td style="padding:13px 16px;background-color:#f7f4f3;border-radius:0 12px 12px 0;text-align:right;font-size:18px;font-weight:800;color:#1c1b1b;white-space:nowrap;">
+                    {{contact.netto_oggi}} €
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:13px 16px;background-color:#e8f6f0;border-radius:12px 0 0 12px;font-size:14px;color:#0a6b4a;font-weight:700;">
+                    Col nuovo prezzo consigliato
+                  </td>
+                  <td style="padding:13px 16px;background-color:#e8f6f0;border-radius:0 12px 12px 0;text-align:right;font-size:18px;font-weight:800;color:#0a6b4a;white-space:nowrap;">
+                    {{contact.netto_nuovo}} €
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- ============ IL TUO CASO ============ -->
+          <tr>
+            <td style="padding:20px 28px 0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff;border:1px solid #e5e2e1;border-radius:14px;">
+                <tr>
+                  <td style="padding:16px 18px;">
+                    <div style="font-size:13px;font-weight:700;color:#801820;letter-spacing:.03em;text-transform:uppercase;margin-bottom:10px;">Il calcolo è fatto sul tuo caso</div>
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="padding:4px 0;font-size:14px;color:#574140;">Regime fiscale</td>
+                        <td style="padding:4px 0;font-size:14px;color:#1c1b1b;font-weight:700;text-align:right;">{{contact.regime_calc}}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:4px 0;font-size:14px;color:#574140;">Obiettivo</td>
+                        <td style="padding:4px 0;font-size:14px;color:#1c1b1b;font-weight:700;text-align:right;">{{contact.obiettivo_calc}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- ============ PERCHÉ QUESTO PREZZO ============ -->
+          <tr>
+            <td style="padding:24px 28px 0;">
+              <div style="font-size:15px;font-weight:800;color:#1c1b1b;margin-bottom:10px;">Perché proprio questo prezzo?</div>
+              <p style="margin:0 0 10px;font-size:14px;line-height:1.65;color:#574140;">
+                Dal 13 ottobre 2026 Airbnb applica una <b style="color:#1c1b1b;">commissione unica del 15,5%</b> a carico tuo,
+                al posto del vecchio 3%. In più, in Italia le tasse si pagano sull'<b style="color:#1c1b1b;">intero prezzo esposto</b>
+                e questa commissione <b style="color:#1c1b1b;">non si scarica</b>.
+              </p>
+              <p style="margin:0;font-size:14px;line-height:1.65;color:#574140;">
+                Per questo alzare il prezzo solo del 15,5% <b style="color:#1c1b1b;">non basta</b>: un prezzo più alto significa
+                anche più tasse. Il conto giusto tiene dentro entrambe le cose — ed è per questo che nel tuo caso
+                serve un <b style="color:#801820;">+{{contact.aumento_pct}}%</b>, così in tasca ti resta come oggi.
+              </p>
+            </td>
+          </tr>
+
+          <!-- ============ BOX PERDITA ============ -->
+          <tr>
+            <td style="padding:20px 28px 0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffe1e0;border:1px solid #f0c4c2;border-radius:14px;">
+                <tr>
+                  <td style="padding:18px 20px;font-size:14px;line-height:1.6;color:#5f000e;">
+                    <b>Se non fai nulla</b> e lasci il prezzo com'è, rischi di perdere circa
+                    <b style="font-size:17px;">{{contact.perdita_anno}} € all'anno</b>
                     di guadagno netto. Bastano pochi minuti per sistemare gli annunci ed evitarlo.
                   </td>
                 </tr>
@@ -148,50 +208,52 @@
             </td>
           </tr>
 
-          <!-- CTA -->
+          <!-- ============ CTA ============ -->
           <tr>
-            <td style="padding:26px 28px 8px;text-align:center;">
-              <div style="font-size:15px;font-weight:800;color:#222226;margin-bottom:6px;">Vuoi essere sicuro dei tuoi numeri?</div>
-              <p style="margin:0 0 16px;font-size:14px;line-height:1.55;color:#63636b;">
-                Ti offriamo una call gratuita di 15 minuti: rivediamo insieme il tuo caso e i nuovi prezzi.
+            <td style="padding:28px 28px 8px;text-align:center;">
+              <div style="font-size:16px;font-weight:800;color:#1c1b1b;margin-bottom:8px;">Vuoi essere sicuro dei tuoi numeri?</div>
+              <p style="margin:0 0 18px;font-size:14px;line-height:1.6;color:#574140;">
+                Una call gratuita di 15 minuti: rivediamo insieme il tuo prezzo, il regime fiscale e la strategia.
               </p>
-              <a href="https://tools.affittibreviaroma.com/grazie"
-                 style="display:inline-block;background:linear-gradient(135deg,#FF385C 0%,#E31C5F 100%);background-color:#FF385C;color:#ffffff;text-decoration:none;font-size:16px;font-weight:800;padding:15px 34px;border-radius:12px;">
-                Prenota una call gratuita
+              <a href="https://api.leadconnectorhq.com/widget/bookings/call-strategica-affitti"
+                 style="display:inline-block;background-color:#801820;color:#ffffff;text-decoration:none;font-size:16px;font-weight:800;padding:16px 34px;border-radius:999px;">
+                Prenota la call gratuita
               </a>
+              <p style="margin:16px 0 0;font-size:13px;line-height:1.6;color:#574140;">
+                Vuoi provare un altro scenario?
+                <a href="https://tools.affittibreviaroma.com/calcolatore" style="color:#801820;font-weight:700;text-decoration:underline;">Rifai il calcolo</a>
+              </p>
             </td>
           </tr>
 
-          <!-- DIVIDER -->
+          <!-- ============ DIVIDER ============ -->
           <tr>
-            <td style="padding:22px 28px 0;">
-              <div style="border-top:1px solid #E8E8EC;height:1px;line-height:1px;font-size:1px;">&nbsp;</div>
+            <td style="padding:24px 28px 0;">
+              <div style="border-top:1px solid #e5e2e1;height:1px;line-height:1px;font-size:1px;">&nbsp;</div>
             </td>
           </tr>
 
-          <!-- DISCLAIMER + LEGALE -->
+          <!-- ============ DISCLAIMER + LEGALE ============ -->
           <tr>
-            <td style="padding:16px 28px 28px;">
-              <p style="margin:0 0 10px;font-size:12px;line-height:1.6;color:#8a8a92;">
-                Strumento indicativo, <b>non e' consulenza fiscale</b>. I calcoli si basano sui dati che hai
-                inserito e sulle regole note ad oggi; per la tua situazione specifica verifica sempre con un
-                commercialista.
+            <td style="padding:18px 28px 28px;">
+              <p style="margin:0 0 10px;font-size:12px;line-height:1.65;color:#8c8483;">
+                Strumento indicativo, <b>non è consulenza fiscale</b>. I calcoli si basano sui dati che hai inserito
+                e sulle regole note ad oggi; per la tua situazione specifica verifica sempre con un commercialista.
+                Non affiliato ad Airbnb.
               </p>
-              <p style="margin:0 0 10px;font-size:12px;line-height:1.6;color:#8a8a92;">
-                Titolare del trattamento dei dati: [Ragione Sociale del Titolare] (affittibreviaroma.com).
-                Ricevi questa email perche' hai richiesto il report dal calcolatore.
-              </p>
-              <p style="margin:0;font-size:12px;line-height:1.6;color:#8a8a92;">
-                Non vuoi piu' ricevere queste email?
-                <a href="{{unsubscribe_link}}" style="color:#C22645;font-weight:700;text-decoration:underline;">Disiscriviti qui</a>.
+              <p style="margin:0;font-size:12px;line-height:1.65;color:#8c8483;">
+                Titolare del trattamento: M2B SRLS ·
+                <a href="https://tools.affittibreviaroma.com/privacypolicy" style="color:#801820;font-weight:600;text-decoration:underline;">Informativa privacy</a> ·
+                <a href="https://tools.affittibreviaroma.com/cookiepolicy" style="color:#801820;font-weight:600;text-decoration:underline;">Cookie policy</a><br>
+                Ricevi questa email perché hai richiesto il report dal calcolatore.
               </p>
             </td>
           </tr>
 
         </table>
 
-        <div style="font-size:11px;color:#a8a8b0;margin-top:16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
-          SalvaGuadagno Host - affittibreviaroma.com - Non affiliato ad Airbnb
+        <div style="font-size:11px;color:#a09896;margin-top:16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+          Pro Pro Manager · affittibreviaroma.com
         </div>
 
       </td>
