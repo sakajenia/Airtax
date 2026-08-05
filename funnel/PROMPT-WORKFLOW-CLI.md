@@ -28,7 +28,7 @@ CUSTOM FIELD condizione = contact.canale_report  (id cFOteyweDLD6j1u66xPW; opzio
 
 IMPOSTAZIONI MITTENTE E NOTIFICHE (già definite):
   Mittente email: usa il SENDER PREDEFINITO del sub-account (default location sender);
-                  From Name = "Affitti Brevi Roma". Non impostare un from-email custom.
+                  From Name = "ProProManager". Non impostare un from-email custom.
   Notifiche interne: invia all'utente admin GIANLUCA BIONDI
                      (userId WUX8ztdcfKfCXePW9C5I, email blionbg+1@gmail.com).
 
@@ -43,7 +43,7 @@ Azioni (in ordine):
        stageId    = 83f80977-075d-4266-bbd9-27cac1224a25   (🔵 Registrato)
        name       = "Calcolatore — {{contact.first_name}} {{contact.last_name}}"
        status     = open
-  3) Send Email (sender predefinito, From Name "Affitti Brevi Roma"):
+  3) Send Email (sender predefinito, From Name "ProProManager"):
        subject = "Il tuo calcolatore è pronto 👉 scopri il prezzo giusto"
        body (HTML): saluto a {{contact.first_name}} + bottone/link a
                     https://tools.affittibreviaroma.com/calcolatore
@@ -62,7 +62,7 @@ Azioni (in ordine):
   3) If/Else su custom field contact.canale_report:
        RAMO A (contact.canale_report EQUALS "email"):
            Send Email → template "Report Calcolatore Airbnb"
-                        (sender predefinito, From Name "Affitti Brevi Roma")
+                        (sender predefinito, From Name "ProProManager")
        RAMO B / ELSE (contact.canale_report EQUALS "whatsapp"):
            Send WhatsApp (canale Twilio) → corpo = TESTO_WHATSAPP (vedi sotto)
   4) (ramo comune, dopo l'If/Else) Internal Notification:

@@ -15,6 +15,8 @@ Sub-account **Propromanager** · `E1HO8PRyWf2yGaTFLuLC` · diagnosi 2026-08-05 v
 | I merge tag si risolvono nei workflow | ✅ le email inviate mostrano i numeri reali |
 | Link prenotazione call | ✅ HTTP 200 |
 | Merge tag orfani nel nuovo HTML | ✅ zero: tutti e 9 mappati su campi esistenti |
+| Origine del mittente "Affitti Brevi Roma" | ⚠️ **non** è il Business Name (è già `Propromanager`): è hardcoded nel *From Name* delle azioni Send Email → **Prompt 0** |
+| Timezone del sub-account | ⚠️ `Europe/Amsterdam`, dovrebbe essere `Europe/Rome` (impatta gli orari del calendario) |
 
 **Il dato è integro lungo tutta la catena. È rotto solo cosa spedisce il Workflow 2.**
 
@@ -46,6 +48,61 @@ di un template, né di delete contatto tra i tool disponibili.
 
 Quindi: la diagnosi e la verifica finale le faccio io via API; le tre modifiche
 vanno fatte da Ask AI / a mano. Sotto trovi i prompt pronti.
+
+---
+
+# PROMPT 0 — Il marchio ProProManager davanti in tutte le comunicazioni
+
+**Origine del problema, verificata via API:** il Business Name del sub-account è
+già `Propromanager`, quindi "Affitti Brevi Roma" **non** arriva dalle impostazioni:
+è scritto a mano nel campo *From Name* delle azioni Send Email dei workflow
+(era così nel prompt con cui il CLI li ha creati). Va corretto lì.
+
+**Stringa di marca da usare ovunque: `ProProManager`.**
+Dove serve il contesto geografico, va dopo: `ProProManager — Affitti Brevi Roma`.
+Mai "Affitti Brevi Roma" da solo come mittente o come firma.
+
+```
+Nel sub-account Propromanager devo uniformare il nome del marchio in tutte le
+comunicazioni che arrivano al cliente. Il marchio è "ProProManager" e deve
+venire SEMPRE per primo. "Affitti Brevi Roma" può restare solo come
+descrizione dopo il marchio, mai da solo.
+
+1. Settings → Business Profile: il Business Name è scritto "Propromanager".
+   Correggilo in "ProProManager" (con le P e la M maiuscole).
+   Non cambiare indirizzo, email o telefono.
+
+2. Automation → Workflows. Apri UNO PER UNO questi tre workflow e, in OGNI
+   azione "Send Email" che contengono, cambia il campo From Name / Sender Name
+   da "Affitti Brevi Roma" a "ProProManager":
+     - WF - Registrazione Calcolatore
+     - WF - Report Calcolatore
+     - WF - Call Prenotata
+   Non toccare l'indirizzo email del mittente: resta quello predefinito.
+
+3. Sempre in "WF - Registrazione Calcolatore", apri il corpo dell'email di
+   benvenuto: in fondo c'è la firma "Gianluca. ProProManager Affitti Brevi".
+   Sostituiscila con:
+     Gianluca
+     ProProManager — Affitti Brevi Roma
+
+4. Calendars → apri il calendario "AIRTAX - Call Strategica Affitti Brevi" →
+   Notifications. Nei testi di conferma e nei promemoria (email e SMS) sostituisci
+   ogni "Affitti Brevi Roma" o "Il team di Affitti Brevi Roma" con
+   "Il team di ProProManager". Lascia invariato il resto del testo e gli orari.
+
+5. Fai Publish di tutti e tre i workflow e salva il calendario.
+
+6. Riportami l'elenco di ogni punto in cui hai trovato e cambiato la scritta,
+   e segnalami se in qualche azione il From Name era diverso da quello atteso.
+```
+
+> Nota: il nome del calendario ("AIRTAX - Call Strategica Affitti Brevi") lo vede
+> il lead nella pagina di prenotazione. Se vuoi, rinominalo in
+> **"ProProManager — Call Strategica Affitti Brevi"**: dimmelo e lo aggiungo al
+> prompt, ma cambia lo slug pubblico solo se GHL te lo chiede esplicitamente —
+> il link `/widget/bookings/call-strategica-affitti` è già usato nelle pagine e
+> nelle email, quindi lo slug **non va toccato**.
 
 ---
 
@@ -84,7 +141,7 @@ Vai su Marketing → Emails → Templates.
      selezionando invece il template salvato al punto 3 o 4.
    - Imposta l'oggetto esattamente così:
      Il tuo report: {{contact.prezzo_consigliato}} €/notte è il tuo nuovo prezzo 🏠
-   - From Name: Affitti Brevi Roma. Mittente: quello predefinito della location.
+   - From Name: ProProManager. Mittente: quello predefinito della location.
 
 6. Salva e fai Publish del workflow.
 
@@ -130,6 +187,8 @@ Perche' non basta alzare del 15,5%? Perche' in Italia le tasse si pagano sul pre
 
 📞 Vuoi rivedere i numeri insieme? Prenota una call gratuita di 15 min:
 👉 https://api.leadconnectorhq.com/widget/bookings/call-strategica-affitti
+
+— *ProProManager* · Affitti Brevi Roma
 
 Strumento indicativo, non e' consulenza fiscale. Rispondi STOP per non ricevere piu' messaggi.
 
@@ -214,11 +273,15 @@ CONTROLLI IN GHL
 11. Apri la conversazione di ciascun contatto e dimmi cosa è stato inviato:
     - il primo deve avere una EMAIL con il report completo
       (deve contenere sia 100 che 120, la tabella "Quanto ti resta in tasca",
-      la sezione "Perché proprio questo prezzo?" e il logo Pro Pro Manager)
+      la sezione "Perché proprio questo prezzo?" e il logo ProProManager)
     - il secondo deve avere un messaggio WHATSAPP col report
 12. Controlla la casella blionbg+qa1@gmail.com (anche in Spam/Promozioni)
     e dimmi se l'email è arrivata e se è quella grafica completa
     o un testo scarno.
+13. CONTROLLO MARCHIO: nell'email ricevuta il mittente deve risultare
+    "ProProManager", NON "Affitti Brevi Roma". Dimmi il nome mittente esatto
+    che vedi. Stesso controllo sulla firma in fondo al messaggio WhatsApp:
+    deve esserci "ProProManager · Affitti Brevi Roma".
 
 NON cancellare niente: la pulizia la facciamo dopo, in un passaggio separato.
 Riportami un elenco puntato con l'esito di ogni punto.

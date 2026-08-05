@@ -48,11 +48,11 @@ Attiva e traduci questi messaggi:
   Durata: 15 minuti. Ci sentiamo lì!
   Se hai un imprevisto puoi spostarla o annullarla dal link nell'invito.
   A presto,
-  Il team di Affitti Brevi Roma
+  Il team di ProProManager
   ```
 
 **B) Promemoria al contatto (Email e/o SMS)** — 24h prima e 1h prima:
-- SMS: `Ciao {{contact.first_name}}, ti ricordiamo la call di oggi alle {{appointment.start_time}}. A tra poco! — Affitti Brevi Roma`
+- SMS: `Ciao {{contact.first_name}}, ti ricordiamo la call di oggi alle {{appointment.start_time}}. A tra poco! — ProProManager`
 
 **C) Notifica interna al team** (a te): attiva "Notify assigned user" o inserisci l'email del team →
 - `Nuova call prenotata da {{contact.first_name}} {{contact.last_name}} ({{contact.email}}, {{contact.phone}}) per {{appointment.start_time}}.`
