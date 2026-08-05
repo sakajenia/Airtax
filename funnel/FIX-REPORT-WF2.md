@@ -1,118 +1,277 @@
-# FIX «WF - Report Calcolatore» — il lead riceve solo la cifra (o niente)
+# Fix report calcolatore — pacchetto completo
 
-Diagnosi eseguita il 2026-08-04 sui contatti reali del sub-account
-**Propromanager** (`E1HO8PRyWf2yGaTFLuLC`) via API.
+Sub-account **Propromanager** · `E1HO8PRyWf2yGaTFLuLC` · diagnosi 2026-08-05 via API.
 
 ---
 
-## Cosa NON è rotto (verificato)
+## 1. Cosa ho verificato via API (nessuna azione richiesta)
 
 | Verifica | Esito |
 |---|---|
 | Il calcolatore passa gli 8 valori al form | ✅ querystring completa da `window.__leadData` |
-| I 9 custom field esistono con le key canoniche | ✅ `prezzo_attuale, prezzo_consigliato, aumento_pct, regime_calc, obiettivo_calc, netto_oggi, netto_nuovo, perdita_anno, canale_report` |
-| I valori arrivano davvero sul contatto | ✅ es. Cristina Onorati: 185 → 237 (+28%), netto 130→131, perdita 3668 — tutti e 9 popolati |
+| I 9 custom field esistono con le key canoniche | ✅ |
+| I valori arrivano davvero sul contatto | ✅ **5 lead su 5** con tutti e 9 i campi pieni, nessuno mancante |
+| `canale_report` sempre valorizzato | ✅ 3 `email` + 2 `whatsapp`, mai vuoto |
 | I merge tag si risolvono nei workflow | ✅ le email inviate mostrano i numeri reali |
 | Link prenotazione call | ✅ HTTP 200 |
+| Merge tag orfani nel nuovo HTML | ✅ zero: tutti e 9 mappati su campi esistenti |
 
-**Il dato c'è tutto. Il problema è solo in cosa spedisce il Workflow 2.**
-
----
-
-## Bug 1 — ramo EMAIL: manda un testo scarno, non il report
-
-Email realmente recapitata (Mani Camerini, 04/08 08:46), oggetto
-*"Il tuo report SalvaGuadagno Host è pronto 🏠"*:
-
-> Ciao Mani, ecco il tuo report SalvaGuadagno Host.
-> Con la nuova commissione Airbnb del 15,5%, per non perdere guadagni il tuo nuovo prezzo consigliato è: 314 €/notte (+26%).
-> Oggi ti restano ~188 €/notte; col nuovo prezzo continui a tenerti ~189 €. Se non lo alzi, rischi di perdere ~4956 €/anno. […]
-
-È il **testo breve inline** scritto dal CLI, non il report. Mancano
-`prezzo_attuale`, `regime_calc`, `obiettivo_calc`, la spiegazione del perché,
-la tabella prima/dopo e tutto il brand.
-
-**Fix:** sostituire il corpo dell'azione *Send Email* con l'HTML di
-`funnel/report-email.html` (Code / Import HTML).
-
-## Bug 2 — ramo WHATSAPP: non manda NIENTE
-
-Chi sceglie WhatsApp non riceve alcun report. Prova sui due contatti con
-`canale_report = whatsapp`:
-
-- **Cristina Onorati** — nessun report; ha scritto in chat:
-  *"Dove trovo il report?"* e *"Non c'è il report però ma solamente il calcolatore"*
-- **Liliana Galli** — nessun report
-
-**Fix:** aggiungere l'azione *Send WhatsApp* nel ramo `whatsapp` col testo di
-`funnel/report-whatsapp.txt`.
-
-## Bug 3 — il template email è ancora il demo di GHL
-
-Il template **"Il tuo report SalvaGuadagno Host"** (`6a5c91c8eb3d45e6ff0fb5fb`)
-contiene ancora il contenuto dimostrativo di serie, in inglese
-(*"Welcome to email — Create ready-to-send emails in minutes…"*), zero merge tag.
-Se un workflow ci puntasse, partirebbe quello. O lo si riempie con
-`funnel/report-email.html`, o lo si elimina per non lasciare la mina.
+**Il dato è integro lungo tutta la catena. È rotto solo cosa spedisce il Workflow 2.**
 
 ---
 
-## PROMPT per il CLI GHL (copia da qui)
+## 2. I tre bug
+
+**Bug 1 — ramo Email: manda un testo scarno.** Email realmente recapitata
+(Mani Camerini, 04/08 08:46): *"…il tuo nuovo prezzo consigliato è: 314 €/notte
+(+26%). Oggi ti restano ~188 €/notte…"*. È il testo breve inline scritto dal CLI.
+Mancano `prezzo_attuale`, `regime_calc`, `obiettivo_calc`, la spiegazione e tutto il brand.
+
+**Bug 2 — ramo WhatsApp: non manda nulla.** L'azione di invio non c'è.
+Cristina Onorati l'ha scritto in chat: *"Dove trovo il report?"*,
+*"Non c'è il report però ma solamente il calcolatore"*. Idem Liliana Galli.
+
+**Bug 3 — il template email è il demo di GHL.** "Il tuo report SalvaGuadagno Host"
+(`6a5c91c8eb3d45e6ff0fb5fb`) contiene ancora *"Welcome to email — Create
+ready-to-send emails in minutes…"* in inglese, zero merge tag.
+
+---
+
+## 3. Perché non posso sistemarli io via API
+
+L'API pubblica GHL (`services.leadconnectorhq.com`, v2021-07-28) **non espone**
+workflow, form e contenuto dei template email — verificato: `POST /workflows/`
+risponde `404 Cannot POST`. Non esiste nemmeno un endpoint di update del corpo
+di un template, né di delete contatto tra i tool disponibili.
+
+Quindi: la diagnosi e la verifica finale le faccio io via API; le tre modifiche
+vanno fatte da Ask AI / a mano. Sotto trovi i prompt pronti.
+
+---
+
+# PROMPT 1 — Riempire il template e agganciarlo al workflow
+### (sistema Bug 1 e Bug 3 in un colpo solo)
+
+> ⚠️ Prima di lanciarlo: apri `funnel/report-email.html` e copia **tutto** il
+> contenuto negli appunti. Ask AI non può leggere un file dal tuo computer:
+> l'incollata dell'HTML la fai tu quando il prompt te lo chiede.
 
 ```
-Sei connesso al sub-account GoHighLevel "Propromanager".
-locationId = E1HO8PRyWf2yGaTFLuLC
+Vai su Marketing → Emails → Templates.
 
-Modifica il workflow "WF - Report Calcolatore"
-(trigger: Form Submitted, form Ompsev6jK1yZDrvBrKz8).
+1. Apri il template chiamato "Il tuo report SalvaGuadagno Host".
+   Contiene ancora il contenuto demo di GoHighLevel in inglese
+   ("Welcome to email — Create ready-to-send emails in minutes...").
+   Devo sostituirlo integralmente.
 
-Il ramo If/Else è sul custom field contact.canale_report
-(id cFOteyweDLD6j1u66xPW, opzioni: email | whatsapp).
+2. Cerca l'opzione per importare/incollare HTML grezzo
+   (di solito: menu ⋮ → "Import HTML", oppure l'editor "Code"/"</>").
+   Cancella tutto il contenuto esistente e fermati: ti incollo io l'HTML.
+   Dimmi quando sei pronto a ricevere l'incollata.
 
-=== RAMO A — canale_report EQUALS "email" ===
-Azione Send Email, sender predefinito della location, From Name "Affitti Brevi Roma".
-  subject = Il tuo report: {{contact.prezzo_consigliato}} €/notte è il tuo nuovo prezzo 🏠
-  body    = HTML COMPLETO del file funnel/report-email.html (usa Import HTML /
-            editor "Code", NON il testo breve attuale: quello va sostituito).
-Il file usa questi merge tag, tutti già popolati sul contatto:
-  contact.first_name, contact.prezzo_attuale, contact.prezzo_consigliato,
-  contact.aumento_pct, contact.regime_calc, contact.obiettivo_calc,
-  contact.netto_oggi, contact.netto_nuovo, contact.perdita_anno
+3. Dopo che ho incollato l'HTML, salva il template.
 
-=== RAMO B — canale_report EQUALS "whatsapp" ===
-QUESTO RAMO OGGI NON INVIA NULLA: aggiungi l'azione mancante.
-Azione Send WhatsApp (canale Twilio), corpo = testo di funnel/report-whatsapp.txt.
+4. Se il template esistente NON permette di reimportare HTML, allora:
+   crea un NUOVO template di tipo "Import HTML" chiamato
+   "Report Calcolatore Airbnb — PPM", incollaci dentro lo stesso HTML,
+   salvalo, e poi RINOMINA il vecchio in
+   "[NON USARE] demo GHL" così non lo usa più nessuno per sbaglio.
 
-=== INVARIATO ===
-Non toccare: trigger, tag "report-richiesto", Create/Update Opportunity
-(pipeline V82v8bJ18wJqkFXSXk8K → stage 2f0066a4-06b4-4f05-955e-c79aea406b03
-"🟢 Report inviato"), notifica interna a WUX8ztdcfKfCXePW9C5I.
+5. Poi vai su Automation → Workflows → apri "WF - Report Calcolatore" → Edit.
+   Nel ramo dell'If/Else in cui la condizione è canale_report = "email",
+   apri l'azione "Send Email".
+   - Sostituisci il corpo attuale (è un testo breve scritto a mano)
+     selezionando invece il template salvato al punto 3 o 4.
+   - Imposta l'oggetto esattamente così:
+     Il tuo report: {{contact.prezzo_consigliato}} €/notte è il tuo nuovo prezzo 🏠
+   - From Name: Affitti Brevi Roma. Mittente: quello predefinito della location.
 
-Al termine ripubblica il workflow (PUBLISHED) e stampa cosa hai cambiato.
+6. Salva e fai Publish del workflow.
+
+7. Dimmi: nome esatto del template collegato, oggetto impostato,
+   e conferma che il workflow risulta Published.
 ```
 
 ---
 
-## Se preferisci farlo a mano nella UI
+# PROMPT 2 — Aggiungere l'invio WhatsApp mancante
+### (sistema Bug 2)
 
-1. **Automation → Workflows → «WF - Report Calcolatore» → Edit**
-2. Ramo **email** → azione *Send Email* → apri l'editor → `</>` **Code / Import HTML**
-   → cancella tutto → incolla `funnel/report-email.html` → Save
-   → subject: `Il tuo report: {{contact.prezzo_consigliato}} €/notte è il tuo nuovo prezzo 🏠`
-3. Ramo **whatsapp** → **+ Add Action → Send WhatsApp** → incolla il testo di
-   `funnel/report-whatsapp.txt` → Save
-4. **Publish** (toggle in alto a destra)
-5. Test: rifai il giro dal calcolatore una volta con `email` e una con `whatsapp`
+```
+Vai su Automation → Workflows → apri "WF - Report Calcolatore" → Edit.
 
-## Dopo il fix — recuperare chi non ha ricevuto il report
+Guarda l'azione If/Else che verifica il custom field "Canale Report"
+(contact.canale_report, opzioni: email | whatsapp).
 
-Questi contatti hanno `report-richiesto` ma non hanno mai visto il report
-(hanno scelto WhatsApp): **Cristina Onorati**, **Liliana Galli**.
-Si recuperano lanciando manualmente il workflow su di loro, o mandando
-il messaggio a mano dalla conversazione.
+PROBLEMA: il ramo "whatsapp" non contiene nessuna azione di invio, quindi
+chi sceglie WhatsApp non riceve mai il report. Va aggiunta.
 
-## Nota minore
+1. Nel ramo dove la condizione è canale_report = "whatsapp",
+   aggiungi l'azione "Send WhatsApp" (canale Twilio già connesso).
 
-Il piè di pagina di disiscrizione che GHL aggiunge in automatico è in inglese
+2. Come corpo del messaggio incolla ESATTAMENTE questo testo:
+
+Ciao {{contact.first_name | Host}}! 👋 Ecco il tuo report SalvaGuadagno Host.
+
+Con la nuova commissione Airbnb del 15,5% (dal 13/10/2026) il prezzo giusto per te e':
+
+💶 *{{contact.prezzo_consigliato}} EUR/notte* (+{{contact.aumento_pct}}%)
+Oggi il tuo prezzo e' {{contact.prezzo_attuale}} EUR/notte.
+
+Cosi' in tasca ti resta come oggi:
+• Oggi: {{contact.netto_oggi}} EUR/notte
+• Col nuovo prezzo: {{contact.netto_nuovo}} EUR/notte
+
+⚠️ Se non fai nulla rischi di perdere circa *{{contact.perdita_anno}} EUR all'anno*.
+
+Calcolo fatto sul tuo caso: {{contact.regime_calc}}, obiettivo "{{contact.obiettivo_calc}}".
+
+Perche' non basta alzare del 15,5%? Perche' in Italia le tasse si pagano sul prezzo intero e la commissione non si scarica: piu' prezzo = piu' tasse. Il conto giusto tiene dentro tutte e due le cose.
+
+📞 Vuoi rivedere i numeri insieme? Prenota una call gratuita di 15 min:
+👉 https://api.leadconnectorhq.com/widget/bookings/call-strategica-affitti
+
+Strumento indicativo, non e' consulenza fiscale. Rispondi STOP per non ricevere piu' messaggi.
+
+3. Verifica che i merge tag siano riconosciuti dall'editor (devono apparire
+   come token/pillole, non come testo grezzo). Se "canale_report" non compare
+   tra i campi disponibili, dimmelo invece di inventare un campo simile.
+
+4. Controlla anche che il ramo ELSE (nessuna condizione soddisfatta) non
+   lasci il contatto senza nulla: se esiste un ramo di fallback, mettici
+   la stessa azione Send Email del ramo "email".
+
+5. Salva e fai Publish.
+
+6. Dimmi quali azioni contiene ora ogni ramo, in ordine.
+```
+
+---
+
+# PROMPT 3 — Test di verifica end-to-end
+
+> Nel prompt sostituisci **`+39XXXXXXXXXX`** col tuo numero WhatsApp reale
+> (serve per verificare il ramo WhatsApp).
+> I valori del test sono scelti apposta e li ho verificati eseguendo il
+> calcolatore: **100 €/notte, cedolare 21% su una casa, obiettivo "guadagnare
+> come oggi" → 120 €/notte (+20%)**. Set atteso completo:
+>
+> | Campo | Valore atteso |
+> |---|---|
+> | Prezzo Attuale | 100 |
+> | Prezzo Consigliato | **120** |
+> | Aumento Pct | **20** |
+> | Regime Calc | una casa (cedolare 21%) |
+> | Obiettivo Calc | Guadagnare come oggi |
+> | Netto Oggi | 76 |
+> | Netto Nuovo | 76 |
+> | Perdita Anno | 1625 |
+> | Canale Report | email / whatsapp |
+>
+> Se esce un numero diverso, il problema è nel calcolatore, non nel workflow.
+
+```
+Devo fare un test end-to-end del funnel calcolatore. Fai esattamente questo,
+in ordine, e riportami ogni risultato.
+
+TEST A — canale Email
+1. Apri in una scheda nuova:
+   https://tools.affittibreviaroma.com/calcola-il-tuo-prezzo-dopo-le-nuove-commissioni-airbnb
+2. Compila il form di registrazione con:
+   Nome: Test        Cognome: ReportQA
+   Email: blionbg+qa1@gmail.com
+   Telefono: +39XXXXXXXXXX
+   Spunta il consenso privacy. Invia.
+3. Verifica che ti porti al calcolatore.
+4. Nel calcolatore imposta: prezzo attuale 100 €/notte,
+   regime "cedolare secca 21% (una casa)", obiettivo "guadagnare come oggi".
+5. CONTROLLO: il prezzo consigliato deve essere 120 €/notte (+20%).
+   Dimmi il numero che vedi.
+6. Clicca "Ricevi il report personalizzato".
+   Nel form scegli canale = Email, conferma il consenso, invia.
+7. Verifica che porti alla pagina Grazie e che NON ci sia più
+   il cerchio verde con l'emoji in cima.
+
+TEST B — canale WhatsApp
+8. Rifai i punti 1-6 ma con Email: blionbg+qa2@gmail.com
+   e al punto 6 scegli canale = WhatsApp.
+
+CONTROLLI IN GHL
+9. Contacts: cerca "ReportQA". Devono esserci 2 contatti.
+   Per ciascuno apri la scheda e verifica questi 9 campi. Valori attesi:
+     Prezzo Attuale = 100
+     Prezzo Consigliato = 120
+     Aumento Pct = 20
+     Regime Calc = una casa (cedolare 21%)
+     Obiettivo Calc = Guadagnare come oggi
+     Netto Oggi = 76
+     Netto Nuovo = 76
+     Perdita Anno = 1625
+     Canale Report = email (primo contatto) / whatsapp (secondo)
+   Segnalami QUALSIASI campo vuoto o diverso dall'atteso.
+10. Opportunities → pipeline "Funnel Calcolatore": entrambi devono essere
+    nello stage "🟢 Report inviato".
+11. Apri la conversazione di ciascun contatto e dimmi cosa è stato inviato:
+    - il primo deve avere una EMAIL con il report completo
+      (deve contenere sia 100 che 120, la tabella "Quanto ti resta in tasca",
+      la sezione "Perché proprio questo prezzo?" e il logo Pro Pro Manager)
+    - il secondo deve avere un messaggio WHATSAPP col report
+12. Controlla la casella blionbg+qa1@gmail.com (anche in Spam/Promozioni)
+    e dimmi se l'email è arrivata e se è quella grafica completa
+    o un testo scarno.
+
+NON cancellare niente: la pulizia la facciamo dopo, in un passaggio separato.
+Riportami un elenco puntato con l'esito di ogni punto.
+```
+
+---
+
+# PROMPT 4 — Pulizia dei contatti di test
+### ⚠️ da lanciare SOLO dopo che il Prompt 3 è andato tutto a buon fine
+
+```
+Pulizia post-test nel sub-account Propromanager.
+
+1. Vai su Opportunities → pipeline "Funnel Calcolatore".
+   Elimina le opportunity intestate a "Test ReportQA" (ce ne sono 2).
+
+2. Vai su Contacts. Cerca "ReportQA" ed elimina entrambi i contatti
+   (blionbg+qa1@gmail.com e blionbg+qa2@gmail.com).
+
+3. Cerca anche il vecchio contatto di collaudo "Test Calcolatore QA"
+   (email qa-test+calcolatore@example.com, tag "qa-test") ed eliminalo:
+   è un residuo di una prova precedente.
+
+4. Verifica che cercando "ReportQA" e "qa-test" non risulti più nulla,
+   e confermami che i contatti reali (Cristina Onorati, Mani Camerini,
+   Alberto Pieri, Liliana Galli, Filippo Fini) sono ancora tutti presenti.
+
+Non toccare nient'altro.
+```
+
+---
+
+## 4. Da decidere: i due lead che non hanno mai ricevuto il report
+
+**Cristina Onorati** e **Liliana Galli** hanno il tag `report-richiesto`, tutti
+i dati calcolati sul contatto, e non hanno mai visto il report (avevano scelto
+WhatsApp). Cristina ha già una conversazione umana aperta con te sull'argomento.
+
+Posso mandare io il report via API su WhatsApp a entrambe, ma sono messaggi a
+persone reali dentro conversazioni già avviate: **dimmi tu se procedere**, oppure
+scrivilo a mano dalla conversazione. Non lo faccio di iniziativa.
+
+## 5. Nota minore
+
+Il footer di disiscrizione che GHL aggiunge in automatico è in inglese
 (*"If you no longer wish to receive these emails you may unsubscribe"*).
 Si cambia in **Settings → Business Profile**, sezione compliance/footer email.
+
+---
+
+## 6. Cosa verifico io dopo il tuo test
+
+Appena il Prompt 3 è girato, dimmelo: rileggo via API i due contatti ReportQA,
+controllo che i 9 campi siano quelli attesi (100 → 120, +20%) e che nelle
+conversazioni risultino davvero un'email e un messaggio WhatsApp in uscita.
+Poi lanci il Prompt 4.
