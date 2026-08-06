@@ -168,7 +168,7 @@ chi sceglie WhatsApp non riceve mai il report. Va aggiunta.
 
 2. Come corpo del messaggio incolla ESATTAMENTE questo testo:
 
-Ciao {{contact.first_name | Host}}! 👋 Ecco il tuo report SalvaGuadagno Host.
+Ciao {{contact.first_name}}! 👋 Ecco il tuo report SalvaGuadagno Host.
 
 Con la nuova commissione Airbnb del 15,5% (dal 13/10/2026) il prezzo giusto per te e':
 

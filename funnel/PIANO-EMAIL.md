@@ -30,8 +30,8 @@ vuoti. Le stiamo scrivendo una cosa falsa, due volte, undici secondi dopo.
 
 | # | Messaggio | Workflow | Quando | A chi | Giudizio |
 |---|---|---|---|---|---|
-| **M1** | Email *"Il tuo calcolatore è pronto 👉 scopri il prezzo giusto"* | WF - Registrazione Calcolatore | subito (+3s) | chi si registra | **da riscrivere** — va bene l'idea, manca il perché |
-| **M2** | WhatsApp *"Ciao! Ho visto che hai messo mano al calcolatore…"* | altro workflow (non è tra i 3 che avevo specificato) | +5s | chi si registra | **da eliminare o riscrivere**: afferma il falso |
+| **M1** | Email *"Il tuo calcolatore è pronto 👉 scopri il prezzo giusto"* | WF - Registrazione Calcolatore | subito (+3s) | chi si registra | **da eliminare** (tua decisione): il form porta già sul calcolatore, l'email era una ripetizione |
+| **M2** | WhatsApp *"Ciao! Ho visto che hai messo mano al calcolatore…"* | altro workflow (non è tra i 3 che avevo specificato) | +5s | chi si registra | ✅ **già sistemato da te** |
 | **M3** | Email *"Il tuo calcolo sulle nuove commissioni Airbnb 📊"* | stesso workflow di M2, come ripiego quando WhatsApp fallisce (tag `no-whatsapp`) | +11s | chi non ha WhatsApp | **da eliminare**: afferma il falso, zero contenuto, chiede solo una consulenza |
 | **M4** | Email *"Il tuo report SalvaGuadagno Host è pronto 🏠"* | WF - Report Calcolatore | subito dopo la richiesta report | chi chiede il report via email | **già sostituita** dall'HTML completo (`report-email.html`), in attesa che tu la carichi |
 | **M5** | WhatsApp report | WF - Report Calcolatore | — | chi chiede il report via WhatsApp | **non parte proprio** (azione mancante) |
@@ -68,8 +68,7 @@ Due percorsi, divisi da una sola domanda: **ha usato il calcolatore o no?**
 
 ```
 SI REGISTRA
-   │
-   ├─ E1  subito ............ Benvenuto + link al calcolatore
+   │   (nessuna email subito: il form lo porta già sul calcolatore)
    │
    ├─ E2  dopo 3 ore ........ Promemoria          ─┐
    ├─ E3  dopo 1 giorno ..... "Perché +15,5% non   │ SOLO se NON ha
@@ -83,6 +82,13 @@ SI REGISTRA
           └─ E7  dopo 5 giorni ..... L'obiezione vera + call
 ```
 
+> **E1 (benvenuto) eliminata su tua indicazione.** Di conseguenza l'azione
+> Send Email dentro *WF - Registrazione Calcolatore* va **rimossa**, non
+> riscritta: chi si registra viene già portato sul calcolatore dal form, quindi
+> l'email di benvenuto era una ripetizione. Il primo contatto diventa E2 a +3 ore,
+> e il suo testo funziona benissimo come prima email della sequenza.
+> **Numerazione lasciata invariata** (E2…E7) per non perdere i riferimenti.
+
 **Regola di uscita (importante):** appena un contatto prende il tag
 `report-richiesto`, E2/E3/E4 non devono più partire. Senza questa condizione
 gli scriviamo "non hai ancora fatto il calcolo" a chi l'ha già fatto — lo stesso
@@ -92,60 +98,38 @@ errore di adesso, al contrario.
 maiuscole urlate, un solo invito all'azione per email, numeri veri.
 I numeri che uso nelle email sono verificati contro il calcolatore stesso.
 
+**Nome del contatto:** uso `{{contact.first_name}}` **senza fallback**. Il vecchio
+`| Host` è stato tolto da tutte le email, dal report e dal WhatsApp: non deve mai
+comparire la parola "Host" al posto del nome. Il form ha il campo Nome
+obbligatorio, quindi risulta sempre valorizzato.
+
 ---
 
 ## PARTE 3 — Le email, testo completo
 
 ---
 
-### E1 — Benvenuto
-**Workflow:** WF - Registrazione Calcolatore · **Quando:** subito
-**A chi:** chiunque si registra · **Sostituisce:** M1
-
-**Oggetto:** `{{contact.first_name | Ciao}}, il tuo calcolatore è pronto`
-**Preheader:** `Due minuti e sai a quanto alzare il prezzo dal 13 ottobre.`
-
-```
-Ciao {{contact.first_name | Host}},
-
-dal 13 ottobre 2026 Airbnb ti trattiene il 15,5% al posto del 3%.
-E in Italia le tasse le paghi lo stesso sul prezzo pieno, commissione inclusa.
-
-Il punto è questo: alzare il prezzo del 15,5% non ti riporta al punto di prima.
-Serve di più, e quanto di più dipende dal tuo regime fiscale.
-
-Il calcolatore ti dà il numero esatto per il tuo caso. Ti serve un dato solo:
-il prezzo a notte che fai oggi.
-
-→ [Apri il calcolatore]
-
-Se hai domande rispondi pure a questa email, la leggo io.
-
-Gianluca
-ProProManager — Affitti Brevi Roma
-```
-
-> **Perché così:** la vecchia diceva "il tuo calcolatore è pronto" senza dire
-> perché dovrebbe importargliene. Qui do il motivo in tre righe e chiedo una
-> cosa sola. "La leggo io" apre la porta alle risposte, che sono i lead migliori.
+### ~~E1 — Benvenuto~~ — ELIMINATA
+Su tua indicazione non mandiamo nessuna email al momento della registrazione.
+**Azione:** rimuovere del tutto l'azione *Send Email* da *WF - Registrazione
+Calcolatore*. Il workflow continua a fare tag + opportunity, ma non scrive.
 
 ---
 
-### E2 — Promemoria
+### E2 — Primo contatto
 **Workflow:** WF - Registrazione Calcolatore · **Quando:** 3 ore dopo la registrazione
-**A chi:** chi NON ha il tag `report-richiesto` · **Sostituisce:** M3 (e M2 via email)
+**A chi:** chi NON ha il tag `report-richiesto` · **Sostituisce:** M1 e M3
 
 **Oggetto:** `Ti serve solo il prezzo a notte`
 **Preheader:** `Il resto lo calcola lui. Due minuti.`
 
 ```
-Ciao {{contact.first_name | Host}},
+Ciao {{contact.first_name}},
 
-ti ho mandato il link al calcolatore stamattina ma non l'hai ancora aperto.
-Nessun problema: ci vogliono davvero due minuti.
+hai fatto la registrazione per usare il calcolatore, ma non l'hai ancora usato.
 
-Ti serve un dato solo, il prezzo a notte che fai oggi. Il resto lo calcola lui,
-sul tuo regime fiscale.
+Ci vogliono davvero due minuti e ti serve un dato solo: il prezzo a notte
+che fai oggi. Il resto lo calcola lui, sul tuo regime fiscale.
 
 Quello che ottieni:
 · il nuovo prezzo da mettere per non perderci
@@ -154,13 +138,18 @@ Quello che ottieni:
 
 → [Fai il calcolo]
 
+Se ti serve una mano per capire, scrivilo qui rispondendo a questa email:
+ti rispondo io.
+
 Gianluca
 ProProManager — Affitti Brevi Roma
 ```
 
-> **Perché così:** dice il vero ("non l'hai ancora aperto") invece del falso
-> ("ho visto che l'hai usato"). Abbassa la barriera: un dato solo, due minuti.
-> E arriva dopo tre ore, non dopo undici secondi.
+> **Perché così:** dice il vero — si è registrato ma non ha usato il calcolatore —
+> invece del falso "ho visto che l'hai usato". Niente riferimenti all'orario
+> ("stamattina"), che sarebbero sbagliati per chi si registra la sera.
+> Con E1 eliminata questa è la prima email che il lead riceve da noi, e regge
+> bene il ruolo: spiega cosa ottiene e apre la porta a una risposta.
 
 ---
 
@@ -172,7 +161,7 @@ ProProManager — Affitti Brevi Roma
 **Preheader:** `Il conto che quasi nessuno si è fatto. Con numeri veri.`
 
 ```
-Ciao {{contact.first_name | Host}},
+Ciao {{contact.first_name}},
 
 quasi tutti gli host stanno facendo questo ragionamento:
 "Airbnb mi prende il 15,5%, alzo del 15,5% e siamo pari".
@@ -187,7 +176,8 @@ Se alzi a 115,50 €, in tasca ti restano 73 €.
 Hai alzato il prezzo e guadagni meno di prima.
 
 Il motivo: in Italia le tasse si calcolano sul prezzo pieno esposto,
-commissione inclusa — e la commissione non si scarica.
+commissione inclusa — e la commissione non si scarica, se non hai
+un'azienda e una gestione fiscale.
 Prezzo più alto significa anche più tasse.
 
 Per restare davvero a 76 € netti servono 120 € a notte. Un +20%, non un +15,5%.
@@ -219,7 +209,7 @@ passato ad aprile.
 **Preheader:** `Ultimo promemoria, poi non ti scrivo più su questo.`
 
 ```
-Ciao {{contact.first_name | Host}},
+Ciao {{contact.first_name}},
 
 questa è l'ultima volta che ti scrivo del calcolatore, promesso.
 
@@ -262,7 +252,7 @@ il tuo regime e obiettivo, il perché, la perdita annua, la call.
 **Preheader:** `Se ti sei bloccato su qualcosa, dimmelo e ti aiuto.`
 
 ```
-Ciao {{contact.first_name | Host}},
+Ciao {{contact.first_name}},
 
 due giorni fa ti ho mandato il tuo numero: {{contact.prezzo_consigliato}} €/notte.
 
@@ -297,7 +287,7 @@ ProProManager — Affitti Brevi Roma
 **Preheader:** `È la domanda che mi fanno tutti. Rispondo qui.`
 
 ```
-Ciao {{contact.first_name | Host}},
+Ciao {{contact.first_name}},
 
 è la cosa che mi sento dire più spesso, e ha senso: alzare il prezzo fa paura.
 
@@ -333,8 +323,8 @@ ProProManager — Affitti Brevi Roma
 
 | Priorità | Cosa | Perché |
 |---|---|---|
-| 🔴 1 | **Autenticare il dominio di invio.** Da `reply@send.lcmsgsndr.org` a `gianluca@affittibreviaroma.com`. In GHL: Settings → Email Services → Dedicated Domain (DKIM+SPF sul DNS) | Senza questo le email finiscono in spam o non vengono aperte. Vale più di tutti i testi messi insieme. Cristina infatti ha trovato la nostra email nello spam. |
-| 🔴 2 | **Spegnere M3** (email di ripiego "Il tuo calcolo…") e correggere o spegnere **M2** (WhatsApp) | Dicono il falso a chi si è appena registrato |
+| 🔴 1 | **Autenticare il dominio di invio.** Da `reply@send.lcmsgsndr.org` a **`info@propromanager.com`**. In GHL: Settings → Email Services → Dedicated Domain, autenticando **`propromanager.com`** (record DKIM + SPF sul DNS di quel dominio) | Senza questo le email finiscono in spam o non vengono aperte. Vale più di tutti i testi messi insieme. Cristina infatti ha trovato la nostra email nello spam. |
+| 🔴 2 | **Spegnere M3** (email di ripiego "Il tuo calcolo…") e **rimuovere M1** (email di benvenuto) | M3 afferma il falso; M1 è la E1 che hai deciso di eliminare |
 | 🟠 3 | **Condizione di uscita su `report-richiesto`** per E2/E3/E4 | Altrimenti scriviamo "non hai fatto il calcolo" a chi l'ha fatto |
 | 🟠 4 | **Footer disiscrizione in italiano** — Settings → Business Profile | Una riga in inglese in fondo a un'email italiana |
 | 🟡 5 | **Timezone `Europe/Rome`** (ora è `Europe/Amsterdam`) | Le email "dopo 3 ore" e gli slot del calendario slittano di un'ora |
@@ -342,15 +332,23 @@ ProProManager — Affitti Brevi Roma
 
 ---
 
-## PARTE 5 — Cosa mi serve da te
+## PARTE 5 — Stato delle decisioni
 
-1. **Ok sulle email**, anche una per una: puoi dirmi "E1 sì, E3 riscrivi il P.S., E4 no".
-2. **Con quale indirizzo firmiamo?** Propongo `gianluca@affittibreviaroma.com`.
-   Se preferisci un altro, dimmelo prima che imposti il dominio.
-3. **M2 (WhatsApp dopo 5 secondi): lo spegniamo o lo riscrivo?** Il mio consiglio
-   è riscriverlo e spostarlo a +30 minuti, perché su WhatsApp le risposte arrivano
-   davvero — ma non può dire che ha usato il calcolatore se non l'ha usato.
-4. **E4 e E7 sono le due più aggressive.** Se il tono non ti convince le ammorbidisco.
+| Punto | Stato |
+|---|---|
+| **E1 — benvenuto** | ❌ **eliminata** (tua decisione). L'azione Send Email esce da WF - Registrazione Calcolatore |
+| **E2 — primo contatto** | ✏️ **riscritta** come da tue indicazioni: niente "stamattina", niente "Host", e aggiunto l'invito a scrivere se serve una mano |
+| **E3 — perché +15,5% non basta** | ✏️ **corretta**: "la commissione non si scarica, se non hai un'azienda e una gestione fiscale" |
+| **Fallback `\| Host`** | ❌ **rimosso ovunque** — email, report HTML e WhatsApp (11 occorrenze) |
+| **Indirizzo mittente** | ✅ **`info@propromanager.com`** — va autenticato il dominio `propromanager.com` |
+| **M2 — WhatsApp a +5s** | ✅ **già sistemato da te**, non ci metto mano |
+| **E4, E6, E7** | ⏳ in attesa del tuo ok (E4 ed E7 sono le più dirette: se il tono non ti convince le ammorbidisco) |
 
-Appena approvi ti preparo i prompt per Ask AI con i testi definitivi, workflow per
-workflow, più il test di verifica.
+> ⚠️ **Nota sul dominio.** `info@propromanager.com` è su un dominio diverso da
+> quello dei link nelle email (`tools.affittibreviaroma.com`). Non è un problema
+> di consegna — il marchio è ProProManager — ma va autenticato **propromanager.com**,
+> non affittibreviaroma.com. Se hai il DNS di propromanager.com a portata di mano
+> procediamo di lì.
+
+Appena mi dai l'ok su E4/E6/E7 ti preparo i prompt per Ask AI con i testi
+definitivi, workflow per workflow, più il test di verifica.

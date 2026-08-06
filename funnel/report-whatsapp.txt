@@ -23,14 +23,15 @@ MERGE TAG GHL (custom field già esistenti, chiavi canoniche):
 NOTE
 - I numeri arrivano interi, senza simbolo: l'unita' (EUR, %) e' scritta nel
   testo, cosi' se un campo fosse vuoto la frase resta leggibile.
-- first_name: {{contact.first_name | Host}} usa il fallback nativo GHL.
+- first_name: nessun fallback. Il form ha Nome obbligatorio, quindi e' sempre
+  pieno. Non usare "| Host": non deve mai comparire "Host" al posto del nome.
 - Su WhatsApp *testo* = grassetto. Niente HTML.
 - Il link della call punta al calendario reale (verificato HTTP 200).
 ======================================================================
 
 --- TESTO DA INCOLLARE IN GHL (dall'inizio del blocco qui sotto) -------------
 
-Ciao {{contact.first_name | Host}}! 👋 Ecco il tuo report SalvaGuadagno Host.
+Ciao {{contact.first_name}}! 👋 Ecco il tuo report SalvaGuadagno Host.
 
 Con la nuova commissione Airbnb del 15,5% (dal 13/10/2026) il prezzo giusto per te e':
 

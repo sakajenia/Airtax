@@ -120,7 +120,7 @@ Scopo: chi prenota la call avanza in pipeline a "Call fissata".
 
 **Marketing → Emails → Templates → + New → Import HTML/Code** → nome esatto: `Report Calcolatore Airbnb`.
 Incolla il contenuto di `funnel/report-email.html`. Usa i merge tag (già nel file):
-`{{contact.first_name | Host}}`, `{{contact.prezzo_attuale}}`, `{{contact.prezzo_consigliato}}`,
+`{{contact.first_name}}`, `{{contact.prezzo_attuale}}`, `{{contact.prezzo_consigliato}}`,
 `{{contact.aumento_pct}}`, `{{contact.regime_calc}}`, `{{contact.obiettivo_calc}}`,
 `{{contact.netto_oggi}}`, `{{contact.netto_nuovo}}`, `{{contact.perdita_anno}}`.
 

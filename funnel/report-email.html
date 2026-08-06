@@ -28,7 +28,9 @@
   NOTE
   - I numeri arrivano SENZA simbolo: "€" e "%" sono scritti FUORI dal merge tag,
     così se un campo fosse vuoto la frase resta comunque leggibile.
-  - {{contact.first_name | Host}} usa il fallback nativo GHL (pipe + default).
+  - Niente fallback sul nome: il form di registrazione ha Nome obbligatorio,
+    quindi first_name e' sempre valorizzato. (Il fallback "| Host" e' stato
+    rimosso per scelta: non deve mai comparire la parola "Host" al posto del nome.)
   - Il logo è .webp: Gmail/Apple Mail lo mostrano, Outlook desktop no → l'alt text
     bianco su fondo rosso resta leggibile anche senza immagine (degrado voluto).
   - Il link di disiscrizione in fondo lo aggiunge GHL in automatico: la lingua si
@@ -69,7 +71,7 @@
           <tr>
             <td style="padding:26px 28px 0;">
               <p style="margin:0 0 12px;font-size:16px;line-height:1.55;color:#1c1b1b;">
-                Ciao {{contact.first_name | Host}},
+                Ciao {{contact.first_name}},
               </p>
               <p style="margin:0;font-size:16px;line-height:1.55;color:#574140;">
                 hai usato il calcolatore per capire cosa cambia con la nuova commissione Airbnb.

@@ -95,7 +95,7 @@ Al termine: metti tutti e 3 i workflow in stato PUBLISHED e stampa gli ID creati
 ## TESTO_WHATSAPP (Ramo B del Workflow 2)
 
 ```
-Ciao {{contact.first_name | Host}}! 🏠 Ecco il tuo report SalvaGuadagno Host.
+Ciao {{contact.first_name}}! 🏠 Ecco il tuo report SalvaGuadagno Host.
 
 Con la nuova commissione Airbnb del 15,5%, per NON perdere guadagni il tuo nuovo prezzo consigliato è:
 👉 {{contact.prezzo_consigliato}} €/notte (+{{contact.aumento_pct}}%)

@@ -300,7 +300,7 @@ sezione full-width senza padding → elemento **Custom Code/HTML** → incolla T
 
 | Merge tag | Significato |
 |---|---|
-| `{{contact.first_name}}` | nome (usa `{{contact.first_name \| Host}}` per default "Host") |
+| `{{contact.first_name}}` | nome — **senza fallback**: non usare `| Host`, non deve mai comparire "Host" al posto del nome |
 | `{{contact.prezzo_attuale}}` | prezzo/notte oggi |
 | `{{contact.prezzo_consigliato}}` | nuovo prezzo/notte consigliato |
 | `{{contact.aumento_pct}}` | aumento % |
@@ -312,7 +312,7 @@ sezione full-width senza padding → elemento **Custom Code/HTML** → incolla T
 
 ### Merge tag per il messaggio WhatsApp
 Gli stessi (sono le stesse chiavi contatto). Il testo pronto in `funnel/report-whatsapp.txt` usa:
-`{{contact.first_name | Host}}`, `{{contact.prezzo_consigliato}}`, `{{contact.aumento_pct}}`,
+`{{contact.first_name}}`, `{{contact.prezzo_consigliato}}`, `{{contact.aumento_pct}}`,
 `{{contact.netto_oggi}}`, `{{contact.netto_nuovo}}`, `{{contact.perdita_anno}}`, `{{contact.regime_calc}}`.
 Il link CTA punta a `https://tools.affittibreviaroma.com/grazie`. Includi l'opt-out "rispondi STOP".
 
