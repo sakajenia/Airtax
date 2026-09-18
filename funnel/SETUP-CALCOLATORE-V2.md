@@ -7,9 +7,13 @@ File nuovo: **`funnel/calcolatore-v2.html`**.
 
 ## Cosa cambia
 
-Una sola aggiunta: la **domanda 4 — «📍 Dove si trova il tuo immobile?»**, subito
-dopo le tre domande esistenti, con lo stesso design (stessa card, stessi colori,
-stesso numero nel pallino rosso).
+Una sola aggiunta: la **domanda 3 — «📍 Dove si trova il tuo immobile?»**, con lo
+stesso design delle altre (stessa card, stessi colori, stesso numero nel pallino
+rosso).
+
+L'ordine delle domande è: 1 prezzo, 2 regime fiscale, **3 dati immobile**,
+4 obiettivo. I dati dell'immobile vengono chiesti *prima* di «Cosa conta di più
+per te?».
 
 | Campo | Tipo | Obbligatorio |
 |---|---|---|
@@ -23,7 +27,7 @@ stesso numero nel pallino rosso).
 consigliato continua ad aggiornarsi in tempo reale come prima, così il lead vede
 subito il valore. Bloccano invece il **pulsante «Ricevi il report»**: se manca
 qualcosa, la modale non si apre, compare l'avviso rosso, i campi mancanti si
-colorano di rosso e la pagina scorre da sola sulla domanda 4 mettendo il cursore
+colorano di rosso e la pagina scorre da sola sulla domanda 3 mettendo il cursore
 sul primo campo vuoto. Appena compili, l'errore sparisce da solo.
 
 > **Camere da letto e posti letto sono due cose diverse** e nel messaggio me le
@@ -149,10 +153,10 @@ Dopo aver pubblicato la pagina e aggiornato il form:
 Test del calcolatore v2.
 
 1. Apri la pagina del calcolatore v2.
-2. Senza compilare la domanda 4, clicca "Ricevi il report personalizzato".
+2. Senza compilare la domanda 3, clicca "Ricevi il report personalizzato".
    ATTESO: la finestra del form NON si apre, compare un avviso rosso e i campi
    mancanti diventano rossi. Dimmi se e' andata cosi'.
-3. Compila la domanda 4 con:
+3. Compila la domanda 3 con:
    Citta: Roma
    Zona: Trastevere
    Via: Via della Lungaretta 42
@@ -197,7 +201,7 @@ e 14 i campi sono arrivati. Poi si cancella il contatto di test.
 
 ## Il problema
 
-Nella v2 i dati della domanda 4 arrivavano in GHL **solo** se la persona
+Nella v2 i dati della domanda 3 arrivavano in GHL **solo** se la persona
 cliccava «Ricevi il report» *e* poi compilava e inviava il form. Se compilava
 l'indirizzo e chiudeva la scheda, quei dati sparivano: vivevano in una variabile
 JavaScript (`window.__leadData`) e morivano con la pagina. Nel file non c'era
@@ -339,7 +343,7 @@ Server locale che faceva sia da pagina sia da finto webhook GHL.
 
 1. Apri il calcolatore **passando dalla landing** (non con link diretto).
 2. Controlla che l'URL contenga `?cid=...`.
-3. Compila solo la domanda 4. **Non cliccare «Ricevi il report».**
+3. Compila solo la domanda 3. **Non cliccare «Ricevi il report».**
 4. Aspetta 2 secondi e chiudi la scheda.
 5. In GHL apri quel contatto: i 5 campi immobile devono essere valorizzati e
    deve esserci il tag `calcolatore-compilato`.

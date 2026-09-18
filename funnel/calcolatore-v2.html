@@ -49,7 +49,7 @@
   .row2{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px;}
   .row2 label{font-size:.78rem; font-weight:700; display:block; margin-bottom:5px; text-align:center;}
   .row2 input{font-size:1.1rem; min-height:46px; padding:8px;}
-  /* ---- STEP 4: dati immobile (aggiunta v2) ---- */
+  /* ---- STEP 3: dati immobile (aggiunta v2) ---- */
   .fl{font-size:.82rem; font-weight:700; display:block; margin:14px 0 6px;}
   .fl:first-of-type{margin-top:0;}
   .fl .req{color:var(--coral);}
@@ -253,31 +253,9 @@
     <p class="hint" id="regimeHint"></p>
   </div>
 
-  <!-- STEP 3: OBIETTIVO -->
-  <div class="card">
-    <span class="q"><span class="n">3</span>🎯 Cosa conta di più per te?</span>
-    <div class="choices" id="goalChoices" role="group" aria-label="Obiettivo">
-      <button type="button" data-goal="net" aria-pressed="true">
-        <span class="e">💰</span>
-        <span><span class="t">Guadagnare come oggi</span>
-        <span class="d">Consigliato: in tasca ti resta lo stesso</span></span>
-      </button>
-      <button type="button" data-goal="guest" aria-pressed="false">
-        <span class="e">🛌</span>
-        <span><span class="t">Non far spendere di più agli ospiti</span>
-        <span class="d">Loro pagano come oggi, tu guadagni un po' meno</span></span>
-      </button>
-      <button type="button" data-goal="payout" aria-pressed="false">
-        <span class="e">🤖</span>
-        <span><span class="t">Fare il minimo indispensabile</span>
-        <span class="d">Ricevi da Airbnb gli stessi soldi, ma paghi più tasse</span></span>
-      </button>
-    </div>
-  </div>
-
-  <!-- STEP 4: DATI IMMOBILE (aggiunta v2 — servono per il report) -->
+  <!-- STEP 3: DATI IMMOBILE (aggiunta v2 — servono per il report) -->
   <div class="card" id="propCard">
-    <span class="q"><span class="n">4</span>📍 Dove si trova il tuo immobile?</span>
+    <span class="q"><span class="n">3</span>📍 Dove si trova il tuo immobile?</span>
 
     <label class="fl" for="citta">Città <span class="req">*</span></label>
     <input type="text" id="citta" name="citta" autocomplete="address-level2" placeholder="es. Roma" value="Roma">
@@ -324,11 +302,33 @@
     <p class="hint">Ci servono per preparare il report sul tuo caso reale. Non pubblichiamo nulla e non li diamo a nessuno.</p>
   </div>
 
+  <!-- STEP 4: OBIETTIVO -->
+  <div class="card">
+    <span class="q"><span class="n">4</span>🎯 Cosa conta di più per te?</span>
+    <div class="choices" id="goalChoices" role="group" aria-label="Obiettivo">
+      <button type="button" data-goal="net" aria-pressed="true">
+        <span class="e">💰</span>
+        <span><span class="t">Guadagnare come oggi</span>
+        <span class="d">Consigliato: in tasca ti resta lo stesso</span></span>
+      </button>
+      <button type="button" data-goal="guest" aria-pressed="false">
+        <span class="e">🛌</span>
+        <span><span class="t">Non far spendere di più agli ospiti</span>
+        <span class="d">Loro pagano come oggi, tu guadagni un po' meno</span></span>
+      </button>
+      <button type="button" data-goal="payout" aria-pressed="false">
+        <span class="e">🤖</span>
+        <span><span class="t">Fare il minimo indispensabile</span>
+        <span class="d">Ricevi da Airbnb gli stessi soldi, ma paghi più tasse</span></span>
+      </button>
+    </div>
+  </div>
+
   <!-- EMPTY STATE -->
   <div class="box warn" id="emptyBox" hidden>👆 Scrivi il tuo prezzo a notte nella domanda 1 e il conto appare qui.</div>
 
-  <!-- Avviso se manca qualcosa nello step 4 al momento di chiedere il report -->
-  <div class="box bad" id="propWarn">⚠️ Per ricevere il report completa la <b>domanda 4</b> qui sopra: città, zona, via, camere e posti letto.</div>
+  <!-- Avviso se manca qualcosa nello step 3 al momento di chiedere il report -->
+  <div class="box bad" id="propWarn">⚠️ Per ricevere il report completa la <b>domanda 3</b> qui sopra: città, zona, via, camere e posti letto.</div>
 
   <!-- RESULTS -->
   <div id="resultsArea" aria-live="polite">
@@ -657,7 +657,7 @@
     };
   }
 
-  /* ====== STEP 4 — DATI IMMOBILE (aggiunta v2) ======
+  /* ====== STEP 3 — DATI IMMOBILE (aggiunta v2) ======
      Obbligatori per aprire il form report. Non toccano il calcolo:
      il prezzo consigliato resta identico alla versione precedente. */
   function propVal(id){ var el=$(id); return el ? String(el.value||'').trim() : ''; }
@@ -699,7 +699,7 @@
 
   /* ====== AUTOSAVE (v2.1) — i dati restano anche SENZA click su "Ricevi il report" ======
 
-     Il problema che risolve: prima, se la persona compilava la domanda 4 e poi
+     Il problema che risolve: prima, se la persona compilava la domanda 3 e poi
      chiudeva la scheda senza inviare il form, quei dati sparivano. Restavano in
      una variabile JavaScript e morivano con la pagina.
 
@@ -889,7 +889,7 @@
   wireGroup('#irpefSub .pillrow button','irpef',function(v){irpefM=parseFloat(v);});
   wireGroup('#forfSub .pillrow button','forf',function(v){forfRate=parseFloat(v);});
 
-  // step 4: aggiorna __leadData mentre scrive e toglie l'errore appena compila
+  // step 3: aggiorna __leadData mentre scrive e toglie l'errore appena compila
   PROP_FIELDS.forEach(function(f){
     var el = $(f.id);
     if(!el) return;

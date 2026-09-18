@@ -209,7 +209,7 @@ rispondi punto per punto, senza modificare nulla:
 
 1. Apri il calcolatore **passando dalla landing**, non con link diretto.
 2. Controlla che l'URL contenga `?cid=...`
-3. Compila solo la domanda 4. **Non cliccare «Ricevi il report».**
+3. Compila solo la domanda 3. **Non cliccare «Ricevi il report».**
 4. Aspetta 2 secondi, chiudi la scheda.
 5. In GHL apri quel contatto: i 5 campi immobile devono essere valorizzati e
    deve esserci il tag `calcolatore-compilato`.
