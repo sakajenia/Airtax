@@ -722,6 +722,7 @@
   var AUTOSAVE_WEBHOOK_URL = 'INCOLLA_QUI_URL_INBOUND_WEBHOOK_GHL';
   var LS_KEY   = 'airtax_calc_v2';
   var CID_KEY  = 'airtax_cid';
+  var EMAIL_KEY= 'airtax_em';
   var SAVE_DELAY = 800;
   var LS_INPUTS = ['price','cleaning','nightsYear','citta','zona','via','camere','postiletto'];
   var CALC_KEYS = ['prezzo_attuale','prezzo_consigliato','aumento_pct','regime_calc',
@@ -729,19 +730,41 @@
   var saveTimer = null, lastSent = '', restoring = false;
 
   // id del contatto: dalla querystring, poi memorizzato (sopravvive a un refresh)
-  function getCid(){
-    var cid = '';
+  // legge un parametro dalla querystring, provando piu' nomi possibili
+  function qsParam(names){
+    var v = '';
     try{
       var s = window.location.search || '';
-      ['cid','contact_id','contactId','contact-id'].forEach(function(k){
-        if(cid) return;
+      names.forEach(function(k){
+        if(v) return;
         var m = s.match(new RegExp('[?&]'+k+'=([^&#]*)'));
-        if(m) cid = decodeURIComponent(m[1].replace(/\+/g,' '));
+        if(m) v = decodeURIComponent(m[1].replace(/\+/g,' '));
       });
-      if(cid) localStorage.setItem(CID_KEY, cid);
-      else    cid = localStorage.getItem(CID_KEY) || '';
     }catch(e){}
-    return cid;
+    return v;
+  }
+
+  // ricorda un valore, cosi' sopravvive a un refresh senza querystring
+  function remembered(key, value){
+    try{
+      if(value) localStorage.setItem(key, value);
+      else      value = localStorage.getItem(key) || '';
+    }catch(e){}
+    return value;
+  }
+
+  function getCid(){
+    return remembered(CID_KEY, qsParam(['cid','contact_id','contactId','contact-id']));
+  }
+
+  /* RIPIEGO — usare SOLO se l'Inbound Webhook GHL non riesce a identificare il
+     contatto dal contact_id e pretende email o telefono.
+     In quel caso, nel redirect della landing aggiungi &em={{contact.email}}.
+     Costo: l'email finisce nell'URL, quindi nella cronologia del browser e nei
+     referrer verso terze parti. Con il solo contact_id (stringa opaca) questo
+     non succede. Se il contact_id basta, NON passare l'email. */
+  function getEmail(){
+    return remembered(EMAIL_KEY, qsParam(['em','email','contact_email']));
   }
 
   function hasAnyProp(){
@@ -750,6 +773,7 @@
 
   function buildPayload(){
     var d = window.__leadData || {};
+    var em = getEmail();
     var p = {
       contact_id:     getCid(),
       fonte:          'calcolatore-v2-autosave',
@@ -759,6 +783,7 @@
       camere_letto:   propVal('camere'),
       posti_letto:    propVal('postiletto')
     };
+    if(em) p.email = em;   // solo col ripiego attivo (vedi getEmail)
     CALC_KEYS.forEach(function(k){
       if(d[k] !== undefined && d[k] !== '') p[k] = d[k];
     });
