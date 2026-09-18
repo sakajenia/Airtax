@@ -105,14 +105,15 @@
     border-radius:999px; padding:3px 12px; font-weight:700; font-size:.78rem; margin:8px 2px 0;
   }
   .result .range{
-    display:flex; gap:10px; margin-top:12px; text-align:left;
+    margin-top:12px; text-align:left;
     background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3);
-    border-radius:14px; padding:10px 12px;
+    border-radius:14px; padding:10px 13px;
   }
-  .result .range > div{flex:1; min-width:0;}
-  .result .range .rl{display:block; font-size:.72rem; font-weight:800; opacity:.9; letter-spacing:.04em; text-transform:uppercase;}
-  .result .range .rv{display:block; font-family:'Poppins','Inter',sans-serif; font-size:1.35rem; font-weight:900; line-height:1.2;}
-  .result .range .rd{display:block; font-size:.71rem; opacity:.88; font-weight:600; line-height:1.3;}
+  .result .range .rtop{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;}
+  .result .range .rl{font-size:.72rem; font-weight:800; opacity:.9; letter-spacing:.04em; text-transform:uppercase;}
+  .result .range .rv{font-family:'Poppins','Inter',sans-serif; font-size:1.3rem; font-weight:900;}
+  .result .range .rd{font-size:.75rem; opacity:.9; font-weight:600;}
+  .result .range .rnote{display:block; font-size:.73rem; opacity:.88; font-weight:600; line-height:1.35; margin-top:6px;}
   .result .clean{font-size:.92rem; margin-top:10px; font-weight:700;}
   .result .verdict{
     background:rgba(255,255,255,.16); border-radius:12px; padding:9px 12px;
@@ -434,8 +435,12 @@
 (function(){
   'use strict';
   var VAT=0.22, RIT=0.21, F_OLD=0.03, F_NEW=0.155, G_OLD=0.141, ADDIZ=0.017;
-  // quanto sta sopra il pareggio il prezzo "massimo" consigliato
-  var MARGINE_MAX=0.05;
+  /* Quanto il prezzo consigliato sta sopra il pareggio.
+     8% perche' il conto NON modella gli sconti settimanali e mensili, che quasi
+     tutti gli host applicano: chi da' il 10% sulla settimana, al prezzo di
+     pareggio, su quelle prenotazioni finisce sotto il pareggio. Questo margine
+     copre quel buco. Non e' un ricarico arbitrario. */
+  var MARGINE_MAX=0.08;
   var regime='ced21', goal='net', irpefM=0.33, forfRate=0.15;
 
   var HINTS={
@@ -502,8 +507,16 @@
     $('emptyBox').hidden=true;
 
     // ---- tutto A NOTTE ----
-    var np=Math.ceil(price*k);
-    var nc=cleaning>0?Math.ceil(cleaning*k):0;
+    /* Il pareggio secco, calcolato sempre sull'obiettivo "guadagnare come oggi":
+       e' la soglia sotto la quale l'host ci rimette, qualunque obiettivo scelga. */
+    var pMin=Math.ceil(price*kFor('net',p));
+    /* Sul "guadagnare come oggi" il prezzo mostrato e' il pareggio piu' il margine.
+       Sugli altri due obiettivi no: li' l'host ha chiesto un bersaglio preciso
+       (l'ospite non spende di piu' / ricevo gli stessi soldi) e il margine lo
+       tradirebbe. */
+    var kEff = (goal==='net') ? k*(1+MARGINE_MAX) : k;
+    var np=Math.ceil(price*kEff);
+    var nc=cleaning>0?Math.ceil(cleaning*kEff):0;
     var pct=Math.round((np/price-1)*100);
     var isImp=(regime==='impresa');
 
@@ -512,7 +525,7 @@
     var loss=netOld-netNothing;
 
     // HERO
-    var lbls={net:'👉 Metti il prezzo a', guest:'👉 Per non far spendere di più gli ospiti:', payout:'👉 Per ricevere gli stessi soldi:'};
+    var lbls={net:'👉 Il prezzo che ti consigliamo', guest:'👉 Per non far spendere di più gli ospiti:', payout:'👉 Per ricevere gli stessi soldi:'};
     $('heroLbl').textContent=lbls[goal];
     $('newPrice').innerHTML=fmt0.format(np)+'<small> /notte</small>';
     $('pct').textContent='+'+pct+'%';
@@ -521,17 +534,15 @@
     // riga minimo/massimo: il pareggio secco e il pareggio con un margine.
     // Il minimo e' sempre calcolato sull'obiettivo "guadagnare come oggi":
     // e' la soglia sotto la quale l'host ci rimette, qualunque obiettivo abbia scelto.
-    var kNet=kFor('net',p);
-    if(isFinite(kNet)){
-      var pMin=Math.ceil(price*kNet);
-      var pMax=Math.ceil(pMin*(1+MARGINE_MAX));
-      $('priceRange').hidden=false;
-      $('priceRange').innerHTML=
-        '<div><span class="rl">Minimo</span><span class="rv">'+fmt0.format(pMin)+'</span>'+
-        '<span class="rd">sotto questo ci rimetti</span></div>'+
-        '<div><span class="rl">Massimo</span><span class="rv">'+fmt0.format(pMax)+'</span>'+
-        '<span class="rd">con margine di sicurezza</span></div>';
-    } else { $('priceRange').hidden=true; }
+    $('priceRange').hidden=false;
+    $('priceRange').innerHTML=
+      '<div class="rtop"><span class="rl">Minimo</span>'+
+      '<span class="rv">'+fmt0.format(pMin)+'</span>'+
+      '<span class="rd">sotto questo ci rimetti</span></div>'+
+      (goal==='net'
+        ? '<span class="rnote">Ti consigliamo un '+Math.round(MARGINE_MAX*100)+'% in più del minimo: '+
+          'copre gli sconti settimanali e mensili, che questo conto non calcola.</span>'
+        : '');
     $('cleanLine').hidden=(nc<=0);
     if(nc>0) $('cleanLine').textContent='🧹 E alza anche le pulizie a '+fmt0.format(nc);
     var vOld=Math.round(netOld), vNew=Math.round(netNew);
