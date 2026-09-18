@@ -697,6 +697,156 @@
     return ok;
   }
 
+  /* ====== AUTOSAVE (v2.1) — i dati restano anche SENZA click su "Ricevi il report" ======
+
+     Il problema che risolve: prima, se la persona compilava la domanda 4 e poi
+     chiudeva la scheda senza inviare il form, quei dati sparivano. Restavano in
+     una variabile JavaScript e morivano con la pagina.
+
+     Come funziona adesso:
+     1. la landing GHL reindirizza qui con ?cid=<id del contatto>, quindi sappiamo
+        gia' CHI e' (ha lasciato email e consensi sulla landing, prima di arrivare);
+     2. mentre compila, i dati partono verso l'Inbound Webhook GHL con 800ms di
+        debounce (non a ogni tasto: a 800ms di pausa dalla digitazione);
+     3. quando chiude la scheda o cambia app parte un ultimo invio con sendBeacon,
+        che il browser consegna anche mentre la pagina muore;
+     4. in piu' tutto finisce in localStorage: se torna, ritrova i campi compilati.
+
+     Senza cid NON si invia nulla al webhook: contatto sconosciuto, nessun posto
+     dove scrivere. In quel caso resta solo il localStorage (comodita' per lui).
+
+     Nota CORS: si usa Content-Type text/plain perche' e' "safelisted" e non
+     scatena il preflight OPTIONS, che sendBeacon non sa gestire. Il corpo resta
+     JSON e GHL lo interpreta come tale. */
+
+  var AUTOSAVE_WEBHOOK_URL = 'INCOLLA_QUI_URL_INBOUND_WEBHOOK_GHL';
+  var LS_KEY   = 'airtax_calc_v2';
+  var CID_KEY  = 'airtax_cid';
+  var SAVE_DELAY = 800;
+  var LS_INPUTS = ['price','cleaning','nightsYear','citta','zona','via','camere','postiletto'];
+  var CALC_KEYS = ['prezzo_attuale','prezzo_consigliato','aumento_pct','regime_calc',
+                   'obiettivo_calc','netto_oggi','netto_nuovo','perdita_anno'];
+  var saveTimer = null, lastSent = '', restoring = false;
+
+  // id del contatto: dalla querystring, poi memorizzato (sopravvive a un refresh)
+  function getCid(){
+    var cid = '';
+    try{
+      var s = window.location.search || '';
+      ['cid','contact_id','contactId','contact-id'].forEach(function(k){
+        if(cid) return;
+        var m = s.match(new RegExp('[?&]'+k+'=([^&#]*)'));
+        if(m) cid = decodeURIComponent(m[1].replace(/\+/g,' '));
+      });
+      if(cid) localStorage.setItem(CID_KEY, cid);
+      else    cid = localStorage.getItem(CID_KEY) || '';
+    }catch(e){}
+    return cid;
+  }
+
+  function hasAnyProp(){
+    return PROP_FIELDS.filter(function(f){ return propVal(f.id)!==''; }).length > 0;
+  }
+
+  function buildPayload(){
+    var d = window.__leadData || {};
+    var p = {
+      contact_id:     getCid(),
+      fonte:          'calcolatore-v2-autosave',
+      citta_immobile: propVal('citta'),
+      zona_immobile:  propVal('zona'),
+      via_immobile:   propVal('via'),
+      camere_letto:   propVal('camere'),
+      posti_letto:    propVal('postiletto')
+    };
+    CALC_KEYS.forEach(function(k){
+      if(d[k] !== undefined && d[k] !== '') p[k] = d[k];
+    });
+    return p;
+  }
+
+  // useBeacon=true solo in chiusura pagina: sendBeacon sopravvive all'unload
+  function sendPayload(p, useBeacon){
+    if(!AUTOSAVE_WEBHOOK_URL || AUTOSAVE_WEBHOOK_URL.indexOf('INCOLLA')===0) return false;
+    if(!p.contact_id) return false;                 // contatto sconosciuto: non si invia
+    var body = JSON.stringify(p);
+    if(body === lastSent) return false;             // niente di cambiato: non risvegliare GHL
+    lastSent = body;
+    try{
+      if(useBeacon && navigator.sendBeacon){
+        navigator.sendBeacon(AUTOSAVE_WEBHOOK_URL, new Blob([body], {type:'text/plain;charset=UTF-8'}));
+        return true;
+      }
+      fetch(AUTOSAVE_WEBHOOK_URL, {
+        method:'POST', mode:'no-cors', keepalive:true,
+        headers:{'Content-Type':'text/plain;charset=UTF-8'},
+        body: body
+      })['catch'](function(){});
+      return true;
+    }catch(e){ return false; }
+  }
+
+  function saveLocal(){
+    try{
+      var o = {};
+      LS_INPUTS.forEach(function(id){ var el=$(id); if(el) o[id]=el.value; });
+      o._regime = regime; o._goal = goal;
+      localStorage.setItem(LS_KEY, JSON.stringify(o));
+    }catch(e){}
+  }
+
+  function restoreLocal(){
+    var o = null;
+    try{ o = JSON.parse(localStorage.getItem(LS_KEY)||'null'); }catch(e){ return; }
+    if(!o) return;
+    restoring = true;
+    try{
+      LS_INPUTS.forEach(function(id){
+        var el = $(id);
+        if(el && o[id]!==undefined && o[id]!=='') el.value = o[id];
+      });
+      if(o._regime){
+        var rb = document.querySelector('#regimeChoices > button[data-regime="'+o._regime+'"]');
+        if(rb) rb.click();
+      }
+      if(o._goal){
+        var gb = document.querySelector('#goalChoices > button[data-goal="'+o._goal+'"]');
+        if(gb) gb.click();
+      }
+    }catch(e){}
+    restoring = false;
+  }
+
+  function onChange(){
+    if(restoring) return;
+    saveLocal();
+    if(saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(function(){
+      if(hasAnyProp()) sendPayload(buildPayload(), false);
+    }, SAVE_DELAY);
+  }
+
+  function flushNow(){
+    if(restoring) return;
+    saveLocal();
+    if(saveTimer){ clearTimeout(saveTimer); saveTimer = null; }
+    if(hasAnyProp()) sendPayload(buildPayload(), true);
+  }
+
+  function initAutosave(){
+    LS_INPUTS.forEach(function(id){
+      var el = $(id); if(!el) return;
+      el.addEventListener(el.tagName==='SELECT' ? 'change' : 'input', onChange);
+    });
+    document.querySelectorAll('#regimeChoices > button, #goalChoices > button')
+      .forEach(function(b){ b.addEventListener('click', onChange); });
+    // pagehide copre chiusura e navigazione; visibilitychange copre il cambio app su mobile
+    window.addEventListener('pagehide', flushNow);
+    document.addEventListener('visibilitychange', function(){
+      if(document.visibilityState === 'hidden') flushNow();
+    });
+  }
+
   // wiring
   ['price','cleaning','nightsYear'].forEach(function(id){ $(id).addEventListener('input',render); });
   function wireGroup(sel,attr,fn){
@@ -765,6 +915,8 @@
   var _lc=document.getElementById('leadClose'); if(_lc) _lc.addEventListener('click', function(){ document.getElementById('leadModal').classList.remove('open'); });
   var _lm=document.getElementById('leadModal'); if(_lm) _lm.addEventListener('click', function(e){ if(e.target===this) this.classList.remove('open'); });
 
+  restoreLocal();   // ripristina i campi se la persona era gia' passata di qui
   render();
+  initAutosave();   // da qui in poi ogni modifica viene salvata da sola
 })();
 </script>
