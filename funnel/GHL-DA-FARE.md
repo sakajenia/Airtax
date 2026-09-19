@@ -1,6 +1,13 @@
-# GHL — tutto quello che resta da fare, in un file solo
+# GHL — passi 1 e 2: campi immobile e autosave
 
-Non hai ancora toccato nulla in GHL: parti da qui, in ordine, dall'alto in
+> **Stato: fatto e funzionante.** I dati dell'immobile arrivano sul contatto
+> anche se il lead non clicca "Ricevi il report". Questo file resta come
+> storico e come riferimento per i dettagli (id dei campi, id dei form).
+>
+> Per il **passo 3** — pagina VSL, sticky header, percentuale di video
+> guardata — vai su **`funnel/GHL-PASSO-3-VSL.md`**.
+
+Parti da qui, in ordine, dall'alto in
 basso. Questo file sostituisce e riassume `SETUP-CALCOLATORE-V2.md` e
 `PROMPT-ASK-AI-AUTOSAVE.md` — quelli restano nel repo come storico, ma per
 lavorare usa solo questo.
@@ -32,7 +39,18 @@ questo punto è chiuso.
 
 ---
 
-## 1 · Creare l'Inbound Webhook (il pezzo centrale, quello che manca davvero)
+## 1 · ~~Creare l'Inbound Webhook~~ → sostituito dal Worker Cloudflare
+
+> ⚠️ **Questa sezione non si fa più.** L'Inbound Webhook di GHL è una Premium
+> Action a pagamento, e avrebbe consumato 3-5 esecuzioni per ogni visitatore.
+> Al suo posto c'è un Worker Cloudflare gratuito, già online:
+> `https://ghl-autosave-airtax.blionbg.workers.dev/`.
+> Istruzioni in **`tools/GUIDA-WORKER.md`**, codice in
+> `tools/ghl-autosave-worker.js`.
+>
+> Il resto di questa sezione è tenuto solo per capire cosa fa il ponte.
+
+### Come sarebbe stato con l'Inbound Webhook (non farlo)
 
 **Cosa fa:** riceve i dati dell'immobile mentre la persona compila il
 calcolatore — anche se non clicca mai "Ricevi il report" — e li scrive sul

@@ -7,7 +7,18 @@
 
 const GHL_BASE = 'https://services.leadconnectorhq.com';
 const GHL_VERSION = '2021-07-28';
-const TAG = 'calcolatore-compilato';
+const PERCENTUALI_VIDEO = [25, 50, 75, 100];
+
+// Che tag mettere, deciso qui in base al campo "fonte" della pagina.
+// Il payload dice DA DOVE arriva, mai QUALE tag scrivere: uno che manomette
+// la richiesta non puo' inventarsi tag nuovi sul contatto.
+const TAG_PER_FONTE = {
+  'calcolatore-v2-autosave': () => 'calcolatore-compilato',
+  'vsl-grazie-video': (d) => {
+    const p = Number(d.video_vsl_pct);
+    return PERCENTUALI_VIDEO.includes(p) ? 'vsl-video-' + p : null;
+  },
+};
 
 const ORIGINI_AMMESSE = [
   'https://tools.affittibreviaroma.com',
@@ -30,6 +41,13 @@ const CAMPI = {
   netto_oggi:         'uDf9DzrIiWU3TXIjSLjn',
   netto_nuovo:        'buoVJFSNhqnYwWqsbYCr',
   perdita_anno:       'QoVDV6jGxRvRYr2Vuonk',
+  // quanto ha guardato del video sulla pagina VSL: 25, 50, 75 o 100
+  video_vsl_pct:      '3Nv64YyptlobUcqyDWRa',
+};
+
+// Campi che accettano solo alcuni valori. Quelli non elencati passano come sono.
+const VALORI_AMMESSI = {
+  video_vsl_pct: PERCENTUALI_VIDEO,
 };
 
 const ID_PLAUSIBILE = /^[A-Za-z0-9]{15,30}$/;
@@ -84,6 +102,8 @@ export default {
     for (const chiave of Object.keys(CAMPI)) {
       const v = dati[chiave];
       if (v === undefined || v === null || v === '') continue;
+      const ammessi = VALORI_AMMESSI[chiave];
+      if (ammessi && !ammessi.includes(Number(v))) continue;
       customFields.push({ id: CAMPI[chiave], fieldValue: String(v) });
     }
     if (customFields.length === 0) {
@@ -112,13 +132,17 @@ export default {
       // Tag a parte: /tags aggiunge, mentre il campo "tags" della
       // update-contact avrebbe CANCELLATO tutti i tag gia' sul contatto.
       // Se fallisce solo questo, i campi restano salvati: sono la cosa che conta.
-      const rt = await fetch(url + '/tags', {
-        method: 'POST',
-        headers: intestazioni,
-        body: JSON.stringify({ tags: [TAG] }),
-      });
-      if (!rt.ok) {
-        console.error('GHL add-tags fallito', rt.status, (await rt.text()).slice(0, 300));
+      const scegliTag = TAG_PER_FONTE[String(dati.fonte || '')];
+      const tag = scegliTag ? scegliTag(dati) : null;
+      if (tag) {
+        const rt = await fetch(url + '/tags', {
+          method: 'POST',
+          headers: intestazioni,
+          body: JSON.stringify({ tags: [tag] }),
+        });
+        if (!rt.ok) {
+          console.error('GHL add-tags fallito', rt.status, (await rt.text()).slice(0, 300));
+        }
       }
 
       return new Response(null, { status: 204, headers: testa });
