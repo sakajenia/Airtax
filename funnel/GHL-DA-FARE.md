@@ -160,8 +160,18 @@ passaggio, senza rischi — semplicemente l'autosave non farà ancora nulla.
 > calcolatore non sa mai chi ha davanti e il webhook del punto 1 non riceve
 > mai nulla, anche se è configurato perfettamente.
 
-Vai sul form della landing (quello con il pulsante "Accedi al calcolatore
-gratis") → `Settings → On Submit → Redirect URL`. Cambia da:
+> ⚠️ **I form sono due e si somigliano. Quello giusto e' il primo:**
+>
+> | Form | ID | Redirect attuale | Da toccare? |
+> |---|---|---|---|
+> | **Registrazioni Calcolatore tasse AIrbnb** | `oRexxrmMwWz2ablBAUoz` | `/calcolatore` | **SI'** |
+> | Invio Report Calcolatore tasse AIrbnb | `Ompsev6jK1yZDrvBrKz8` | `/grazie` | **NO** |
+>
+> Il `/grazie` e' il redirect del form del report, ed e' corretto cosi'.
+
+Form **Registrazioni Calcolatore tasse AIrbnb** (`oRexxrmMwWz2ablBAUoz`),
+quello con il pulsante "Accedi al calcolatore gratis" →
+`Settings → On Submit → Redirect URL`. Cambia da:
 
 ```
 https://tools.affittibreviaroma.com/calcolatore

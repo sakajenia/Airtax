@@ -56,16 +56,15 @@ non è leggibile da nessuno che apra la pagina.
 
 ---
 
-## Passo 4 — Collegare la pagina al Worker
+## Passo 4 — Collegare la pagina al Worker ✅ FATTO
 
-Mandami l'URL del Worker del passo 2 e lo incollo io nel file, con commit e
-push. Oppure fallo tu: in `funnel/calcolatore-v2.html` cerca
+`funnel/calcolatore-v2.html` punta gia' al Worker:
 
 ```js
-var AUTOSAVE_WEBHOOK_URL = 'INCOLLA_QUI_URL_INBOUND_WEBHOOK_GHL';
+var AUTOSAVE_WEBHOOK_URL = 'https://ghl-autosave-airtax.blionbg.workers.dev/';
 ```
 
-e sostituisci il placeholder con l'URL. Poi ripubblica la pagina su GHL.
+Resta solo da **ripubblicare la pagina su GHL** con questa versione del file.
 
 ---
 
@@ -74,7 +73,19 @@ e sostituisci il placeholder con l'URL. Poi ripubblica la pagina su GHL.
 Questo resta uguale a prima ed è **il passaggio senza il quale niente
 funziona**: il Worker ha bisogno di sapere di quale contatto si tratta.
 
-Form della landing → `Settings` → `On Submit` → `Redirect URL`. Da:
+> ⚠️ **Attenzione a quale form apri: i form sono due e si somigliano.**
+>
+> | Form | ID | Redirect | Da toccare? |
+> |---|---|---|---|
+> | **Registrazioni Calcolatore tasse AIrbnb** | `oRexxrmMwWz2ablBAUoz` | `/calcolatore` | **SI', e' questo** |
+> | Invio Report Calcolatore tasse AIrbnb | `Ompsev6jK1yZDrvBrKz8` | `/grazie` | **NO, lascia stare** |
+>
+> Il secondo e' il form dentro il calcolatore, quello del "Ricevi il report":
+> il suo redirect a `/grazie` e' corretto cosi'. Se ci metti `?cid=` mandi i
+> lead sulla pagina sbagliata dopo che hanno chiesto il report.
+
+Form **Registrazioni Calcolatore tasse AIrbnb** (`oRexxrmMwWz2ablBAUoz`) →
+`Settings` → `On Submit` → `Redirect URL`. Da:
 
 ```
 https://tools.affittibreviaroma.com/calcolatore
