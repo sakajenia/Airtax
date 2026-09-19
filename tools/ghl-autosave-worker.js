@@ -1,36 +1,8 @@
 /**
- * Ponte fra il calcolatore e GHL — Cloudflare Worker.
- *
- * A COSA SERVE
- * Il calcolatore manda qui i dati dell'immobile mentre la persona li scrive,
- * anche se poi non clicca "Ricevi il report". Questo Worker li scrive sul
- * contatto GHL usando l'API, e aggiunge il tag calcolatore-compilato.
- *
- * PERCHE' NON L'INBOUND WEBHOOK DI GHL
- * L'Inbound Webhook e' una Premium Action: si paga a esecuzione, e l'autosave
- * per sua natura spara piu' volte per visitatore. Qui il costo e' zero (il
- * piano gratuito di Cloudflare Workers copre 100.000 richieste al giorno) e
- * non cresce col traffico del funnel.
- *
- * IL TOKEN NON STA NELLA PAGINA
- * Il Private Integration Token vive come secret del Worker, lato server.
- * Nella pagina pubblica finisce solo l'URL di questo Worker, che da solo non
- * permette di leggere nulla: vedi le difese piu' sotto.
- *
- * DIFESE (l'URL del Worker e' pubblico, quindi vanno messe)
- *  1. Solo POST.
- *  2. Solo dalle origini in ORIGINI_AMMESSE.
- *  3. Serve un contact_id di forma plausibile: senza quello non si fa nulla.
- *  4. Si scrivono SOLO i campi nella whitelist CAMPI, mappati per id.
- *     Nessun altro campo del contatto e' raggiungibile da qui: niente
- *     email, telefono, nome, niente tag arbitrari.
- *  5. Il tag e' fisso e viene aggiunto con l'endpoint /tags, che NON
- *     sovrascrive i tag gia' presenti (l'API update-contact invece li
- *     azzererebbe tutti: trappola da evitare).
- *
- * Il peggio che puo' fare chi trova l'URL e' scrivere quei 5 campi su un
- * contatto di cui conosce gia' l'id. Non puo' leggere niente, non puo'
- * toccare altro.
+ * Ponte fra il calcolatore e GHL - Cloudflare Worker.
+ * Riceve i dati dell'immobile dalla pagina (anche senza click sul report)
+ * e li scrive sul contatto via API v2. Spiegazioni in tools/GUIDA-WORKER.md.
+ * Il token vive come secret del Worker: non e' mai nella pagina pubblica.
  */
 
 const GHL_BASE = 'https://services.leadconnectorhq.com';
@@ -41,19 +13,15 @@ const ORIGINI_AMMESSE = [
   'https://tools.affittibreviaroma.com',
 ];
 
-/**
- * Whitelist: chiave nel payload -> id del custom field in GHL.
- * Gli id sono quelli reali del sub-account Propromanager
- * (E1HO8PRyWf2yGaTFLuLC), verificati il 18/09/2026.
- * Aggiungere una riga qui e' l'unico modo di far scrivere un campo in piu'.
- */
+// Whitelist: chiave nel payload -> id del custom field GHL.
+// Id reali del sub-account E1HO8PRyWf2yGaTFLuLC, verificati il 18/09/2026.
+// Aggiungere una riga qui e' l'unico modo di far scrivere un campo in piu'.
 const CAMPI = {
   citta_immobile:     '2EPV8IRyO3UEbJsibJQA',
   zona_immobile:      'aiovraZGkkS396EtydaU',
   via_immobile:       '3jhbti4RwiLq4totHvwI',
   camere_letto:       'qjLlbKXfFaUq7Ekjmdt6',
   posti_letto:        '5NTsbkA3yr6vYRPVyQgH',
-  // dati del calcolo: utili in scheda contatto anche se il report non parte
   prezzo_attuale:     'hNKj8W7MfIux5R0k5NzJ',
   prezzo_consigliato: 'UmkV5eIzxji8AeXQZW1p',
   aumento_pct:        'yexerI0GvNOeOG25T9m9',
@@ -64,8 +32,6 @@ const CAMPI = {
   perdita_anno:       'QoVDV6jGxRvRYr2Vuonk',
 };
 
-// id GHL: stringa alfanumerica, ~20 caratteri. Filtro grezzo ma taglia
-// via subito i payload spazzatura senza sprecare una chiamata all'API.
 const ID_PLAUSIBILE = /^[A-Za-z0-9]{15,30}$/;
 
 function cors(origin) {
@@ -82,35 +48,30 @@ export default {
     const origin = request.headers.get('Origin');
     const testa = cors(origin);
 
-    // preflight: non dovrebbe mai arrivare (la pagina usa text/plain, che e'
-    // "safelisted" e non lo scatena) ma se arriva va risposto comunque
     if (request.method === 'OPTIONS') {
-      return new Response(null, {
-        status: 204,
-        headers: { ...testa, 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type' },
-      });
+      return new Response(null, { status: 204, headers: {
+        ...testa,
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+      } });
     }
-
     if (request.method !== 'POST') {
       return new Response('Solo POST', { status: 405, headers: testa });
     }
-
     if (!origin || !ORIGINI_AMMESSE.includes(origin)) {
-      // niente dettagli nel messaggio: non serve spiegare a chi sonda
       return new Response('Origine non ammessa', { status: 403, headers: testa });
     }
-
     if (!env.GHL_TOKEN) {
       console.error('GHL_TOKEN non configurato come secret del Worker');
       return new Response('Configurazione incompleta', { status: 500, headers: testa });
     }
 
-    // il corpo arriva come text/plain (scelta della pagina, per non far
-    // scattare il preflight che sendBeacon non saprebbe gestire)
+    // La pagina manda text/plain apposta: e' "safelisted" e non scatena il
+    // preflight CORS, che sendBeacon non saprebbe gestire.
     let dati;
     try {
       dati = JSON.parse(await request.text());
-    } catch {
+    } catch (e) {
       return new Response('JSON non valido', { status: 400, headers: testa });
     }
 
@@ -119,44 +80,39 @@ export default {
       return new Response('contact_id mancante o non valido', { status: 400, headers: testa });
     }
 
-    // solo i campi in whitelist, solo se hanno davvero un valore
     const customFields = [];
-    for (const [chiave, id] of Object.entries(CAMPI)) {
+    for (const chiave of Object.keys(CAMPI)) {
       const v = dati[chiave];
       if (v === undefined || v === null || v === '') continue;
-      customFields.push({ id, fieldValue: String(v) });
+      customFields.push({ id: CAMPI[chiave], fieldValue: String(v) });
     }
-
     if (customFields.length === 0) {
-      // niente da scrivere: si esce senza disturbare GHL
       return new Response(null, { status: 204, headers: testa });
     }
 
     const intestazioni = {
-      Authorization: `Bearer ${env.GHL_TOKEN}`,
+      Authorization: 'Bearer ' + env.GHL_TOKEN,
       Version: GHL_VERSION,
       Accept: 'application/json',
       'Content-Type': 'application/json',
     };
+    const url = GHL_BASE + '/contacts/' + encodeURIComponent(contactId);
 
     try {
-      const r = await fetch(`${GHL_BASE}/contacts/${encodeURIComponent(contactId)}`, {
+      const r = await fetch(url, {
         method: 'PUT',
         headers: intestazioni,
         body: JSON.stringify({ customFields }),
       });
-
       if (!r.ok) {
-        const dettaglio = await r.text();
-        console.error('GHL update-contact fallito', r.status, dettaglio.slice(0, 500));
+        console.error('GHL update-contact fallito', r.status, (await r.text()).slice(0, 500));
         return new Response('Aggiornamento contatto fallito', { status: 502, headers: testa });
       }
 
-      // Tag a parte: l'endpoint /tags aggiunge, mentre il campo "tags" della
-      // update-contact avrebbe cancellato tutti i tag gia' sul contatto.
-      // Se fallisce non si butta via l'aggiornamento dei campi, che e' la
-      // cosa importante: si registra e basta.
-      const rt = await fetch(`${GHL_BASE}/contacts/${encodeURIComponent(contactId)}/tags`, {
+      // Tag a parte: /tags aggiunge, mentre il campo "tags" della
+      // update-contact avrebbe CANCELLATO tutti i tag gia' sul contatto.
+      // Se fallisce solo questo, i campi restano salvati: sono la cosa che conta.
+      const rt = await fetch(url + '/tags', {
         method: 'POST',
         headers: intestazioni,
         body: JSON.stringify({ tags: [TAG] }),
