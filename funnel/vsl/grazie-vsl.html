@@ -474,7 +474,6 @@
 .ppm-page .ppm-hero-title{max-width:none;font-size:clamp(33px,5.2vw,54px);line-height:1.06;letter-spacing:-.028em}
 .ppm-page .ppm-hero-title .ev{color:var(--ppm-accent);
   background:linear-gradient(180deg,transparent 72%,rgba(128,24,32,.16) 72%)}
-.ppm-page .ppm-hero-lead{max-width:52ch}
 
 /* --- player --- */
 .ppm-page .ppm-hero-media{position:relative;width:100%;max-width:940px;margin:clamp(30px,4.2vw,52px) auto 0}
@@ -518,6 +517,63 @@
 }
 </style>
 
+<!-- ppm:015-conto =========================================================
+     Il conto, dentro l'eroe, subito sotto al titolo. Una domanda sola:
+     quanto di tasse oggi, quanto con noi. Due barre e due numeri, nient'altro:
+     e' la prima cosa che si vede, deve reggere un'occhiata di un secondo.
+     I numeri diventano quelli della persona se il calcolatore ne ha lasciati
+     nel browser: vedi lo script ppm:015b.
+     ====================================================================== -->
+<style>
+.ppm-page .ppm-conto{
+  width:100%;max-width:560px;margin:clamp(22px,3.4vw,34px) auto 0;
+  background:var(--ppm-card);border:1px solid var(--ppm-line);
+  border-radius:var(--ppm-radius-lg);box-shadow:var(--ppm-shadow-soft);
+  padding:clamp(18px,2.6vw,26px);
+}
+.ppm-page .ppm-conto-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px 14px}
+.ppm-page .ppm-conto-top p{font-size:14.5px;line-height:1.45;color:var(--ppm-muted)}
+.ppm-page .ppm-conto-top p b{color:var(--ppm-ink);font-weight:800}
+.ppm-page .ppm-tuoi{display:inline-flex;align-items:center;gap:5px;flex:0 0 auto;
+  padding:4px 9px;border-radius:var(--ppm-radius-pill);
+  background:var(--ppm-ok-soft);color:var(--ppm-ok);
+  font-size:11px;font-weight:800;line-height:1;white-space:nowrap}
+.ppm-page .ppm-tuoi svg{width:12px;height:12px;flex:0 0 auto}
+
+.ppm-page .ppm-righe{display:grid;gap:11px;margin-top:18px}
+.ppm-page .ppm-riga{display:grid;grid-template-columns:4.4rem minmax(0,1fr) auto;
+  align-items:center;gap:clamp(9px,1.4vw,14px)}
+.ppm-page .ppm-riga .k{font-size:12.5px;font-weight:800;letter-spacing:.02em;color:var(--ppm-muted)}
+.ppm-page .ppm-riga .b{height:12px;border-radius:99px;background:var(--ppm-warm)}
+.ppm-page .ppm-riga .b i{display:block;height:100%;border-radius:99px;background:var(--ppm-accent);
+  transform:scaleX(var(--w,1));transform-origin:left}
+.ppm-page .ppm-riga .v{font-family:var(--ppm-font-display);font-weight:800;
+  font-size:clamp(20px,2.6vw,26px);line-height:1;letter-spacing:-.02em;
+  white-space:nowrap;font-variant-numeric:tabular-nums}
+.ppm-page .ppm-riga.oggi .v{color:var(--ppm-ink-2)}
+.ppm-page .ppm-riga.noi .k,.ppm-page .ppm-riga.noi .v{color:var(--ppm-ok)}
+.ppm-page .ppm-riga.noi .b i{background:var(--ppm-ok)}
+
+/* le barre entrano da sinistra quando la card compare. Senza JS non c'e'
+   nessun is-in: restano piene, che e' lo stato giusto da leggere. */
+.ppm-page.ppm-js .ppm-conto .ppm-riga .b i{transform:scaleX(0);
+  transition:transform 1s cubic-bezier(.16,1,.3,1) .12s}
+.ppm-page.ppm-js .ppm-conto.is-in .ppm-riga .b i{transform:scaleX(var(--w,1))}
+
+
+@media (max-width:560px){
+  /* la pillola sopra, la frase sotto a tutta riga: altrimenti il testo si
+     spezzava in tre righe per far posto al badge */
+  .ppm-page .ppm-conto-top{flex-direction:column-reverse;align-items:flex-start;gap:10px}
+  .ppm-page .ppm-riga{grid-template-columns:3.4rem minmax(0,1fr) auto;gap:9px}
+  .ppm-page .ppm-riga .k{font-size:11.5px}
+  .ppm-page .ppm-riga .b{height:10px}
+}
+@media (prefers-reduced-motion:reduce){
+  .ppm-page.ppm-js .ppm-conto .ppm-riga .b i{transform:scaleX(var(--w,1));transition:none}
+}
+</style>
+
 <section class="ppm-hero" id="ppm-hero" data-ppm-toast="Il video arriva a breve. Intanto trovi tutto qui sotto.">
   <div class="ppm-container">
     <div class="ppm-hero-copy" data-ppm-stagger>
@@ -526,14 +582,37 @@
         Aspetta, non hai ancora finito
       </p>
 
-      <h1 class="ppm-h1 ppm-hero-title ppm-reveal">
-        Stai pagando tasse anche sui soldi che <span class="ev">non hai mai incassato</span>
-      </h1>
+      <!-- Il nome arriva da GHL: il merge tag qui sotto viene risolto dalla
+           pagina prima che il browser la veda. Se il contatto non si sa (link
+           diretto, altro dispositivo) resta il titolo senza nome, che e'
+           scritto qui dentro ed e' quello che si vede anche senza JavaScript. -->
+      <h1 class="ppm-h1 ppm-hero-title ppm-reveal" data-ppm-h1>Stai pagando tasse anche sui soldi che <span class="ev">non hai mai incassato</span></h1>
+      <span data-ppm-merge="first_name" hidden>{{contact.first_name}}</span>
+    </div>
 
-      <p class="ppm-lead ppm-hero-lead ppm-reveal">
-        Si sistema: fino al 50% di tasse in meno sul tuo alloggio.
-        Un metodo per host singoli, che a Roma in pochissimi conoscono.
-      </p>
+    <div class="ppm-conto ppm-reveal" id="ppm-conto">
+      <div class="ppm-conto-top">
+        <p id="ppm-caso">Su <b>340 &euro;</b> che versa l&rsquo;ospite, di tasse paghi</p>
+        <span class="ppm-tuoi" id="ppm-tuoi" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 6 9 17l-5-5"></path>
+          </svg>
+          I tuoi numeri
+        </span>
+      </div>
+      <div class="ppm-righe">
+        <div class="ppm-riga oggi">
+          <span class="k">oggi</span>
+          <span class="b"><i style="--w:1"></i></span>
+          <span class="v" id="ppm-tasse-oggi">71,40 &euro;</span>
+        </div>
+        <div class="ppm-riga noi">
+          <span class="k">con noi</span>
+          <span class="b"><i id="ppm-barra-noi" style="--w:.493"></i></span>
+          <span class="v" id="ppm-tasse-noi">35,22 &euro;</span>
+        </div>
+      </div>
     </div>
 
     <div class="ppm-hero-media ppm-reveal">
@@ -760,116 +839,70 @@
   </div>
 </section>
 
-<!-- ppm:035-conto ==========================================================
-     Il conto, in due righe. Una sola domanda: quanto di tasse oggi, quanto
-     con noi. La composizione del lordo (Airbnb, pulizie, gestione) resta
-     nella frase sotto: su un telefono una barra a quattro fette si legge
-     male e si capisce in tre secondi invece che in uno.
-     I numeri diventano quelli della persona, se il calcolatore ne ha
-     lasciati nel browser. Vedi lo script ppm:035b piu' sotto.
-     ====================================================================== -->
-<style>
-.ppm-page .ppm-contosec{padding-top:clamp(16px,2.6vw,32px);padding-bottom:clamp(20px,3vw,38px)}
-.ppm-page .ppm-conto{
-  width:100%;max-width:600px;margin-inline:auto;
-  background:var(--ppm-card);border:1px solid var(--ppm-line);
-  border-radius:var(--ppm-radius-lg);box-shadow:var(--ppm-shadow-soft);
-  padding:clamp(18px,2.6vw,26px);
-}
-.ppm-page .ppm-conto-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px 14px}
-.ppm-page .ppm-conto-top p{font-size:14.5px;line-height:1.45;color:var(--ppm-muted)}
-.ppm-page .ppm-conto-top p b{color:var(--ppm-ink);font-weight:800}
-.ppm-page .ppm-tuoi{display:inline-flex;align-items:center;gap:5px;flex:0 0 auto;
-  padding:4px 9px;border-radius:var(--ppm-radius-pill);
-  background:var(--ppm-ok-soft);color:var(--ppm-ok);
-  font-size:11px;font-weight:800;line-height:1;white-space:nowrap}
-.ppm-page .ppm-tuoi svg{width:12px;height:12px;flex:0 0 auto}
 
-.ppm-page .ppm-righe{display:grid;gap:11px;margin-top:18px}
-.ppm-page .ppm-riga{display:grid;grid-template-columns:4.4rem minmax(0,1fr) auto;
-  align-items:center;gap:clamp(9px,1.4vw,14px)}
-.ppm-page .ppm-riga .k{font-size:12.5px;font-weight:800;letter-spacing:.02em;color:var(--ppm-muted)}
-.ppm-page .ppm-riga .b{height:12px;border-radius:99px;background:var(--ppm-warm)}
-.ppm-page .ppm-riga .b i{display:block;height:100%;border-radius:99px;background:var(--ppm-accent);
-  transform:scaleX(var(--w,1));transform-origin:left}
-.ppm-page .ppm-riga .v{font-family:var(--ppm-font-display);font-weight:800;
-  font-size:clamp(20px,2.6vw,26px);line-height:1;letter-spacing:-.02em;
-  white-space:nowrap;font-variant-numeric:tabular-nums}
-.ppm-page .ppm-riga.oggi .v{color:var(--ppm-ink-2)}
-.ppm-page .ppm-riga.noi .k,.ppm-page .ppm-riga.noi .v{color:var(--ppm-ok)}
-.ppm-page .ppm-riga.noi .b i{background:var(--ppm-ok)}
-
-/* le barre entrano da sinistra quando la card compare. Senza JS non c'e'
-   nessun is-in: restano piene, che e' lo stato giusto da leggere. */
-.ppm-page.ppm-js .ppm-conto .ppm-riga .b i{transform:scaleX(0);
-  transition:transform 1s cubic-bezier(.16,1,.3,1) .12s}
-.ppm-page.ppm-js .ppm-conto.is-in .ppm-riga .b i{transform:scaleX(var(--w,1))}
-
-.ppm-page .ppm-conto .frase{margin-top:17px;font-size:14.5px;line-height:1.55;color:var(--ppm-muted)}
-.ppm-page .ppm-conto .frase b{color:var(--ppm-accent);font-weight:800}
-.ppm-page .ppm-conto .piedino{margin-top:12px;display:flex;flex-wrap:wrap;gap:4px 10px;
-  justify-content:space-between;align-items:baseline;
-  font-size:12px;line-height:1.5;color:var(--ppm-muted)}
-.ppm-page .ppm-conto .piedino a{color:var(--ppm-accent-ink);font-weight:700;
-  border-bottom:1px solid rgba(128,24,32,.3);white-space:nowrap}
-
-@media (max-width:560px){
-  /* la pillola sopra, la frase sotto a tutta riga: altrimenti il testo si
-     spezzava in tre righe per far posto al badge */
-  .ppm-page .ppm-conto-top{flex-direction:column-reverse;align-items:flex-start;gap:10px}
-  .ppm-page .ppm-riga{grid-template-columns:3.4rem minmax(0,1fr) auto;gap:9px}
-  .ppm-page .ppm-riga .k{font-size:11.5px}
-  .ppm-page .ppm-riga .b{height:10px}
-}
-@media (prefers-reduced-motion:reduce){
-  .ppm-page.ppm-js .ppm-conto .ppm-riga .b i{transform:scaleX(var(--w,1));transition:none}
-}
-</style>
-
-<section class="ppm-contosec" id="ppm-conto-sec">
-  <div class="ppm-container">
-    <div class="ppm-conto ppm-reveal" id="ppm-conto">
-
-      <div class="ppm-conto-top">
-        <p id="ppm-caso">Su <b>340 &euro;</b> che versa l&rsquo;ospite, di tasse paghi</p>
-        <span class="ppm-tuoi" id="ppm-tuoi" hidden>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"
-               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M20 6 9 17l-5-5"></path>
-          </svg>
-          I tuoi numeri
-        </span>
-      </div>
-
-      <div class="ppm-righe">
-        <div class="ppm-riga oggi">
-          <span class="k">oggi</span>
-          <span class="b"><i style="--w:1"></i></span>
-          <span class="v" id="ppm-tasse-oggi">71,40 &euro;</span>
-        </div>
-        <div class="ppm-riga noi">
-          <span class="k">con noi</span>
-          <span class="b"><i id="ppm-barra-noi" style="--w:.493"></i></span>
-          <span class="v" id="ppm-tasse-noi">35,22 &euro;</span>
-        </div>
-      </div>
-
-      <p class="frase" id="ppm-nota">
-        <b>&minus;50%.</b> Oggi la cedolare la paghi su tutto quello che versa l&rsquo;ospite,
-        pulizie e commissione Airbnb comprese. Con noi, solo su quello che arriva davvero a te.
-      </p>
-
-      <p class="piedino">
-        <span id="ppm-piccolo">Esempio su una prenotazione tipo. Non &egrave; consulenza fiscale.</span>
-        <a href="https://tools.affittibreviaroma.com/calcolatore" id="ppm-rifai" hidden>rifai il calcolo</a>
-      </p>
-
-    </div>
-  </div>
-</section>
 
 <script>
-/* ppm:035b-caso — il conto con i numeri di chi sta guardando.
+/* ppm:012-nome — il nome della persona nel titolo.
+   -------------------------------------------------------------------------
+   Tre posti da cui puo' arrivare, in quest'ordine:
+     1. la querystring  (?nome= , messo nel redirect del form)
+     2. il merge tag di GHL, risolto dalla pagina prima che il browser la veda
+     3. il localStorage, se una pagina precedente dello stesso dominio lo ha
+        gia' visto
+   Se non si sa, il titolo resta quello scritto nell'HTML: senza nome, giusto
+   lo stesso. Meglio nessun nome che un "{{contact.first_name}}" in faccia.
+   ------------------------------------------------------------------------- */
+(function () {
+  "use strict";
+  var NOME_KEY = "airtax_nome";
+  var h1 = document.querySelector("[data-ppm-h1]");
+  if (!h1) return;
+
+  function daQuery(chiavi) {
+    var q;
+    try { q = new URLSearchParams(window.location.search); } catch (e) { return ""; }
+    for (var i = 0; i < chiavi.length; i++) {
+      var v = q.get(chiavi[i]);
+      if (v && v.trim()) return v.trim();
+    }
+    return "";
+  }
+
+  function pulisci(grezzo) {
+    if (!grezzo) return "";
+    var s = String(grezzo).trim();
+    /* un merge tag non risolto arriva tale e quale: "{{contact.first_name}}" */
+    if (!s || s.indexOf("{") > -1 || s.indexOf("}") > -1) return "";
+    if (/^(null|undefined|none|n\/a|nome)$/i.test(s)) return "";
+    s = s.split(/[\s,]+/)[0].replace(/[.,;:]+$/, "");
+    if (s.length > 20) return "";                  /* non e' un nome */
+    if (!/^[A-Za-z\u00C0-\u017F'\u2019-]+$/.test(s)) return "";
+    return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+  }
+
+  var nome = pulisci(daQuery(["nome", "first_name", "firstname", "name"]));
+  if (!nome) {
+    var merge = document.querySelector('[data-ppm-merge="first_name"]');
+    if (merge) nome = pulisci(merge.textContent);
+  }
+  if (!nome) { try { nome = pulisci(localStorage.getItem(NOME_KEY)); } catch (e) {} }
+  if (!nome) return;
+
+  try { localStorage.setItem(NOME_KEY, nome); } catch (e) {}
+
+  /* Si infila davanti al testo che c'e' gia', cosi' l'evidenziatore sulla
+     parte finale del titolo resta dov'e'. */
+  var primo = h1.firstChild;
+  if (primo && primo.nodeType === 3 && /Stai/.test(primo.nodeValue)) {
+    primo.nodeValue = primo.nodeValue.replace("Stai", nome + ", stai");
+  }
+  window.PPM = window.PPM || {};
+  window.PPM.nome = nome;
+})();
+</script>
+
+<script>
+/* ppm:015b-caso — il conto con i numeri di chi sta guardando.
    -------------------------------------------------------------------------
    Il calcolatore, sullo stesso dominio, lascia in localStorage gli
    ingredienti del suo conto (chiave "airtax_caso"). Qui li rileggiamo e
@@ -908,15 +941,6 @@
     };
   }
 
-  /* come si chiama l'imposta, secondo il regime scelto nel calcolatore */
-  function nomeImposta(d) {
-    var q = (Math.round(d.t * 1000) / 10).toLocaleString("it-IT");
-    if (d.regime === "ced21" || d.regime === "ced26") return "la cedolare del " + q + "%";
-    if (d.regime === "forf") return "l\u2019imposta del forfettario";
-    if (d.regime === "irpef") return "l\u2019IRPEF";
-    return "l\u2019imposta";
-  }
-
   function disegna(d, personale) {
     var c = conteggio(d);
     if (!(c.lordo > 0) || !(c.tua > 0)) return false;
@@ -935,20 +959,6 @@
       personale ? " di una tua prenotazione tipo, di tasse paghi"
                 : " che versa l\u2019ospite, di tasse paghi"));
 
-    /* arrotondato per difetto: meglio promettere meno di quanto esce */
-    var meno = Math.floor((1 - c.quota) * 100);
-    var nota = document.getElementById("ppm-nota");
-    nota.innerHTML = "";
-    var pct = document.createElement("b");
-    pct.textContent = "\u2212" + meno + "%.";   /* meno tipografico, non un trattino */
-    nota.appendChild(pct);
-    nota.appendChild(document.createTextNode(
-      " Oggi " + nomeImposta(d) + " la paghi su tutto quello che versa l\u2019ospite, " +
-      "pulizie e commissione Airbnb comprese. Con noi, solo su quello che arriva davvero a te."));
-
-    testo("ppm-piccolo", personale
-      ? "Sui numeri del tuo calcolo. \u00c8 una stima, non \u00e8 consulenza fiscale."
-      : "Esempio su una prenotazione tipo. Non \u00e8 consulenza fiscale.");
     return true;
   }
 
@@ -973,7 +983,6 @@
   var mio = caso();
   if (mio && disegna(mio, true)) {
     document.getElementById("ppm-tuoi").hidden = false;
-    document.getElementById("ppm-rifai").hidden = false;
   } else {
     disegna({ price: 100, cleaning: 40, nights: 3, regime: "ced21",
               t: 0.21, effN: COMM_NUOVA * (1 + IVA) }, false);
@@ -1026,7 +1035,7 @@
 
     <header class="ppm-head ppm-reveal">
       <h2 class="ppm-h2">Il metodo in 4 fasi</h2>
-      <p class="ppm-lead">Ecco perch&eacute; stai pagando tantissime tasse, e non lo sai.</p>
+      <p class="ppm-lead">Quattro fasi. Nella terza succede la cosa che ti fa pagare meno.</p>
     </header>
 
     <div class="ppm-tl" data-ppm-tl>
@@ -1034,23 +1043,23 @@
       <ol class="ppm-tl-card" data-ppm-tl-card>
         <li class="ppm-tl-block ppm-reveal" data-ppm-step>
           <p class="ppm-tl-step">Fase 1</p>
-          <h3 class="ppm-tl-title">Guardiamo il tuo immobile, e ne prendiamo pochissimi</h3>
+          <h3 class="ppm-tl-title">Valutiamo la tua situazione, e quanto possiamo farti risparmiare davvero</h3>
           <p class="ppm-tl-body">Quindici minuti sui tuoi numeri veri: annuncio, zona, notti vendute, prezzo. Se non ha senso per tutti e due, te lo diciamo subito.</p>
         </li>
         <li class="ppm-tl-block ppm-reveal" data-ppm-step>
           <p class="ppm-tl-step">Fase 2</p>
-          <h3 class="ppm-tl-title">Lo prendiamo in gestione o in cogestione</h3>
-          <p class="ppm-tl-body">L&rsquo;immobile resta tuo, le regole le fai tu. Noi mettiamo prezzi dinamici, annuncio, ospiti, pulizie e assistenza: dai nostri numeri rende <span class="ev">dal 35% al 60% in pi&ugrave;</span> di quando era da solo.</p>
+          <h3 class="ppm-tl-title">Ti facciamo vedere esattamente quanto in pi&ugrave; puoi guadagnare</h3>
+          <p class="ppm-tl-body">L&rsquo;immobile resta tuo, il resto lo mettiamo noi: un team di oltre 20 persone specializzate, prezzi dinamici, annunci su tantissime piattaforme, prenotazione diretta, il nostro sistema di gestione ospiti prioritario ProProManager, assistenza 24/7 e molto altro ancora. In media i numeri dicono che lo facciamo rendere <span class="ev">dal 35% al 60% in pi&ugrave;</span> di quando la gestione la facevi da solo.</p>
         </li>
         <li class="ppm-tl-block ppm-reveal" data-ppm-step>
           <p class="ppm-tl-step">Fase 3</p>
           <h3 class="ppm-tl-title">Attiviamo il sostituto d&rsquo;imposta</h3>
-          <p class="ppm-tl-body">L&rsquo;incasso non ti arriva pi&ugrave; lordo da Airbnb: passa da noi, e siamo noi a trattenere e versare l&rsquo;imposta al posto tuo. Come fa il datore di lavoro con la busta paga.</p>
+          <p class="ppm-tl-body">L&rsquo;incasso non ti arriva pi&ugrave; lordo da Airbnb: passa da noi, e siamo noi a trattenere e versare l&rsquo;imposta al posto tuo. Come fa il datore di lavoro con la busta paga. Il commercialista lo paghiamo noi, le tasse le versiamo noi: <span class="ev">tu non fai nulla</span>.</p>
         </li>
         <li class="ppm-tl-block ppm-reveal" data-ppm-step>
           <p class="ppm-tl-step">Fase 4</p>
-          <h3 class="ppm-tl-title">Paghi le tasse sul netto, non pi&ugrave; sul lordo</h3>
-          <p class="ppm-tl-body">Fino a oggi hai pagato <span class="ev">anche</span> sulla fetta di Airbnb e sulle pulizie: soldi che non hai mai visto. Da qui in poi paghi solo su quello che arriva davvero a te.</p>
+          <h3 class="ppm-tl-title">Ti godi una vera rendita immobiliare</h3>
+          <p class="ppm-tl-body">Ad oggi, in Italia, questo &egrave; l&rsquo;unico modo di godersi una vera e propria rendita immobiliare: l&rsquo;immobile lavora, e tu non ci pensi pi&ugrave;.</p>
         </li>
       </ol>
     </div>
@@ -1077,13 +1086,17 @@
   var dots = [], segs = [], marks = [], railH = 0, cur = 0, target = 0, running = false;
 
   function build() {
-    var railBox = rail.getBoundingClientRect();
-    if (!railBox.height) return;
-    railH = railBox.height;
+    railH = rail.offsetHeight;
+    if (!railH) return;
 
+    /* Le posizioni si prendono da offsetTop, non da getBoundingClientRect:
+       i blocchi hanno la comparsa allo scroll, che li trasla di 18px, e con
+       il rect i pallini finivano fuori posto finche' non si ridimensionava
+       la finestra. offsetTop ignora le transform. Rail e card sono due celle
+       della stessa riga di griglia, quindi partono dalla stessa quota. */
     var ys = [];
     for (var i = 0; i < blocks.length; i++) {
-      ys.push(Math.round(blocks[i].getBoundingClientRect().top - railBox.top + 11));
+      ys.push(Math.round(blocks[i].offsetTop - card.offsetTop + 11));
     }
     marks = ys;
 
@@ -1093,12 +1106,14 @@
       if (h > 0) html += '<span class="ppm-tl-seg" style="top:' + top + 'px;height:' + h + 'px"></span>';
     }
     for (var j = 0; j < ys.length; j++) html += '<span class="ppm-tl-dot" style="top:' + ys[j] + 'px"></span>';
-    fill.insertAdjacentHTML("afterend", html);
 
-    /* tengo solo l'ultimo gruppo disegnato, gli altri sono di un resize precedente */
-    var old = rail.querySelectorAll(".ppm-tl-dot, .ppm-tl-seg");
-    var keep = ys.length * 2 - 1;
-    for (var q = 0; q < old.length - keep; q++) old[q].parentNode.removeChild(old[q]);
+    /* Prima si buttano via i vecchi, poi si disegnano i nuovi. Al contrario
+       (com'era) i nuovi finiscono PRIMA dei vecchi nel documento, e la
+       ripulitura dall'inizio cancellava proprio quelli appena fatti: dopo un
+       ridimensionamento restavano in piedi i pallini di prima, fermi dov'erano. */
+    var vecchi = rail.querySelectorAll(".ppm-tl-dot, .ppm-tl-seg");
+    for (var q = 0; q < vecchi.length; q++) vecchi[q].parentNode.removeChild(vecchi[q]);
+    fill.insertAdjacentHTML("afterend", html);
     dots = rail.querySelectorAll(".ppm-tl-dot");
     segs = rail.querySelectorAll(".ppm-tl-seg");
     paint(cur);

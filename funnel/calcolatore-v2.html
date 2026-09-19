@@ -945,6 +945,7 @@
   var LS_KEY   = 'airtax_calc_v2';
   var CID_KEY  = 'airtax_cid';
   var EMAIL_KEY= 'airtax_em';
+  var NOME_KEY = 'airtax_nome';   /* serve alla pagina VSL per il titolo */
   var SAVE_DELAY = 800;
   var LS_INPUTS = ['price','cleaning','nights','nightsYear','citta','zona','via','camere','postiletto'];
   var CALC_KEYS = ['prezzo_attuale','prezzo_consigliato','aumento_pct','regime_calc',
@@ -1161,6 +1162,17 @@
   var _lb=document.getElementById('leadBtn'); if(_lb) _lb.addEventListener('click', openLead);
   var _lc=document.getElementById('leadClose'); if(_lc) _lc.addEventListener('click', function(){ document.getElementById('leadModal').classList.remove('open'); });
   var _lm=document.getElementById('leadModal'); if(_lm) _lm.addEventListener('click', function(e){ if(e.target===this) this.classList.remove('open'); });
+
+  /* Il nome non serve qui, serve alla pagina dopo: se passa in querystring
+     lo mettiamo da parte adesso, cosi' la VSL ce l'ha anche se ci arriva
+     senza parametri. Resta nel browser, non va da nessuna parte. */
+  (function ricordaNome(){
+    var v = qsParam(['nome','first_name','firstname','name']);
+    if(!v) return;
+    v = v.split(/[\s,]+/)[0];
+    if(!v || v.length>20 || v.indexOf('{')>-1) return;
+    try{ localStorage.setItem(NOME_KEY, v); }catch(e){}
+  })();
 
   restoreLocal();   // ripristina i campi se la persona era gia' passata di qui
   render();

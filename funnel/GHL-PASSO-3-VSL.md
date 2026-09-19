@@ -151,16 +151,32 @@ Quindi, sul form **`Invio Report Calcolatore tasse AIrbnb` (`Ompsev6jK1yZDrvBrKz
 nelle impostazioni di redirect metti:
 
 ```
-https://tools.affittibreviaroma.com/grazie?cid={{contact.id}}
+https://tools.affittibreviaroma.com/grazie?cid={{contact.id}}&nome={{contact.first_name}}
 ```
+
+Il `nome` serve al titolo della VSL, che saluta la persona per nome.
 
 > ⚠️ Nel sub-account ci sono **due form con nomi quasi uguali**. Non
 > confonderli:
 >
 > | Form | ID | Redirect |
 > |---|---|---|
-> | Registrazioni Calcolatore tasse AIrbnb (dalla landing) | `oRexxrmMwWz2ablBAUoz` | `…/calcolatore?cid={{contact.id}}` |
-> | Invio Report Calcolatore tasse AIrbnb (dal calcolatore) | `Ompsev6jK1yZDrvBrKz8` | `…/grazie?cid={{contact.id}}` |
+> | Registrazioni Calcolatore tasse AIrbnb (dalla landing) | `oRexxrmMwWz2ablBAUoz` | `…/calcolatore?cid={{contact.id}}&nome={{contact.first_name}}` |
+> | Invio Report Calcolatore tasse AIrbnb (dal calcolatore) | `Ompsev6jK1yZDrvBrKz8` | `…/grazie?cid={{contact.id}}&nome={{contact.first_name}}` |
+
+### Il nome nel titolo
+
+Il titolo dice «**Gian**, stai pagando tasse anche sui soldi che non hai mai
+incassato». Il nome lo cerca in tre posti, in quest'ordine:
+
+1. la querystring (`?nome=`, quella del redirect qui sopra);
+2. il merge tag `{{contact.first_name}}`, che la pagina GHL risolve da sola
+   quando il contatto è noto;
+3. il `localStorage`, se il calcolatore lo aveva già visto passare.
+
+Se non lo sa, il titolo resta senza nome e funziona lo stesso. Un merge tag
+non risolto (`{{contact.first_name}}` scritto per intero) viene riconosciuto e
+scartato: al lead non finisce mai in faccia.
 
 ---
 
@@ -224,10 +240,10 @@ che arriva e l'eventuale errore.
 
 ## 7 · Il conto, e i numeri veri del lead
 
-Subito sotto la prova sociale, prima del metodo in 4 fasi, c'è la card che
-risponde a una domanda sola: **quanto di tasse paghi oggi, quanto con noi.**
-Due barre, due numeri, una frase. Niente di più: su un telefono una barra a
-quattro fette si legge male e si capisce in tre secondi invece che in uno.
+Subito sotto il titolo, prima ancora del video, c'è la card che risponde a una
+domanda sola: **quanto di tasse paghi oggi, quanto con noi.** Due barre e due
+numeri, nient'altro: è la prima cosa che si vede, deve reggere un'occhiata di
+un secondo.
 
 E quando può, non usa un esempio: usa **i numeri che quella persona ha appena
 messo nel calcolatore.**
@@ -238,9 +254,8 @@ per soggiorno, regime fiscale, aliquota, commissione. La VSL, che sta sullo
 stesso dominio, li rilegge e rifà le due righe. Nessun dato esce dal browser e
 non serve nessuna configurazione su GHL: è roba sua, mostrata a lui.
 
-Quando è personalizzato si vede: pillola verde **«I tuoi numeri»**, la riga
-sopra le barre parla della *sua* prenotazione, e sotto compare «rifai il
-calcolo».
+Quando è personalizzato si vede: pillola verde **«I tuoi numeri»** e la riga
+sopra le barre che parla della *sua* prenotazione.
 
 Torna da solo all'esempio, senza rompere niente, se:
 
@@ -262,11 +277,11 @@ var FEE_GESTIONE = 0.20;          /* <-- la vostra quota di gestione */
 Quella costante regge **sia** l'esempio **sia** il caso personale: si cambia
 lì e basta.
 
-La percentuale mostrata («−51%») è calcolata e arrotondata **per difetto**,
-mai a favore. Dipende da quanto pesano commissione, pulizie e gestione sul
-lordo, quindi cambia da host a host: con il 20% di gestione va da circa −38%
-(host senza costi di pulizia) a circa −51%. Per questo il titolo dice **«fino
-al 50%»** e non «oltre il 50%»: così regge in tutti e due i casi.
+Quanto è lunga la barra verde dipende da quanto pesano commissione, pulizie e
+gestione sul lordo, quindi cambia da host a host: con il 20% di gestione il
+risparmio va da circa un terzo a circa la metà delle tasse. Nessuna
+percentuale viene scritta a parole, quindi non c'è più niente che possa
+contraddire il titolo: si vedono i due numeri e le due barre, e basta.
 
 Dammi la tua percentuale di gestione e la aggiorno.
 
