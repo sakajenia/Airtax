@@ -18,7 +18,8 @@ funzionanti: i dati passano. Qui si parte da lì.
 | Anteprima apribile in un browser | `funnel/vsl/anteprima.html` |
 | Campo GHL per la percentuale di video guardata | creato via API: **Video VSL Pct**, `contact.video_vsl_pct`, numerico, nel gruppo del calcolatore |
 | Worker aggiornato: accetta `video_vsl_pct` e mette i tag giusti | `tools/ghl-autosave-worker.js` |
-| Prove automatiche (78 in tutto, tutte verdi) | `tools/test/` |
+| Il conto della cedolare rifatto sui numeri veri di chi guarda | `funnel/calcolatore-v2.html` + `funnel/vsl/grazie-vsl.html` |
+| Prove automatiche (103 in tutto, tutte verdi) | `tools/test/` |
 
 La vecchia header a una sola colonna è stata tolta: non esiste più in nessuna
 pagina.
@@ -221,17 +222,54 @@ che arriva e l'eventuale errore.
 
 ---
 
-## 7 · Una cosa che devi decidere tu
+## 7 · Il caso studio con i numeri veri del lead
 
-Nella sezione "Il metodo in 4 fasi" c'è il conto con la barra colorata. È
-calcolato con **una quota di gestione del 20%**, che ho messo io perché non
-so la tua.
+La barra colorata dentro "Il metodo in 4 fasi" non è sempre l'esempio da
+340 €: quando può, usa **i numeri che quella persona ha appena messo nel
+calcolatore**.
 
-Quel numero regge il titolo della pagina: con il 20% le tasse su quella
-prenotazione passano da 71,40 € a 35,22 €, cioè **il 50,7% in meno**, ed è
-esattamente quello che promette l'headline. Con una percentuale diversa il
-conto cambia, e se scende sotto il 50% l'headline non è più sostenuta dal
-numero che c'è scritto sotto.
+Come funziona: il calcolatore salva nel browser (`localStorage`, chiave
+`airtax_caso`) gli ingredienti del suo conto — prezzo a notte, pulizie,
+notti per soggiorno, regime fiscale, aliquota, commissione. La VSL, che sta
+sullo stesso dominio, li rilegge e rifà la barra con quei numeri. Nessun
+dato esce dal browser e non serve nessuna configurazione su GHL: è roba sua,
+mostrata a lui.
 
-Nel file, sopra la barra, c'è il commento con le quattro formule da rifare.
-Dimmi la tua percentuale e li aggiorno io.
+Quando è personalizzato si vede: compare la pillola verde **«I tuoi numeri»**
+in alto a destra della card, la riga sopra la barra descrive la *sua*
+prenotazione, e sotto compare «Non sono i tuoi numeri? rifai il calcolo».
+
+Torna da solo all'esempio generico, senza rompere niente, se:
+
+- la persona non è passata dal calcolatore, o lo ha fatto da un altro
+  dispositivo (arriva su `/grazie` da un link in email);
+- ha scelto il regime **impresa**, che non paga un'imposta sul lordo: il
+  confronto sarebbe 0 contro 0;
+- il dato è più vecchio di 60 giorni;
+- i numeri non reggono (quota netta che verrebbe negativa, localStorage
+  corrotto).
+
+### L'unico numero da decidere: la quota di gestione
+
+Dentro `funnel/vsl/grazie-vsl.html`, nel blocco `ppm:04b-caso`:
+
+```js
+var FEE_GESTIONE = 0.20;          /* <-- la vostra quota di gestione */
+```
+
+Quella costante regge **sia** l'esempio generico **sia** il caso personale:
+si cambia lì e basta, i numeri scritti nell'HTML sono solo la versione senza
+JavaScript.
+
+⚠️ Da sapere: quel numero regge anche il titolo della pagina. Col 20% le
+tasse dell'esempio passano da 71,40 € a 35,22 €, cioè **il 50,7% in meno**,
+ed è quello che promette l'headline. Ma il risparmio dipende da quanto pesano
+commissione + pulizie + gestione sul lordo: **un host senza costi di pulizia
+si vedrà scrivere una percentuale più bassa** (con il 20% di gestione,
+circa il 39%), e lì l'headline «oltre il 50%» non è più sostenuta dal numero
+che gli compare sotto.
+
+Le strade sono due, decidi tu: tenere il numero esatto (onesto, ma a volte
+contraddice il titolo) o ammorbidire il titolo in qualcosa tipo «fino al 50%
+in meno di tasse». Dimmi quale preferisci e la tua percentuale di gestione,
+e sistemo.

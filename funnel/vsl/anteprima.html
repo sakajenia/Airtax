@@ -810,7 +810,16 @@
 .ppm-page .ppm-conto{width:100%;max-width:760px;margin:clamp(22px,3vw,34px) auto 0;
   background:var(--ppm-card);border:1px solid var(--ppm-line);border-radius:var(--ppm-radius-lg);
   box-shadow:var(--ppm-shadow-soft);padding:clamp(18px,2.4vw,26px)}
+.ppm-page .ppm-conto-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px 14px;flex-wrap:wrap}
 .ppm-page .ppm-conto h3{font-size:clamp(17px,1.9vw,20px);font-weight:800;margin-bottom:4px}
+.ppm-page .ppm-tuoi{display:inline-flex;align-items:center;gap:6px;flex:0 0 auto;
+  padding:5px 11px;border-radius:var(--ppm-radius-pill);
+  background:var(--ppm-ok-soft);color:var(--ppm-ok);
+  font-size:12px;font-weight:800;letter-spacing:.02em;line-height:1;white-space:nowrap}
+.ppm-page .ppm-tuoi svg{width:13px;height:13px;flex:0 0 auto}
+.ppm-page .ppm-rifai{margin-top:12px;text-align:center;font-size:13px;color:var(--ppm-muted)}
+.ppm-page .ppm-rifai a{color:var(--ppm-accent-ink);font-weight:700;
+  border-bottom:1px solid rgba(128,24,32,.35)}
 .ppm-page .ppm-conto .caso{font-size:14.5px;color:var(--ppm-muted);margin-bottom:18px}
 .ppm-page .ppm-barra{display:flex;width:100%;height:54px;border-radius:12px;overflow:hidden}
 .ppm-page .ppm-barra .seg{display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -887,9 +896,18 @@
       </ol>
     </div>
 
-    <div class="ppm-conto ppm-reveal">
-      <h3>Su quanto stai pagando la cedolare, davvero</h3>
-      <p class="caso">Una prenotazione da 3 notti a 100 &euro;, pi&ugrave; 40 &euro; di pulizie: l&rsquo;ospite versa 340 &euro;.</p>
+    <div class="ppm-conto ppm-reveal" id="ppm-conto">
+      <div class="ppm-conto-top">
+        <h3>Su quanto stai pagando la cedolare, davvero</h3>
+        <span class="ppm-tuoi" id="ppm-tuoi" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 6 9 17l-5-5"></path>
+          </svg>
+          I tuoi numeri
+        </span>
+      </div>
+      <p class="caso" id="ppm-caso">Una prenotazione da 3 notti a 100 &euro;, pi&ugrave; 40 &euro; di pulizie: l&rsquo;ospite versa 340 &euro;.</p>
 
       <!-- I numeri qui sotto sono calcolati con una quota di gestione del 20%.
            Se la tua e' diversa, rifai i quattro valori e le larghezze:
@@ -898,38 +916,42 @@
              gestione  = 340 x la TUA percentuale             -> 20,0%
              tua quota = quello che resta                     -> 49,3%
            e aggiorna i due importi sotto (21% di 340, e 21% della tua quota). -->
-      <div class="ppm-barra" role="img"
+      <div class="ppm-barra" id="ppm-barra" role="img"
            aria-label="Dei 340 euro versati dall'ospite, 167,71 sono la tua quota netta, 68 la gestione, 64,29 la commissione Airbnb, 40 le pulizie.">
-        <span class="seg tua" style="width:49.3%"><i>la tua quota</i><b>167,71 &euro;</b></span>
-        <span class="seg ges" style="width:20.0%"><i>gestione</i><b>68 &euro;</b></span>
-        <span class="seg abn" style="width:18.9%"><i>Airbnb</i><b>64,29 &euro;</b></span>
-        <span class="seg pul" style="width:11.8%"><i>pulizie</i><b>40 &euro;</b></span>
+        <span class="seg tua" data-seg="tua" style="width:49.3%"><i>la tua quota</i><b>167,71 &euro;</b></span>
+        <span class="seg ges" data-seg="ges" style="width:20.0%"><i>gestione</i><b>68 &euro;</b></span>
+        <span class="seg abn" data-seg="abn" style="width:18.9%"><i>Airbnb</i><b>64,29 &euro;</b></span>
+        <span class="seg pul" data-seg="pul" style="width:11.8%"><i>pulizie</i><b>40 &euro;</b></span>
       </div>
 
       <div class="ppm-graffa ppm-graffa--oggi">
-        <i></i><em>Oggi la cedolare del 21% la paghi su tutti i 340 &euro;</em>
+        <i></i><em id="ppm-graffa-oggi">Oggi la cedolare del 21% la paghi su tutti i 340 &euro;</em>
       </div>
       <div class="ppm-graffa ppm-graffa--noi" style="margin-top:34px">
-        <i style="width:49.3%"></i><em>Con il sostituto d&rsquo;imposta la paghi solo qui</em>
+        <i id="ppm-graffa-noi" style="width:49.3%"></i><em>Con il sostituto d&rsquo;imposta la paghi solo qui</em>
       </div>
 
       <div class="ppm-esito" style="margin-top:46px">
         <div class="prima">
-          <div class="v ppm-display">71,40 &euro;</div>
+          <div class="v ppm-display" id="ppm-tasse-oggi">71,40 &euro;</div>
           <span class="k">di tasse su questa prenotazione, oggi</span>
         </div>
         <div class="frec" aria-hidden="true">&rarr;</div>
         <div class="dopo">
-          <div class="v ppm-display">35,22 &euro;</div>
+          <div class="v ppm-display" id="ppm-tasse-noi">35,22 &euro;</div>
           <span class="k">con il sostituto d&rsquo;imposta</span>
         </div>
       </div>
 
-      <p class="ppm-esito-nota">
+      <p class="ppm-esito-nota" id="ppm-nota">
         A parit&agrave; di incasso: oltre il 50% di tasse in meno. E l&rsquo;immobile, gestito da noi, incassa anche di pi&ugrave;.
       </p>
 
-      <p class="piccolo">
+      <p class="ppm-rifai" id="ppm-rifai" hidden>
+        Non sono i tuoi numeri? <a href="https://tools.affittibreviaroma.com/calcolatore">rifai il calcolo</a>
+      </p>
+
+      <p class="piccolo" id="ppm-piccolo">
         Esempio a scopo illustrativo, con cedolare secca al 21% e commissione Airbnb del 15,5% pi&ugrave; IVA.
         Il tuo numero dipende dal tuo regime fiscale e dai tuoi incassi: lo rifacciamo insieme in call, sui tuoi dati.
         Questa pagina non &egrave; consulenza fiscale.
@@ -1039,6 +1061,135 @@
 })();
 </script>
 
+
+<script>
+/* ppm:04b-caso — il conto della cedolare, sui numeri di chi sta guardando.
+   -------------------------------------------------------------------------
+   Il calcolatore, sullo stesso dominio, lascia in localStorage gli
+   ingredienti del suo conto (chiave "airtax_caso"). Qui li rileggiamo e
+   rifacciamo la barra con quei numeri, al posto dell'esempio inventato.
+   Non esce niente dal browser: e' roba sua, mostrata a lui.
+
+   Se non c'e' niente da leggere, o i numeri non reggono (regime senza
+   imposta sul lordo, quota netta che verrebbe negativa, dato vecchio),
+   resta l'esempio generico gia' scritto nell'HTML: la pagina non si accorge
+   di nulla e nessuno vede un buco.
+
+   L'UNICO numero da cambiare e' FEE_GESTIONE: regge sia l'esempio generico
+   sia il caso personale.
+   ------------------------------------------------------------------------- */
+(function () {
+  "use strict";
+
+  var FEE_GESTIONE = 0.20;          /* <-- la vostra quota di gestione */
+  var IVA = 0.22, COMM_NUOVA = 0.155;
+  var GIORNI_VALIDI = 60;           /* oltre, il dato e' vecchio: meglio il generico */
+
+  var conto = document.getElementById("ppm-conto");
+  if (!conto) return;
+
+  var euro0 = new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  var euro2 = new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  function pct(x) { return (Math.round(x * 1000) / 10).toLocaleString("it-IT"); }
+
+  /* ---- il conto, uno solo, usato per entrambi i casi ---- */
+  function conteggio(d) {
+    var lordo = d.price * d.nights + d.cleaning;
+    var abn = lordo * d.effN;
+    var ges = lordo * FEE_GESTIONE;
+    var tua = lordo - abn - ges - d.cleaning;
+    return {
+      lordo: lordo, abn: abn, ges: ges, pul: d.cleaning, tua: tua,
+      tasseOggi: lordo * d.t,
+      tasseNoi: tua * d.t,
+      risparmio: lordo > 0 ? 1 - tua / lordo : 0
+    };
+  }
+
+  /* come si chiama l'imposta, secondo il regime scelto nel calcolatore */
+  function nomeImposta(d) {
+    var p = pct(d.t);
+    if (d.regime === "ced21" || d.regime === "ced26") return "la cedolare del " + p + "%";
+    if (d.regime === "forf") return "l\u2019imposta del forfettario (" + p + "%)";
+    if (d.regime === "irpef") return "l\u2019IRPEF (circa " + p + "%)";
+    return "l\u2019imposta del " + p + "%";
+  }
+
+  function disegna(d, personale) {
+    var c = conteggio(d);
+    if (!(c.lordo > 0) || !(c.tua > 0)) return false;
+
+    var barra = document.getElementById("ppm-barra");
+    var quote = { tua: c.tua, ges: c.ges, abn: c.abn, pul: c.pul };
+    var etichette = { tua: "la tua quota", ges: "gestione", abn: "Airbnb", pul: "pulizie" };
+    Object.keys(quote).forEach(function (k) {
+      var seg = barra.querySelector('[data-seg="' + k + '"]');
+      if (!seg) return;
+      var largo = quote[k] / c.lordo * 100;
+      seg.style.width = largo.toFixed(2) + "%";
+      seg.innerHTML = "<i>" + etichette[k] + "</i><b>" + euro0.format(quote[k]) + "</b>";
+    });
+    barra.setAttribute("aria-label",
+      "Dei " + euro0.format(c.lordo) + " versati dall'ospite, " + euro0.format(c.tua) +
+      " sono la tua quota netta, " + euro0.format(c.ges) + " la gestione, " +
+      euro0.format(c.abn) + " la commissione Airbnb, " + euro0.format(c.pul) + " le pulizie.");
+
+    document.getElementById("ppm-graffa-noi").style.width = (c.tua / c.lordo * 100).toFixed(2) + "%";
+    document.getElementById("ppm-graffa-oggi").textContent =
+      "Oggi " + nomeImposta(d) + " la paghi su tutti i " + euro0.format(c.lordo);
+    document.getElementById("ppm-tasse-oggi").textContent = euro2.format(c.tasseOggi);
+    document.getElementById("ppm-tasse-noi").textContent = euro2.format(c.tasseNoi);
+    document.getElementById("ppm-nota").textContent =
+      (personale ? "Sui tuoi numeri, a parit\u00e0 di incasso: il " : "A parit\u00e0 di incasso: il ") +
+      pct(c.risparmio) + "% di tasse in meno. E l\u2019immobile, gestito da noi, incassa anche di pi\u00f9.";
+
+    if (personale) {
+      document.getElementById("ppm-piccolo").textContent =
+        "Conto fatto sui numeri che hai messo nel calcolatore, con " + nomeImposta(d) +
+        " e commissione Airbnb del 15,5% pi\u00f9 IVA. \u00c8 una stima su una prenotazione tipo: " +
+        "in call la rifacciamo sui tuoi incassi veri. Questa pagina non \u00e8 consulenza fiscale.";
+    }
+
+    var notti = d.nights === 1 ? "1 notte" : d.nights + " notti";
+    document.getElementById("ppm-caso").textContent =
+      (personale ? "La tua prenotazione tipo: " : "Una prenotazione da ") + notti +
+      " a " + euro0.format(d.price) +
+      (d.cleaning > 0 ? ", pi\u00f9 " + euro0.format(d.cleaning) + " di pulizie" : "") +
+      ": l\u2019ospite versa " + euro0.format(c.lordo) + ".";
+    return true;
+  }
+
+  /* ---- il caso della persona, se c'e' ---- */
+  function caso() {
+    var raw = null;
+    try { raw = localStorage.getItem("airtax_caso"); } catch (e) { return null; }
+    if (!raw) return null;
+    var d = null;
+    try { d = JSON.parse(raw); } catch (e) { return null; }
+    if (!d || d.v !== 1) return null;
+    if (!d.ts || (Date.now() - d.ts) > GIORNI_VALIDI * 864e5) return null;
+
+    d.price = Number(d.price); d.cleaning = Number(d.cleaning) || 0;
+    d.nights = Math.round(Number(d.nights)) || 0;
+    d.effN = Number(d.effN); d.t = Number(d.t);
+    /* Un regime senza imposta sul lordo (impresa) non ha niente da spostare:
+       il confronto verrebbe 0 contro 0. Meglio l'esempio generico. */
+    if (!(d.price > 0) || !(d.nights >= 1) || !(d.t > 0) || !(d.effN > 0)) return null;
+    return d;
+  }
+
+  var mio = caso();
+  if (mio && disegna(mio, true)) {
+    document.getElementById("ppm-tuoi").hidden = false;
+    document.getElementById("ppm-rifai").hidden = false;
+  } else {
+    /* anche il generico passa dallo stesso conto: FEE_GESTIONE resta
+       l'unico posto da cambiare */
+    disegna({ price: 100, cleaning: 40, nights: 3, regime: "ced21",
+              t: 0.21, effN: COMM_NUOVA * (1 + IVA) }, false);
+  }
+})();
+</script>
 
 <!-- ppm:05-obiezioni ======================================================
      "Cosa sapere prima di sentirci" — otto card 16:9 con titolo in overlay.

@@ -851,6 +851,32 @@
       camere_letto: propVal('camere'),
       posti_letto: propVal('postiletto')
     };
+
+    /* Caso studio per la pagina VSL.
+       Stesso dominio, stesso browser: la VSL rilegge questi numeri e rifa'
+       il conto della cedolare sui dati veri di chi sta guardando, invece che
+       sull'esempio inventato. Salviamo gli ingredienti (prezzo, pulizie,
+       notti, aliquota, commissione effettiva), non il risultato: il conto
+       della barra non esiste qui e farlo in due posti lo farebbe divergere,
+       com'e' gia' successo fra repo e pagina online.
+       Resta tutto nel browser: non esce niente verso nessuno. */
+    try{
+      localStorage.setItem('airtax_caso', JSON.stringify({
+        v: 1,
+        ts: Date.now(),
+        price: Math.round(price),
+        cleaning: Math.round(cleaning),
+        nights: nights,
+        nightsYear: nightsYear,
+        regime: regime,
+        regimeLabel: REG_LABEL[regime],
+        effN: p.effN,            // commissione Airbnb + IVA, dal 13/10/2026
+        t: p.t,                  // aliquota sul lordo, secondo il regime scelto
+        np: np,
+        pct: pct,
+        citta: propVal('citta')
+      }));
+    }catch(e){}
   }
 
   /* ====== STEP 3 — DATI IMMOBILE (aggiunta v2) ======

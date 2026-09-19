@@ -7,7 +7,12 @@ nell'ambiente di sviluppo:
 node tools/test/worker.mjs        # il Worker Cloudflare, senza toccare GHL
 node tools/test/calcolatore.mjs   # calcolatore v2 in un browser vero
 node tools/test/vsl.mjs           # pagina VSL + percentuale di video guardata
+node tools/test/caso-studio.mjs   # i numeri che passano dal calcolatore alla VSL
 ```
+
+`caso-studio.mjs` serve le due pagine dalla **stessa** origine, come su
+`tools.affittibreviaroma.com`: e' l'unico modo perche' condividano il
+localStorage, ed e' esattamente il meccanismo che verifica.
 
 `calcolatore.mjs` e `vsl.mjs` aprono la pagina in Chromium, sostituiscono
 l'indirizzo del Worker con un finto server locale e controllano cosa arriva:
