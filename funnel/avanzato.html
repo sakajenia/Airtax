@@ -210,8 +210,8 @@
           </div>
         </div>
         <div class="field">
-          <label><input type="checkbox" id="vatAdded"> IVA 22% aggiunta sopra la commissione</label>
-          <span class="hint">Airbnb dichiara la commissione «IVA inclusa, dove applicabile». Attiva questa opzione per lo scenario prudenziale (privati senza P.IVA). Per i forfettari l'IVA in reverse charge (non recuperabile) è già applicata in automatico.</span>
+          <label><input type="checkbox" id="ivaDetraibile"> La mia P.IVA scarica l'IVA sulla commissione</label>
+          <span class="hint">Di default l'IVA 22% sulla commissione è contata come costo per tutti: il privato se la vede trattenere e non la recupera, il forfettario la versa in reverse charge senza poterla detrarre. Attiva questa casella <b>solo</b> se hai P.IVA ordinaria iscritta al VIES e la scarichi davvero.</span>
         </div>
       </details>
     </div>
@@ -283,7 +283,7 @@
   <h3>Perché «+15,5%» non basta</h3>
   <p>Le imposte italiane sugli affitti brevi (cedolare secca, IRPEF, forfettario) si calcolano sul <strong>corrispettivo lordo</strong> — il prezzo esposto, commissione inclusa (Circolare AdE 24/E/2017): la commissione Airbnb <strong>non è deducibile</strong> per i privati. Anche la ritenuta d'acconto del 21% che Airbnb applica come sostituto d'imposta è calcolata sul lordo, pulizie incluse, prima della commissione. Alzando il prezzo aumentano quindi anche le tasse: per mantenere il netto serve un rincaro maggiore del semplice recupero della commissione.</p>
   <h3>Assunzioni e limiti</h3>
-  <p>Aliquote 2026 (L. 199/2025): cedolare 21% sul primo immobile e 26% sul secondo; obbligo di P.IVA dal terzo; IRPEF 23/33/43%; forfettario 15% (5% start-up) con coefficiente di redditività 40% (ATECO 55.20). Ritenuta 21% a titolo d'acconto per gli host senza P.IVA (per la cedolare 21% coincide con l'imposta dovuta). Non modellati: imposta di soggiorno (partita di giro), contributi INPS fissi, IMU e costi di gestione, sconti settimanali/mensili, co-hosting. La commissione è trattata come IVA inclusa salvo opzione avanzata; per i forfettari è aggiunta l'IVA 22% in reverse charge (non recuperabile).</p>
+  <p>Aliquote 2026 (L. 199/2025): cedolare 21% sul primo immobile e 26% sul secondo; obbligo di P.IVA dal terzo; IRPEF 23/33/43%; forfettario 15% (5% start-up) con coefficiente di redditività 40% (ATECO 55.20). Ritenuta 21% a titolo d'acconto per gli host senza P.IVA (per la cedolare 21% coincide con l'imposta dovuta). Non modellati: imposta di soggiorno (partita di giro), contributi INPS fissi, IMU e costi di gestione, sconti settimanali/mensili, co-hosting. Sulla commissione è sempre aggiunta l'IVA 22%, in ogni regime: il privato se la vede trattenere da Airbnb, il forfettario la versa in reverse charge senza poterla detrarre. Solo chi ha P.IVA ordinaria iscritta al VIES può escluderla, con l'apposita casella.</p>
   <h3>Fonti principali</h3>
   <p>
     <a href="https://www.airbnb.com/help/article/1857" rel="noopener">Airbnb — Costi del servizio (art. 1857)</a> ·
@@ -323,13 +323,20 @@
 
   function readInputs(){
     var regime = $('regime').value;
-    var vatAdded = $('vatAdded').checked;
+    var ivaDetraibile = $('ivaDetraibile').checked;
     var fOld = (parseFloat($('feeOld').value)||0)/100;
     var fNew = (parseFloat($('feeNew').value)||0)/100;
+    /* IVA 22% sulla commissione: applicata SEMPRE, a ogni regime.
+       Il forfettario la subisce per reverse charge non recuperabile. Il privato
+       senza P.IVA se la vede trattenere da Airbnb e non la recupera. La P.IVA
+       ordinaria in teoria la scarica, ma servono iscrizione al VIES e reverse
+       charge gestito bene: troppo raro per darlo per scontato, quindi di default
+       e' un costo anche per lei. Chi sa di poterla detrarre lo dichiara con la
+       casella, che e' un opt-out esplicito e non il default.
+       Stessa identica regola del calcolatore base: i due strumenti devono dire
+       la stessa cosa. */
     function eff(f){
-      if(regime==='forf15'||regime==='forf5') return f*(1+VAT); // reverse charge non recuperabile
-      if(regime==='impresa') return f;                          // IVA neutra
-      return vatAdded ? f*(1+VAT) : f;                          // privato
+      return ivaDetraibile ? f : f*(1+VAT);
     }
     var m = parseFloat($('irpefRate').value)||0.33;
     var add = (parseFloat($('addiz').value)||0)/100;
@@ -519,9 +526,10 @@
       s2.t = {ced21:0.21, ced26:0.26, irpef:IRPEF_BASE*((parseFloat($('irpefRate').value)||0.33)+(parseFloat($('addiz').value)||0)/100), forf15:0.06, forf5:0.02, impresa:0}[rk];
       var f = s.fNewRaw, fo = s.fOldRaw;
       var effN, effO;
-      if(rk==='forf15'||rk==='forf5'){ effN=f*(1+VAT); effO=fo*(1+VAT); }
-      else if(rk==='impresa'){ effN=f; effO=fo; }
-      else { effN = $('vatAdded').checked?f*(1+VAT):f; effO = $('vatAdded').checked?fo*(1+VAT):fo; }
+      // stessa regola di eff(): IVA sempre, salvo opt-out esplicito
+      var detr = $('ivaDetraibile').checked;
+      effN = detr ? f  : f*(1+VAT);
+      effO = detr ? fo : fo*(1+VAT);
       s2.fNewEff=effN; s2.fOldEff=effO;
       var kk = kFor(rk==='impresa'?'payout':'net', s2);
       if(!isFinite(kk)){ return; }
@@ -546,7 +554,7 @@
   }
 
   // events
-  ['nightly','nights','cleaning','nightsYear','regime','irpefRate','feeOld','guestFeeOld','feeNew','addiz','vatAdded'].forEach(function(id){
+  ['nightly','nights','cleaning','nightsYear','regime','irpefRate','feeOld','guestFeeOld','feeNew','addiz','ivaDetraibile'].forEach(function(id){
     $(id).addEventListener('input', render);
     $(id).addEventListener('change', render);
   });

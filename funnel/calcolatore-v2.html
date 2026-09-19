@@ -46,7 +46,7 @@
     min-height:56px; text-align:center;
   }
   input[type=number]:focus{outline:3px solid var(--coral); outline-offset:1px; border-color:var(--coral);}
-  .row2{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px;}
+  .row2{display:grid; grid-template-columns:repeat(auto-fit,minmax(118px,1fr)); gap:10px; margin-top:14px;}
   .row2 label{font-size:.78rem; font-weight:700; display:block; margin-bottom:5px; text-align:center;}
   .row2 input{font-size:1.1rem; min-height:46px; padding:8px;}
   /* ---- STEP 3: dati immobile (aggiunta v2) ---- */
@@ -205,11 +205,15 @@
         <input type="number" id="cleaning" inputmode="decimal" min="0" step="1" placeholder="es. 40">
       </div>
       <div>
+        <label for="nights">🌙 Notti per soggiorno</label>
+        <input type="number" id="nights" inputmode="numeric" min="1" step="1" value="3">
+      </div>
+      <div>
         <label for="nightsYear">📅 Notti affittate in un anno</label>
         <input type="number" id="nightsYear" inputmode="numeric" min="0" step="5" value="130">
       </div>
     </div>
-    <p class="hint">Facoltativi. Non sai le notti? Lascia 130, è la media italiana.</p>
+    <p class="hint">Airbnb trattiene la commissione <b>anche sulle pulizie</b>, e le tasse si pagano pure su quelle: per questo servono le notti per soggiorno, così le ripartiamo. Non le sai? Lascia 3 notti e 130 notti l'anno, sono le medie italiane.</p>
   </div>
 
   <!-- STEP 2: REGIME -->
@@ -493,6 +497,7 @@
 
     var price=parseFloat($('price').value)||0;
     var cleaning=Math.max(0,parseFloat($('cleaning').value)||0);
+    var nights=Math.max(1,Math.round(parseFloat($('nights').value)||1));
     var nightsYear=Math.max(0,parseFloat($('nightsYear').value)||0);
 
     var k=kFor(goal,p);
@@ -520,8 +525,20 @@
     var pct=Math.round((np/price-1)*100);
     var isImp=(regime==='impresa');
 
+    /* Airbnb trattiene commissione + IVA sul SUBTOTALE, pulizie incluse, e anche
+       le tasse si pagano sul lordo pulizie comprese. Prima qui entrava solo il
+       prezzo della notte: la perdita risultava sottostimata per chiunque avesse
+       una voce pulizie. Ripartiamo le pulizie sulle notti del soggiorno, cosi'
+       resta tutto "a notte" come nel resto della pagina ma il conto e' quello
+       giusto: su base annua e' identico a calcolare per soggiorno e moltiplicare
+       per il numero di soggiorni. */
+    var cpnOld = cleaning/nights;      // quota pulizie per notte, prezzo di oggi
+    var cpnNew = nc/nights;            // quota pulizie per notte, prezzo nuovo
+    var baseOld = price + cpnOld;      // imponibile a notte, oggi
+    var baseNew = np    + cpnNew;      // imponibile a notte, col nuovo prezzo
+
     function net(P,eff){ return P - P*eff - P*p.t; }   // ti restano, a notte
-    var netOld=net(price,p.effO), netNothing=net(price,p.effN), netNew=net(np,p.effN);
+    var netOld=net(baseOld,p.effO), netNothing=net(baseOld,p.effN), netNew=net(baseNew,p.effN);
     var loss=netOld-netNothing;
 
     // HERO
@@ -613,12 +630,12 @@
       var segs=[['you',you],['fee',fee]]; if(tax>0.005) segs.push(['tax',tax]);
       var html='<div class="barrow"><div class="barlbl">'+label+'</div><div class="bar">';
       segs.forEach(function(s){
-        var wPct=s[1]/np*100;
+        var wPct=s[1]/baseNew*100;
         html+='<div class="seg '+s[0]+'" style="width:'+wPct.toFixed(2)+'%">'+(wPct>=14?fmt0.format(Math.round(s[1])):'')+'</div>';
       });
       return html+'</div></div>';
     }
-    $('bars').innerHTML = bar('Oggi · '+fmt0.format(price), price, p.effO) + bar('Nuovo · '+fmt0.format(np), np, p.effN);
+    $('bars').innerHTML = bar('Oggi · '+fmt0.format(price), baseOld, p.effO) + bar('Nuovo · '+fmt0.format(np), baseNew, p.effN);
     $('barCap').textContent = goal==='net'
       ? 'La parte verde — la tua — resta uguale 💚'
       : (diff>0.005 ? 'La parte verde — la tua — si accorcia un po’: è quello a cui rinunci.' : 'La parte verde — la tua — resta uguale 💚');
@@ -771,7 +788,7 @@
   var CID_KEY  = 'airtax_cid';
   var EMAIL_KEY= 'airtax_em';
   var SAVE_DELAY = 800;
-  var LS_INPUTS = ['price','cleaning','nightsYear','citta','zona','via','camere','postiletto'];
+  var LS_INPUTS = ['price','cleaning','nights','nightsYear','citta','zona','via','camere','postiletto'];
   var CALC_KEYS = ['prezzo_attuale','prezzo_consigliato','aumento_pct','regime_calc',
                    'obiettivo_calc','netto_oggi','netto_nuovo','perdita_anno'];
   var saveTimer = null, lastSent = '', restoring = false;
