@@ -222,54 +222,51 @@ che arriva e l'eventuale errore.
 
 ---
 
-## 7 · Il caso studio con i numeri veri del lead
+## 7 · Il conto, e i numeri veri del lead
 
-La barra colorata dentro "Il metodo in 4 fasi" non è sempre l'esempio da
-340 €: quando può, usa **i numeri che quella persona ha appena messo nel
-calcolatore**.
+Subito sotto la prova sociale, prima del metodo in 4 fasi, c'è la card che
+risponde a una domanda sola: **quanto di tasse paghi oggi, quanto con noi.**
+Due barre, due numeri, una frase. Niente di più: su un telefono una barra a
+quattro fette si legge male e si capisce in tre secondi invece che in uno.
+
+E quando può, non usa un esempio: usa **i numeri che quella persona ha appena
+messo nel calcolatore.**
 
 Come funziona: il calcolatore salva nel browser (`localStorage`, chiave
-`airtax_caso`) gli ingredienti del suo conto — prezzo a notte, pulizie,
-notti per soggiorno, regime fiscale, aliquota, commissione. La VSL, che sta
-sullo stesso dominio, li rilegge e rifà la barra con quei numeri. Nessun
-dato esce dal browser e non serve nessuna configurazione su GHL: è roba sua,
-mostrata a lui.
+`airtax_caso`) gli ingredienti del suo conto — prezzo a notte, pulizie, notti
+per soggiorno, regime fiscale, aliquota, commissione. La VSL, che sta sullo
+stesso dominio, li rilegge e rifà le due righe. Nessun dato esce dal browser e
+non serve nessuna configurazione su GHL: è roba sua, mostrata a lui.
 
-Quando è personalizzato si vede: compare la pillola verde **«I tuoi numeri»**
-in alto a destra della card, la riga sopra la barra descrive la *sua*
-prenotazione, e sotto compare «Non sono i tuoi numeri? rifai il calcolo».
+Quando è personalizzato si vede: pillola verde **«I tuoi numeri»**, la riga
+sopra le barre parla della *sua* prenotazione, e sotto compare «rifai il
+calcolo».
 
-Torna da solo all'esempio generico, senza rompere niente, se:
+Torna da solo all'esempio, senza rompere niente, se:
 
 - la persona non è passata dal calcolatore, o lo ha fatto da un altro
   dispositivo (arriva su `/grazie` da un link in email);
 - ha scelto il regime **impresa**, che non paga un'imposta sul lordo: il
   confronto sarebbe 0 contro 0;
 - il dato è più vecchio di 60 giorni;
-- i numeri non reggono (quota netta che verrebbe negativa, localStorage
-  corrotto).
+- i numeri non reggono, o il `localStorage` è corrotto.
 
 ### L'unico numero da decidere: la quota di gestione
 
-Dentro `funnel/vsl/grazie-vsl.html`, nel blocco `ppm:04b-caso`:
+Dentro `funnel/vsl/grazie-vsl.html`, nel blocco `ppm:035b-caso`:
 
 ```js
 var FEE_GESTIONE = 0.20;          /* <-- la vostra quota di gestione */
 ```
 
-Quella costante regge **sia** l'esempio generico **sia** il caso personale:
-si cambia lì e basta, i numeri scritti nell'HTML sono solo la versione senza
-JavaScript.
+Quella costante regge **sia** l'esempio **sia** il caso personale: si cambia
+lì e basta.
 
-⚠️ Da sapere: quel numero regge anche il titolo della pagina. Col 20% le
-tasse dell'esempio passano da 71,40 € a 35,22 €, cioè **il 50,7% in meno**,
-ed è quello che promette l'headline. Ma il risparmio dipende da quanto pesano
-commissione + pulizie + gestione sul lordo: **un host senza costi di pulizia
-si vedrà scrivere una percentuale più bassa** (con il 20% di gestione,
-circa il 39%), e lì l'headline «oltre il 50%» non è più sostenuta dal numero
-che gli compare sotto.
+La percentuale mostrata («−51%») è calcolata e arrotondata **per difetto**,
+mai a favore. Dipende da quanto pesano commissione, pulizie e gestione sul
+lordo, quindi cambia da host a host: con il 20% di gestione va da circa −38%
+(host senza costi di pulizia) a circa −51%. Per questo il titolo dice **«fino
+al 50%»** e non «oltre il 50%»: così regge in tutti e due i casi.
 
-Le strade sono due, decidi tu: tenere il numero esatto (onesto, ma a volte
-contraddice il titolo) o ammorbidire il titolo in qualcosa tipo «fino al 50%
-in meno di tasse». Dimmi quale preferisci e la tua percentuale di gestione,
-e sistemo.
+Dammi la tua percentuale di gestione e la aggiorno.
+

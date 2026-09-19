@@ -201,7 +201,7 @@
   --ppm-shadow-soft:0 1px 2px rgba(28,27,27,.03),0 10px 26px -14px rgba(28,27,27,.13);
   --ppm-shadow-lift:0 2px 4px rgba(28,27,27,.04),0 26px 54px -22px rgba(28,27,27,.24);
   --ppm-ease:cubic-bezier(.16,1,.3,1);
-  --ppm-section-y:clamp(52px,8vw,110px);
+  --ppm-section-y:clamp(44px,7.5vw,110px);
   --ppm-gutter:clamp(20px,5vw,40px);
   font-family:var(--ppm-font-body); color:var(--ppm-ink); background:var(--ppm-paper);
   font-size:17px; line-height:1.6; font-weight:400;
@@ -253,9 +253,9 @@
 .ppm-page .ppm-btn{
   --ppm-shine:100%;
   position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;
-  min-height:56px;padding:0 30px;border:0;border-radius:var(--ppm-radius-pill);
+  min-height:52px;padding:0 26px;border:0;border-radius:var(--ppm-radius-pill);
   background:linear-gradient(180deg,#9A2029 0%,var(--ppm-accent) 52%,var(--ppm-accent-ink) 100%);
-  color:#fff;font-weight:800;font-size:17px;line-height:1.25;
+  color:#fff;font-weight:800;font-size:16px;line-height:1.25;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 14px 30px -14px rgba(128,24,32,.85);
   transition:transform .18s var(--ppm-ease),box-shadow .25s var(--ppm-ease);
   animation:ppm-shine-run 3.6s linear infinite;
@@ -546,11 +546,12 @@
       </p>
 
       <h1 class="ppm-h1 ppm-hero-title ppm-reveal">
-        Scopri come pagare <span class="ev">oltre il 50% in meno di tasse</span> con il tuo alloggio
+        Stai pagando tasse anche sui soldi che <span class="ev">non hai mai incassato</span>
       </h1>
 
       <p class="ppm-lead ppm-hero-lead ppm-reveal">
-        Un metodo fatto per host singoli, che a Roma in pochissimi conoscono.
+        Si sistema: fino al 50% di tasse in meno sul tuo alloggio.
+        Un metodo per host singoli, che a Roma in pochissimi conoscono.
       </p>
     </div>
 
@@ -673,7 +674,12 @@
   margin-top:18px;font-size:14.5px;color:var(--ppm-muted)}
 .ppm-page .ppm-rassicura span{display:inline-flex;align-items:center;gap:7px}
 .ppm-page .ppm-rassicura svg{width:15px;height:15px;color:var(--ppm-ok);flex:0 0 auto}
-@media (max-width:560px){ .ppm-page .ppm-ctasec .ppm-btn{width:100%} }
+/* su telefono resta un pulsante, non una banda: a tutta larghezza sembrava
+   un blocco di colore e perdeva la forma di cosa cliccabile */
+@media (max-width:560px){
+  .ppm-page .ppm-btn{min-height:48px;padding:0 22px;font-size:15px}
+  .ppm-page .ppm-btn .ppm-lbl svg{width:17px;height:17px}
+}
 </style>
 
 <section class="ppm-ctasec" id="ppm-prenota">
@@ -773,6 +779,226 @@
   </div>
 </section>
 
+<!-- ppm:035-conto ==========================================================
+     Il conto, in due righe. Una sola domanda: quanto di tasse oggi, quanto
+     con noi. La composizione del lordo (Airbnb, pulizie, gestione) resta
+     nella frase sotto: su un telefono una barra a quattro fette si legge
+     male e si capisce in tre secondi invece che in uno.
+     I numeri diventano quelli della persona, se il calcolatore ne ha
+     lasciati nel browser. Vedi lo script ppm:035b piu' sotto.
+     ====================================================================== -->
+<style>
+.ppm-page .ppm-contosec{padding-top:clamp(16px,2.6vw,32px);padding-bottom:clamp(20px,3vw,38px)}
+.ppm-page .ppm-conto{
+  width:100%;max-width:600px;margin-inline:auto;
+  background:var(--ppm-card);border:1px solid var(--ppm-line);
+  border-radius:var(--ppm-radius-lg);box-shadow:var(--ppm-shadow-soft);
+  padding:clamp(18px,2.6vw,26px);
+}
+.ppm-page .ppm-conto-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px 14px}
+.ppm-page .ppm-conto-top p{font-size:14.5px;line-height:1.45;color:var(--ppm-muted)}
+.ppm-page .ppm-conto-top p b{color:var(--ppm-ink);font-weight:800}
+.ppm-page .ppm-tuoi{display:inline-flex;align-items:center;gap:5px;flex:0 0 auto;
+  padding:4px 9px;border-radius:var(--ppm-radius-pill);
+  background:var(--ppm-ok-soft);color:var(--ppm-ok);
+  font-size:11px;font-weight:800;line-height:1;white-space:nowrap}
+.ppm-page .ppm-tuoi svg{width:12px;height:12px;flex:0 0 auto}
+
+.ppm-page .ppm-righe{display:grid;gap:11px;margin-top:18px}
+.ppm-page .ppm-riga{display:grid;grid-template-columns:4.4rem minmax(0,1fr) auto;
+  align-items:center;gap:clamp(9px,1.4vw,14px)}
+.ppm-page .ppm-riga .k{font-size:12.5px;font-weight:800;letter-spacing:.02em;color:var(--ppm-muted)}
+.ppm-page .ppm-riga .b{height:12px;border-radius:99px;background:var(--ppm-warm)}
+.ppm-page .ppm-riga .b i{display:block;height:100%;border-radius:99px;background:var(--ppm-accent);
+  transform:scaleX(var(--w,1));transform-origin:left}
+.ppm-page .ppm-riga .v{font-family:var(--ppm-font-display);font-weight:800;
+  font-size:clamp(20px,2.6vw,26px);line-height:1;letter-spacing:-.02em;
+  white-space:nowrap;font-variant-numeric:tabular-nums}
+.ppm-page .ppm-riga.oggi .v{color:var(--ppm-ink-2)}
+.ppm-page .ppm-riga.noi .k,.ppm-page .ppm-riga.noi .v{color:var(--ppm-ok)}
+.ppm-page .ppm-riga.noi .b i{background:var(--ppm-ok)}
+
+/* le barre entrano da sinistra quando la card compare. Senza JS non c'e'
+   nessun is-in: restano piene, che e' lo stato giusto da leggere. */
+.ppm-page.ppm-js .ppm-conto .ppm-riga .b i{transform:scaleX(0);
+  transition:transform 1s cubic-bezier(.16,1,.3,1) .12s}
+.ppm-page.ppm-js .ppm-conto.is-in .ppm-riga .b i{transform:scaleX(var(--w,1))}
+
+.ppm-page .ppm-conto .frase{margin-top:17px;font-size:14.5px;line-height:1.55;color:var(--ppm-muted)}
+.ppm-page .ppm-conto .frase b{color:var(--ppm-accent);font-weight:800}
+.ppm-page .ppm-conto .piedino{margin-top:12px;display:flex;flex-wrap:wrap;gap:4px 10px;
+  justify-content:space-between;align-items:baseline;
+  font-size:12px;line-height:1.5;color:var(--ppm-muted)}
+.ppm-page .ppm-conto .piedino a{color:var(--ppm-accent-ink);font-weight:700;
+  border-bottom:1px solid rgba(128,24,32,.3);white-space:nowrap}
+
+@media (max-width:560px){
+  /* la pillola sopra, la frase sotto a tutta riga: altrimenti il testo si
+     spezzava in tre righe per far posto al badge */
+  .ppm-page .ppm-conto-top{flex-direction:column-reverse;align-items:flex-start;gap:10px}
+  .ppm-page .ppm-riga{grid-template-columns:3.4rem minmax(0,1fr) auto;gap:9px}
+  .ppm-page .ppm-riga .k{font-size:11.5px}
+  .ppm-page .ppm-riga .b{height:10px}
+}
+@media (prefers-reduced-motion:reduce){
+  .ppm-page.ppm-js .ppm-conto .ppm-riga .b i{transform:scaleX(var(--w,1));transition:none}
+}
+</style>
+
+<section class="ppm-contosec" id="ppm-conto-sec">
+  <div class="ppm-container">
+    <div class="ppm-conto ppm-reveal" id="ppm-conto">
+
+      <div class="ppm-conto-top">
+        <p id="ppm-caso">Su <b>340 &euro;</b> che versa l&rsquo;ospite, di tasse paghi</p>
+        <span class="ppm-tuoi" id="ppm-tuoi" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 6 9 17l-5-5"></path>
+          </svg>
+          I tuoi numeri
+        </span>
+      </div>
+
+      <div class="ppm-righe">
+        <div class="ppm-riga oggi">
+          <span class="k">oggi</span>
+          <span class="b"><i style="--w:1"></i></span>
+          <span class="v" id="ppm-tasse-oggi">71,40 &euro;</span>
+        </div>
+        <div class="ppm-riga noi">
+          <span class="k">con noi</span>
+          <span class="b"><i id="ppm-barra-noi" style="--w:.493"></i></span>
+          <span class="v" id="ppm-tasse-noi">35,22 &euro;</span>
+        </div>
+      </div>
+
+      <p class="frase" id="ppm-nota">
+        <b>&minus;50%.</b> Oggi la cedolare la paghi su tutto quello che versa l&rsquo;ospite,
+        pulizie e commissione Airbnb comprese. Con noi, solo su quello che arriva davvero a te.
+      </p>
+
+      <p class="piedino">
+        <span id="ppm-piccolo">Esempio su una prenotazione tipo. Non &egrave; consulenza fiscale.</span>
+        <a href="https://tools.affittibreviaroma.com/calcolatore" id="ppm-rifai" hidden>rifai il calcolo</a>
+      </p>
+
+    </div>
+  </div>
+</section>
+
+<script>
+/* ppm:035b-caso — il conto con i numeri di chi sta guardando.
+   -------------------------------------------------------------------------
+   Il calcolatore, sullo stesso dominio, lascia in localStorage gli
+   ingredienti del suo conto (chiave "airtax_caso"). Qui li rileggiamo e
+   rifacciamo le due righe con quei numeri, al posto dell'esempio.
+   Non esce niente dal browser: e' roba sua, mostrata a lui.
+
+   Se non c'e' niente da leggere, o i numeri non reggono, resta l'esempio
+   gia' scritto nell'HTML: la pagina non se ne accorge e nessuno vede un buco.
+
+   L'UNICO numero da cambiare e' FEE_GESTIONE: regge sia l'esempio sia il
+   caso personale.
+   ------------------------------------------------------------------------- */
+(function () {
+  "use strict";
+
+  var FEE_GESTIONE = 0.20;          /* <-- la vostra quota di gestione */
+  var IVA = 0.22, COMM_NUOVA = 0.155;
+  var GIORNI_VALIDI = 60;           /* oltre, il dato e' vecchio: meglio l'esempio */
+
+  if (!document.getElementById("ppm-conto")) return;
+
+  var euro0 = new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  var euro2 = new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  function testo(id, s) { var e = document.getElementById(id); if (e) e.textContent = s; }
+
+  /* Un conto solo, usato sia per l'esempio sia per il caso vero: due formule
+     in due posti diversi divergono, e qui e' gia' successo una volta. */
+  function conteggio(d) {
+    var lordo = d.price * d.nights + d.cleaning;
+    var tua = lordo * (1 - d.effN - FEE_GESTIONE) - d.cleaning;
+    return {
+      lordo: lordo, tua: tua,
+      tasseOggi: lordo * d.t,
+      tasseNoi: tua * d.t,
+      quota: lordo > 0 ? tua / lordo : 0       /* quanto del lordo ti arriva */
+    };
+  }
+
+  /* come si chiama l'imposta, secondo il regime scelto nel calcolatore */
+  function nomeImposta(d) {
+    var q = (Math.round(d.t * 1000) / 10).toLocaleString("it-IT");
+    if (d.regime === "ced21" || d.regime === "ced26") return "la cedolare del " + q + "%";
+    if (d.regime === "forf") return "l\u2019imposta del forfettario";
+    if (d.regime === "irpef") return "l\u2019IRPEF";
+    return "l\u2019imposta";
+  }
+
+  function disegna(d, personale) {
+    var c = conteggio(d);
+    if (!(c.lordo > 0) || !(c.tua > 0)) return false;
+
+    testo("ppm-tasse-oggi", euro2.format(c.tasseOggi));
+    testo("ppm-tasse-noi", euro2.format(c.tasseNoi));
+    document.getElementById("ppm-barra-noi").style.setProperty("--w", c.quota.toFixed(3));
+
+    var caso = document.getElementById("ppm-caso");
+    caso.innerHTML = "";
+    caso.appendChild(document.createTextNode("Su "));
+    var forte = document.createElement("b");
+    forte.textContent = euro0.format(c.lordo);
+    caso.appendChild(forte);
+    caso.appendChild(document.createTextNode(
+      personale ? " di una tua prenotazione tipo, di tasse paghi"
+                : " che versa l\u2019ospite, di tasse paghi"));
+
+    /* arrotondato per difetto: meglio promettere meno di quanto esce */
+    var meno = Math.floor((1 - c.quota) * 100);
+    var nota = document.getElementById("ppm-nota");
+    nota.innerHTML = "";
+    var pct = document.createElement("b");
+    pct.textContent = "\u2212" + meno + "%.";   /* meno tipografico, non un trattino */
+    nota.appendChild(pct);
+    nota.appendChild(document.createTextNode(
+      " Oggi " + nomeImposta(d) + " la paghi su tutto quello che versa l\u2019ospite, " +
+      "pulizie e commissione Airbnb comprese. Con noi, solo su quello che arriva davvero a te."));
+
+    testo("ppm-piccolo", personale
+      ? "Sui numeri del tuo calcolo. \u00c8 una stima, non \u00e8 consulenza fiscale."
+      : "Esempio su una prenotazione tipo. Non \u00e8 consulenza fiscale.");
+    return true;
+  }
+
+  function caso() {
+    var raw = null;
+    try { raw = localStorage.getItem("airtax_caso"); } catch (e) { return null; }
+    if (!raw) return null;
+    var d = null;
+    try { d = JSON.parse(raw); } catch (e) { return null; }
+    if (!d || d.v !== 1) return null;
+    if (!d.ts || (Date.now() - d.ts) > GIORNI_VALIDI * 864e5) return null;
+
+    d.price = Number(d.price); d.cleaning = Number(d.cleaning) || 0;
+    d.nights = Math.round(Number(d.nights)) || 0;
+    d.effN = Number(d.effN); d.t = Number(d.t);
+    /* Il regime impresa non paga un'imposta sul lordo: il confronto sarebbe
+       zero contro zero. Meglio l'esempio. */
+    if (!(d.price > 0) || !(d.nights >= 1) || !(d.t > 0) || !(d.effN > 0)) return null;
+    return d;
+  }
+
+  var mio = caso();
+  if (mio && disegna(mio, true)) {
+    document.getElementById("ppm-tuoi").hidden = false;
+    document.getElementById("ppm-rifai").hidden = false;
+  } else {
+    disegna({ price: 100, cleaning: 40, nights: 3, regime: "ced21",
+              t: 0.21, effN: COMM_NUOVA * (1 + IVA) }, false);
+  }
+})();
+</script>
 <!-- ppm:04-metodo =========================================================
      "Il metodo in 4 fasi" — binario a capsula e card unica, come nella
      pagina di riferimento. In fondo, il conto spiegato con una barra sola.
@@ -806,59 +1032,11 @@
 .ppm-page .ppm-tl-body{font-size:16px;line-height:1.6;color:var(--ppm-muted);max-width:60ch;margin-top:3px}
 .ppm-page .ppm-tl-body .ev{color:var(--ppm-accent);font-weight:700}
 
-/* --- il conto in una barra sola --- */
-.ppm-page .ppm-conto{width:100%;max-width:760px;margin:clamp(22px,3vw,34px) auto 0;
-  background:var(--ppm-card);border:1px solid var(--ppm-line);border-radius:var(--ppm-radius-lg);
-  box-shadow:var(--ppm-shadow-soft);padding:clamp(18px,2.4vw,26px)}
-.ppm-page .ppm-conto-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px 14px;flex-wrap:wrap}
-.ppm-page .ppm-conto h3{font-size:clamp(17px,1.9vw,20px);font-weight:800;margin-bottom:4px}
-.ppm-page .ppm-tuoi{display:inline-flex;align-items:center;gap:6px;flex:0 0 auto;
-  padding:5px 11px;border-radius:var(--ppm-radius-pill);
-  background:var(--ppm-ok-soft);color:var(--ppm-ok);
-  font-size:12px;font-weight:800;letter-spacing:.02em;line-height:1;white-space:nowrap}
-.ppm-page .ppm-tuoi svg{width:13px;height:13px;flex:0 0 auto}
-.ppm-page .ppm-rifai{margin-top:12px;text-align:center;font-size:13px;color:var(--ppm-muted)}
-.ppm-page .ppm-rifai a{color:var(--ppm-accent-ink);font-weight:700;
-  border-bottom:1px solid rgba(128,24,32,.35)}
-.ppm-page .ppm-conto .caso{font-size:14.5px;color:var(--ppm-muted);margin-bottom:18px}
-.ppm-page .ppm-barra{display:flex;width:100%;height:54px;border-radius:12px;overflow:hidden}
-.ppm-page .ppm-barra .seg{display:flex;flex-direction:column;align-items:center;justify-content:center;
-  color:#fff;text-align:center;padding:0 2px;min-width:0;overflow:hidden;line-height:1.2}
-.ppm-page .ppm-barra .seg i{font-style:normal;opacity:.85;font-size:11px;white-space:nowrap}
-.ppm-page .ppm-barra .seg b{font-size:13.5px;font-weight:800;white-space:nowrap}
-.ppm-page .ppm-barra .tua{background:var(--ppm-accent)}
-.ppm-page .ppm-barra .ges{background:#9A3D33}
-.ppm-page .ppm-barra .abn{background:#8B7170}
-.ppm-page .ppm-barra .pul{background:#B3A09F}
-.ppm-page .ppm-graffa{position:relative;height:22px;margin-top:6px}
-.ppm-page .ppm-graffa i{position:absolute;top:0;height:100%;border:2px solid;border-top:0;border-radius:0 0 8px 8px}
-.ppm-page .ppm-graffa em{position:absolute;top:25px;left:0;font-style:normal;font-size:13.5px;font-weight:700;line-height:1.3}
-.ppm-page .ppm-graffa--oggi i{left:0;right:0;border-color:var(--ppm-muted)}
-.ppm-page .ppm-graffa--oggi em{color:var(--ppm-muted)}
-.ppm-page .ppm-graffa--noi i{left:0;border-color:var(--ppm-ok)}
-.ppm-page .ppm-graffa--noi em{color:var(--ppm-ok)}
-.ppm-page .ppm-esito{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;
-  border-top:1px solid var(--ppm-line);padding-top:20px;text-align:center}
-.ppm-page .ppm-esito .v{font-family:var(--ppm-font-display);font-size:clamp(26px,3.4vw,34px);font-weight:800;line-height:1.1}
-.ppm-page .ppm-esito .k{font-size:13px;color:var(--ppm-muted);display:block;margin-top:5px}
-.ppm-page .ppm-esito .prima .v{color:var(--ppm-muted);text-decoration:line-through;text-decoration-thickness:2px}
-.ppm-page .ppm-esito .dopo .v{color:var(--ppm-ok)}
-.ppm-page .ppm-esito .frec{color:var(--ppm-accent);font-size:26px;font-weight:800;line-height:1}
-.ppm-page .ppm-esito-nota{margin-top:16px;background:var(--ppm-ok-soft);color:var(--ppm-ok);
-  border-radius:12px;padding:13px 15px;font-size:15px;font-weight:700;text-align:center;line-height:1.45}
-.ppm-page .ppm-conto .piccolo{font-size:13px;color:var(--ppm-muted);margin-top:15px;line-height:1.55}
-
 @media (max-width:640px){
   .ppm-page .ppm-tl{--rail:34px;--gap:14px}
   .ppm-page .ppm-tl-dot{width:13px;height:13px}
   .ppm-page .ppm-tl-seg{width:5px}
   .ppm-page .ppm-tl-body{font-size:15.5px}
-  .ppm-page .ppm-barra{height:64px}
-  .ppm-page .ppm-barra .seg i{font-size:9.5px}
-  .ppm-page .ppm-barra .seg b{font-size:11.5px}
-  .ppm-page .ppm-barra .pul i{display:none}
-  .ppm-page .ppm-esito{grid-template-columns:1fr;gap:4px}
-  .ppm-page .ppm-esito .frec{transform:rotate(90deg)}
 }
 </style>
 
@@ -876,86 +1054,24 @@
         <li class="ppm-tl-block ppm-reveal" data-ppm-step>
           <p class="ppm-tl-step">Fase 1</p>
           <h3 class="ppm-tl-title">Guardiamo il tuo immobile, e ne prendiamo pochissimi</h3>
-          <p class="ppm-tl-body">Quindici minuti sui tuoi numeri veri: annuncio, zona, notti vendute, prezzo. Se non ha senso per tutti e due, te lo diciamo subito. Non prendiamo tutto quello che ci arriva.</p>
+          <p class="ppm-tl-body">Quindici minuti sui tuoi numeri veri: annuncio, zona, notti vendute, prezzo. Se non ha senso per tutti e due, te lo diciamo subito.</p>
         </li>
         <li class="ppm-tl-block ppm-reveal" data-ppm-step>
           <p class="ppm-tl-step">Fase 2</p>
           <h3 class="ppm-tl-title">Lo prendiamo in gestione o in cogestione</h3>
-          <p class="ppm-tl-body">L&rsquo;immobile resta tuo e le regole le fai tu. Noi ci mettiamo prezzi dinamici, annuncio, ospiti, pulizie e assistenza. Dai nostri numeri, un immobile gestito da noi rende <span class="ev">dal 35% al 60% in pi&ugrave;</span> di quanto rendeva da solo.</p>
+          <p class="ppm-tl-body">L&rsquo;immobile resta tuo, le regole le fai tu. Noi mettiamo prezzi dinamici, annuncio, ospiti, pulizie e assistenza: dai nostri numeri rende <span class="ev">dal 35% al 60% in pi&ugrave;</span> di quando era da solo.</p>
         </li>
         <li class="ppm-tl-block ppm-reveal" data-ppm-step>
           <p class="ppm-tl-step">Fase 3</p>
           <h3 class="ppm-tl-title">Attiviamo il sostituto d&rsquo;imposta</h3>
-          <p class="ppm-tl-body">Da quel momento l&rsquo;incasso non ti arriva pi&ugrave; lordo da Airbnb: passa da noi, e siamo noi a trattenere e versare l&rsquo;imposta al posto tuo. &Egrave; la stessa cosa che fa il datore di lavoro con la busta paga.</p>
+          <p class="ppm-tl-body">L&rsquo;incasso non ti arriva pi&ugrave; lordo da Airbnb: passa da noi, e siamo noi a trattenere e versare l&rsquo;imposta al posto tuo. Come fa il datore di lavoro con la busta paga.</p>
         </li>
         <li class="ppm-tl-block ppm-reveal" data-ppm-step>
           <p class="ppm-tl-step">Fase 4</p>
           <h3 class="ppm-tl-title">Paghi le tasse sul netto, non pi&ugrave; sul lordo</h3>
-          <p class="ppm-tl-body">Oggi la cedolare la paghi su <span class="ev">tutto</span> quello che versa l&rsquo;ospite: notti, pulizie e la fetta che si tiene Airbnb. Soldi che non hai mai visto, ma su cui paghi lo stesso. Da qui in poi paghi solo su quello che arriva davvero a te.</p>
+          <p class="ppm-tl-body">Fino a oggi hai pagato <span class="ev">anche</span> sulla fetta di Airbnb e sulle pulizie: soldi che non hai mai visto. Da qui in poi paghi solo su quello che arriva davvero a te.</p>
         </li>
       </ol>
-    </div>
-
-    <div class="ppm-conto ppm-reveal" id="ppm-conto">
-      <div class="ppm-conto-top">
-        <h3>Su quanto stai pagando la cedolare, davvero</h3>
-        <span class="ppm-tuoi" id="ppm-tuoi" hidden>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
-               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M20 6 9 17l-5-5"></path>
-          </svg>
-          I tuoi numeri
-        </span>
-      </div>
-      <p class="caso" id="ppm-caso">Una prenotazione da 3 notti a 100 &euro;, pi&ugrave; 40 &euro; di pulizie: l&rsquo;ospite versa 340 &euro;.</p>
-
-      <!-- I numeri qui sotto sono calcolati con una quota di gestione del 20%.
-           Se la tua e' diversa, rifai i quattro valori e le larghezze:
-             Airbnb    = 340 x 15,5% x 1,22 (IVA) = 64,29 EUR -> 18,9%
-             pulizie   = 40,00 EUR                            -> 11,8%
-             gestione  = 340 x la TUA percentuale             -> 20,0%
-             tua quota = quello che resta                     -> 49,3%
-           e aggiorna i due importi sotto (21% di 340, e 21% della tua quota). -->
-      <div class="ppm-barra" id="ppm-barra" role="img"
-           aria-label="Dei 340 euro versati dall'ospite, 167,71 sono la tua quota netta, 68 la gestione, 64,29 la commissione Airbnb, 40 le pulizie.">
-        <span class="seg tua" data-seg="tua" style="width:49.3%"><i>la tua quota</i><b>167,71 &euro;</b></span>
-        <span class="seg ges" data-seg="ges" style="width:20.0%"><i>gestione</i><b>68 &euro;</b></span>
-        <span class="seg abn" data-seg="abn" style="width:18.9%"><i>Airbnb</i><b>64,29 &euro;</b></span>
-        <span class="seg pul" data-seg="pul" style="width:11.8%"><i>pulizie</i><b>40 &euro;</b></span>
-      </div>
-
-      <div class="ppm-graffa ppm-graffa--oggi">
-        <i></i><em id="ppm-graffa-oggi">Oggi la cedolare del 21% la paghi su tutti i 340 &euro;</em>
-      </div>
-      <div class="ppm-graffa ppm-graffa--noi" style="margin-top:34px">
-        <i id="ppm-graffa-noi" style="width:49.3%"></i><em>Con il sostituto d&rsquo;imposta la paghi solo qui</em>
-      </div>
-
-      <div class="ppm-esito" style="margin-top:46px">
-        <div class="prima">
-          <div class="v ppm-display" id="ppm-tasse-oggi">71,40 &euro;</div>
-          <span class="k">di tasse su questa prenotazione, oggi</span>
-        </div>
-        <div class="frec" aria-hidden="true">&rarr;</div>
-        <div class="dopo">
-          <div class="v ppm-display" id="ppm-tasse-noi">35,22 &euro;</div>
-          <span class="k">con il sostituto d&rsquo;imposta</span>
-        </div>
-      </div>
-
-      <p class="ppm-esito-nota" id="ppm-nota">
-        A parit&agrave; di incasso: oltre il 50% di tasse in meno. E l&rsquo;immobile, gestito da noi, incassa anche di pi&ugrave;.
-      </p>
-
-      <p class="ppm-rifai" id="ppm-rifai" hidden>
-        Non sono i tuoi numeri? <a href="https://tools.affittibreviaroma.com/calcolatore">rifai il calcolo</a>
-      </p>
-
-      <p class="piccolo" id="ppm-piccolo">
-        Esempio a scopo illustrativo, con cedolare secca al 21% e commissione Airbnb del 15,5% pi&ugrave; IVA.
-        Il tuo numero dipende dal tuo regime fiscale e dai tuoi incassi: lo rifacciamo insieme in call, sui tuoi dati.
-        Questa pagina non &egrave; consulenza fiscale.
-      </p>
     </div>
 
   </div>
@@ -1062,134 +1178,6 @@
 </script>
 
 
-<script>
-/* ppm:04b-caso — il conto della cedolare, sui numeri di chi sta guardando.
-   -------------------------------------------------------------------------
-   Il calcolatore, sullo stesso dominio, lascia in localStorage gli
-   ingredienti del suo conto (chiave "airtax_caso"). Qui li rileggiamo e
-   rifacciamo la barra con quei numeri, al posto dell'esempio inventato.
-   Non esce niente dal browser: e' roba sua, mostrata a lui.
-
-   Se non c'e' niente da leggere, o i numeri non reggono (regime senza
-   imposta sul lordo, quota netta che verrebbe negativa, dato vecchio),
-   resta l'esempio generico gia' scritto nell'HTML: la pagina non si accorge
-   di nulla e nessuno vede un buco.
-
-   L'UNICO numero da cambiare e' FEE_GESTIONE: regge sia l'esempio generico
-   sia il caso personale.
-   ------------------------------------------------------------------------- */
-(function () {
-  "use strict";
-
-  var FEE_GESTIONE = 0.20;          /* <-- la vostra quota di gestione */
-  var IVA = 0.22, COMM_NUOVA = 0.155;
-  var GIORNI_VALIDI = 60;           /* oltre, il dato e' vecchio: meglio il generico */
-
-  var conto = document.getElementById("ppm-conto");
-  if (!conto) return;
-
-  var euro0 = new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", minimumFractionDigits: 0, maximumFractionDigits: 2 });
-  var euro2 = new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  function pct(x) { return (Math.round(x * 1000) / 10).toLocaleString("it-IT"); }
-
-  /* ---- il conto, uno solo, usato per entrambi i casi ---- */
-  function conteggio(d) {
-    var lordo = d.price * d.nights + d.cleaning;
-    var abn = lordo * d.effN;
-    var ges = lordo * FEE_GESTIONE;
-    var tua = lordo - abn - ges - d.cleaning;
-    return {
-      lordo: lordo, abn: abn, ges: ges, pul: d.cleaning, tua: tua,
-      tasseOggi: lordo * d.t,
-      tasseNoi: tua * d.t,
-      risparmio: lordo > 0 ? 1 - tua / lordo : 0
-    };
-  }
-
-  /* come si chiama l'imposta, secondo il regime scelto nel calcolatore */
-  function nomeImposta(d) {
-    var p = pct(d.t);
-    if (d.regime === "ced21" || d.regime === "ced26") return "la cedolare del " + p + "%";
-    if (d.regime === "forf") return "l\u2019imposta del forfettario (" + p + "%)";
-    if (d.regime === "irpef") return "l\u2019IRPEF (circa " + p + "%)";
-    return "l\u2019imposta del " + p + "%";
-  }
-
-  function disegna(d, personale) {
-    var c = conteggio(d);
-    if (!(c.lordo > 0) || !(c.tua > 0)) return false;
-
-    var barra = document.getElementById("ppm-barra");
-    var quote = { tua: c.tua, ges: c.ges, abn: c.abn, pul: c.pul };
-    var etichette = { tua: "la tua quota", ges: "gestione", abn: "Airbnb", pul: "pulizie" };
-    Object.keys(quote).forEach(function (k) {
-      var seg = barra.querySelector('[data-seg="' + k + '"]');
-      if (!seg) return;
-      var largo = quote[k] / c.lordo * 100;
-      seg.style.width = largo.toFixed(2) + "%";
-      seg.innerHTML = "<i>" + etichette[k] + "</i><b>" + euro0.format(quote[k]) + "</b>";
-    });
-    barra.setAttribute("aria-label",
-      "Dei " + euro0.format(c.lordo) + " versati dall'ospite, " + euro0.format(c.tua) +
-      " sono la tua quota netta, " + euro0.format(c.ges) + " la gestione, " +
-      euro0.format(c.abn) + " la commissione Airbnb, " + euro0.format(c.pul) + " le pulizie.");
-
-    document.getElementById("ppm-graffa-noi").style.width = (c.tua / c.lordo * 100).toFixed(2) + "%";
-    document.getElementById("ppm-graffa-oggi").textContent =
-      "Oggi " + nomeImposta(d) + " la paghi su tutti i " + euro0.format(c.lordo);
-    document.getElementById("ppm-tasse-oggi").textContent = euro2.format(c.tasseOggi);
-    document.getElementById("ppm-tasse-noi").textContent = euro2.format(c.tasseNoi);
-    document.getElementById("ppm-nota").textContent =
-      (personale ? "Sui tuoi numeri, a parit\u00e0 di incasso: il " : "A parit\u00e0 di incasso: il ") +
-      pct(c.risparmio) + "% di tasse in meno. E l\u2019immobile, gestito da noi, incassa anche di pi\u00f9.";
-
-    if (personale) {
-      document.getElementById("ppm-piccolo").textContent =
-        "Conto fatto sui numeri che hai messo nel calcolatore, con " + nomeImposta(d) +
-        " e commissione Airbnb del 15,5% pi\u00f9 IVA. \u00c8 una stima su una prenotazione tipo: " +
-        "in call la rifacciamo sui tuoi incassi veri. Questa pagina non \u00e8 consulenza fiscale.";
-    }
-
-    var notti = d.nights === 1 ? "1 notte" : d.nights + " notti";
-    document.getElementById("ppm-caso").textContent =
-      (personale ? "La tua prenotazione tipo: " : "Una prenotazione da ") + notti +
-      " a " + euro0.format(d.price) +
-      (d.cleaning > 0 ? ", pi\u00f9 " + euro0.format(d.cleaning) + " di pulizie" : "") +
-      ": l\u2019ospite versa " + euro0.format(c.lordo) + ".";
-    return true;
-  }
-
-  /* ---- il caso della persona, se c'e' ---- */
-  function caso() {
-    var raw = null;
-    try { raw = localStorage.getItem("airtax_caso"); } catch (e) { return null; }
-    if (!raw) return null;
-    var d = null;
-    try { d = JSON.parse(raw); } catch (e) { return null; }
-    if (!d || d.v !== 1) return null;
-    if (!d.ts || (Date.now() - d.ts) > GIORNI_VALIDI * 864e5) return null;
-
-    d.price = Number(d.price); d.cleaning = Number(d.cleaning) || 0;
-    d.nights = Math.round(Number(d.nights)) || 0;
-    d.effN = Number(d.effN); d.t = Number(d.t);
-    /* Un regime senza imposta sul lordo (impresa) non ha niente da spostare:
-       il confronto verrebbe 0 contro 0. Meglio l'esempio generico. */
-    if (!(d.price > 0) || !(d.nights >= 1) || !(d.t > 0) || !(d.effN > 0)) return null;
-    return d;
-  }
-
-  var mio = caso();
-  if (mio && disegna(mio, true)) {
-    document.getElementById("ppm-tuoi").hidden = false;
-    document.getElementById("ppm-rifai").hidden = false;
-  } else {
-    /* anche il generico passa dallo stesso conto: FEE_GESTIONE resta
-       l'unico posto da cambiare */
-    disegna({ price: 100, cleaning: 40, nights: 3, regime: "ced21",
-              t: 0.21, effN: COMM_NUOVA * (1 + IVA) }, false);
-  }
-})();
-</script>
 
 <!-- ppm:05-obiezioni ======================================================
      "Cosa sapere prima di sentirci" — otto card 16:9 con titolo in overlay.
@@ -1203,6 +1191,8 @@
 @media (min-width:760px){.ppm-page .ppm-obj-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 .ppm-page .ppm-vcard{position:relative;isolation:isolate;overflow:hidden;aspect-ratio:16/9;
+  /* su telefono otto card 16:9 di fila sono oltre 1600px di scroll: le
+     schiacciamo, il titolo resta grande uguale */
   border-radius:var(--ppm-radius-lg);cursor:pointer;
   background:linear-gradient(145deg,#3a1418 0%,#1b1012 100%);
   box-shadow:0 1px 2px rgba(28,27,27,.06),0 18px 40px -22px rgba(28,27,27,.45);
@@ -1243,7 +1233,10 @@
    vale (0,1,1) e batterebbe .ppm-play da solo */
 .ppm-page .ppm-vcard .ppm-play{position:absolute;inset:0;margin:auto;z-index:3;background:rgba(255,255,255,.92)}
 .ppm-page .ppm-vcard:hover .ppm-play{transform:scale(1.07);background:#fff}
-@media (max-width:759px){.ppm-page .ppm-vcard .ppm-play{inset:0 0 34% 0}}
+@media (max-width:759px){
+  .ppm-page .ppm-vcard{aspect-ratio:2/1}
+  .ppm-page .ppm-vcard .ppm-play{inset:0 0 34% 0}
+}
 .ppm-page .ppm-vcard.is-playing{cursor:default}
 .ppm-page .ppm-vcard.is-playing .ppm-vcard-img,
 .ppm-page .ppm-vcard.is-playing .ppm-vcard-scrim,
@@ -1260,8 +1253,7 @@
   <div class="ppm-container">
     <header class="ppm-head ppm-reveal">
       <h2 class="ppm-h2" id="ppm-obj-title">Cosa sapere prima di sentirci</h2>
-      <p class="ppm-lead">Parlando ogni giorno con host di Roma ci arrivano sempre le stesse otto domande.
-      Te le mettiamo qui, cos&igrave; in call non perdiamo tempo.</p>
+      <p class="ppm-lead">Le otto che ci fanno sempre. Te le togliamo prima, cos&igrave; in call non perdiamo tempo.</p>
     </header>
 
     <div class="ppm-obj-grid" data-ppm-stagger data-ppm-obj-grid>
@@ -1423,6 +1415,9 @@
   .ppm-page .ppm-wall-card{height:170px;width:auto !important;max-width:78vw}
   .ppm-page .ppm-wall-card img{width:auto;height:100%;object-fit:contain}
 }
+/* su telefono una fila sola: due nastri che scorrono in senso opposto
+   raddoppiano l'altezza e non aggiungono niente */
+@media (max-width:560px){ .ppm-page .ppm-wall-row--rev{display:none} }
 </style>
 
 <section class="ppm-section ppm-rev" id="ppm-testimonianze" aria-labelledby="ppm-rev-title">
@@ -1504,7 +1499,6 @@
 @media (max-width:639px){
   .ppm-page .ppm-foot-in{justify-content:flex-start}
   .ppm-page .ppm-foot-id{flex:1 0 100%}
-  .ppm-page .ppm-chiusura .ppm-btn{width:100%}
 }
 </style>
 

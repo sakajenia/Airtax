@@ -47,29 +47,25 @@ async function leggiVsl() {
        uguaglianza fallisce pur essendo il testo giusto. */
     const norm = s => (s || '').replace(/\u00A0/g, ' ').trim();
     const txt = id => norm((document.getElementById(id) || {}).textContent);
-    const seg = k => {
-      const s = document.querySelector(`[data-seg="${k}"]`);
-      return s ? { w: s.style.width, v: norm(s.querySelector('b')?.textContent) } : null;
-    };
     return {
-      caso: txt('ppm-caso'), graffa: txt('ppm-graffa-oggi'), piccolo: txt('ppm-piccolo'),
-      oggi: txt('ppm-tasse-oggi'), noi: txt('ppm-tasse-noi'), nota: txt('ppm-nota'),
+      caso: txt('ppm-caso'), nota: txt('ppm-nota'), piccolo: txt('ppm-piccolo'),
+      oggi: txt('ppm-tasse-oggi'), noi: txt('ppm-tasse-noi'),
+      w: document.getElementById('ppm-barra-noi').style.getPropertyValue('--w').trim(),
       badge: !document.getElementById('ppm-tuoi').hidden,
       rifai: !document.getElementById('ppm-rifai').hidden,
-      larghNoi: document.getElementById('ppm-graffa-noi').style.width,
-      tua: seg('tua'), ges: seg('ges'), abn: seg('abn'), pul: seg('pul'),
     };
   });
 }
 
-// ---------- A: senza dati, resta l'esempio generico ----------
+// ---------- A: senza dati, resta l'esempio ----------
 await p.goto(`http://127.0.0.1:${PORT}/vsl`);
 await p.evaluate(() => { try { localStorage.clear(); } catch (e) {} });
 let v = await leggiVsl();
-check('A1 · senza dati resta l esempio generico', /340/.test(v.caso) && v.oggi === '71,40 €', `${v.caso} | ${v.oggi}`);
-check('A2 · niente badge "I tuoi numeri"', !v.badge && !v.rifai, `badge ${v.badge}`);
-check('A3 · il generico dice comunque il suo 50,7%', /50,7% di tasse in meno/.test(v.nota), v.nota);
-check('A4 · e resta dichiarato come esempio', /^Esempio a scopo illustrativo/.test(v.piccolo), v.piccolo.slice(0, 60));
+check('A1 · senza dati resta l esempio', v.caso === 'Su 340 € che versa l’ospite, di tasse paghi', v.caso);
+check('A2 · con i suoi due numeri', v.oggi === '71,40 €' && v.noi === '35,22 €', `${v.oggi} / ${v.noi}`);
+check('A3 · niente badge "I tuoi numeri"', !v.badge && !v.rifai, `badge ${v.badge}`);
+check('A4 · dichiarato come esempio', /^Esempio su una prenotazione tipo/.test(v.piccolo), v.piccolo);
+check('A5 · il risparmio è arrotondato per difetto', /^−50%\./.test(v.nota), v.nota.slice(0, 24));
 
 // ---------- B: il calcolatore lascia il caso ----------
 const d = await compila({ price: 200, cleaning: 60, nights: 2, regime: 'ced21' });
@@ -79,34 +75,35 @@ check('B3 · e con aliquota e commissione', d && Math.abs(d.t - 0.21) < 1e-9 && 
 check('B4 · niente dati personali nel caso', d && !('via' in d) && !('email' in d), Object.keys(d || {}).join(','));
 
 // ---------- C: la VSL li usa ----------
+// lordo 460 · tua quota 221,01 (tolti Airbnb 18,91%, gestione 20%, pulizie 60)
+// tasse oggi 21% di 460 = 96,60 · con noi 21% di 221,01 = 46,41 · −51%
 v = await leggiVsl();
-// lordo 460 · Airbnb 86,99 · gestione 92 · pulizie 60 · tua 221,01
-// tasse oggi 21% di 460 = 96,60 · con noi 21% di 221,01 = 46,41 · risparmio 52%
 check('C1 · badge "I tuoi numeri" acceso', v.badge && v.rifai, `badge ${v.badge}`);
-check('C2 · la riga descrive la SUA prenotazione', /La tua prenotazione tipo: 2 notti a 200 €, più 60 € di pulizie: l’ospite versa 460 €\./.test(v.caso), v.caso);
+check('C2 · la riga parla della SUA prenotazione', v.caso === 'Su 460 € di una tua prenotazione tipo, di tasse paghi', v.caso);
 check('C3 · tasse di oggi sul lordo', v.oggi === '96,60 €', v.oggi);
 check('C4 · tasse col sostituto d imposta', v.noi === '46,41 €', v.noi);
-check('C5 · risparmio calcolato, non copiato', /il 52% di tasse in meno/.test(v.nota) && /Sui tuoi numeri/.test(v.nota), v.nota);
-check('C6 · quota dell host nella barra', v.tua?.v === '221,01 €', v.tua?.v);
-check('C7 · commissione Airbnb con IVA', v.abn?.v === '86,99 €', v.abn?.v);
-check('C8 · pulizie e gestione', v.pul?.v === '60 €' && v.ges?.v === '92 €', `${v.pul?.v} / ${v.ges?.v}`);
-check('C9 · la graffa verde copre solo la sua quota', v.larghNoi === v.tua?.w, `${v.larghNoi} vs ${v.tua?.w}`);
-const somma = ['tua', 'ges', 'abn', 'pul'].reduce((s, k) => s + parseFloat(v[k].w), 0);
-check('C10 · le quattro fette fanno il 100%', Math.abs(somma - 100) < 0.05, somma.toFixed(2) + '%');
-check('C11 · la nota in fondo non dice più "esempio"', /sui numeri che hai messo nel calcolatore/.test(v.piccolo) && !/Esempio a scopo/.test(v.piccolo), v.piccolo.slice(0, 80));
+check('C5 · la barra verde e lunga quanto la sua quota', v.w === '0.480', v.w);
+check('C6 · percentuale calcolata, non copiata', /^−51%\./.test(v.nota), v.nota.slice(0, 24));
+check('C7 · e nomina la sua imposta', /cedolare del 21%/.test(v.nota), v.nota);
+check('C8 · la nota in fondo non dice più "esempio"', /^Sui numeri del tuo calcolo/.test(v.piccolo), v.piccolo);
 
 // ---------- D: regimi e casi che non reggono ----------
 await compila({ price: 150, cleaning: 0, nights: 1, regime: 'impresa' });
 v = await leggiVsl();
-check('D1 · impresa (nessuna imposta sul lordo): torna al generico', !v.badge && v.oggi === '71,40 €', `${v.badge} ${v.oggi}`);
+check('D1 · impresa (nessuna imposta sul lordo): torna all esempio', !v.badge && v.oggi === '71,40 €', `${v.badge} ${v.oggi}`);
 
 await compila({ price: 180, cleaning: 30, nights: 4, regime: 'forf' });
 v = await leggiVsl();
-check('D2 · forfettario: personalizzato e con il nome giusto', v.badge && /forfettario/.test(v.graffa), v.graffa);
+check('D2 · forfettario: personalizzato e col nome giusto', v.badge && /forfettario/.test(v.nota), v.nota.slice(0, 60));
 
 await compila({ price: 90, cleaning: 25, nights: 3, regime: 'ced26' });
 v = await leggiVsl();
-check('D3 · cedolare 26%: la graffa dice 26%', v.badge && /cedolare del 26%/.test(v.graffa), v.graffa);
+check('D3 · cedolare 26%: la frase dice 26%', v.badge && /cedolare del 26%/.test(v.nota), v.nota.slice(0, 60));
+
+// senza pulizie il risparmio scende sotto il 50%: deve dirlo, non arrotondare a favore
+await compila({ price: 120, cleaning: 0, nights: 2, regime: 'ced21' });
+v = await leggiVsl();
+check('D4 · senza pulizie dichiara la percentuale vera, piu bassa', v.badge && /^−38%\./.test(v.nota), v.nota.slice(0, 24));
 
 // dato vecchio: non si usa
 await p.evaluate(() => {
@@ -115,12 +112,12 @@ await p.evaluate(() => {
   localStorage.setItem('airtax_caso', JSON.stringify(d));
 });
 v = await leggiVsl();
-check('D4 · dato di 90 giorni fa: torna al generico', !v.badge && v.oggi === '71,40 €', `${v.badge} ${v.oggi}`);
+check('D5 · dato di 90 giorni fa: torna all esempio', !v.badge && v.oggi === '71,40 €', `${v.badge} ${v.oggi}`);
 
 // roba rotta in localStorage non deve buttare giu' la pagina
 await p.evaluate(() => localStorage.setItem('airtax_caso', '{non sono json'));
 v = await leggiVsl();
-check('D5 · localStorage corrotto: torna al generico senza errori', !v.badge && v.oggi === '71,40 €', `${v.badge} ${v.oggi}`);
+check('D6 · localStorage corrotto: torna all esempio senza errori', !v.badge && v.oggi === '71,40 €', `${v.badge} ${v.oggi}`);
 
 check('E1 · nessuna eccezione JavaScript', errs.length === 0, errs.join(' | '));
 

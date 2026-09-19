@@ -96,13 +96,18 @@ const s = await p.evaluate(() => ({
   titolo: document.querySelector('.ppm-hero-title')?.innerText.replace(/\s+/g, ' ').trim(),
   h2: [...document.querySelectorAll('.ppm-h2')].map(h => h.innerText.trim()),
   ancora: !!document.getElementById('ppm-prenota'),
+  vw: window.innerWidth,
+  btn: (() => { const b = document.querySelector('.ppm-btn').getBoundingClientRect();
+                return { w: Math.round(b.width), h: Math.round(b.height) }; })(),
 }));
 check('D1 · quattro fasi', s.fasi === 4, String(s.fasi));
 check('D2 · otto obiezioni', s.card === 8, String(s.card));
 check('D3 · due pulsanti, entrambi sul calendario', s.cta.length === 2 && s.cta.every(h => h.includes('call-strategica-affitti')), JSON.stringify(s.cta));
 check('D4 · sticky header presente', s.hdr, '');
 check('D5 · la CTA in alto scorre al pulsante', s.hdrCta === '#ppm-prenota' && s.ancora, String(s.hdrCta));
-check('D6 · titolo giusto', /oltre il 50% in meno di tasse/i.test(s.titolo || ''), s.titolo);
+check('D6 · titolo giusto', /non hai mai incassato/i.test(s.titolo || ''), s.titolo);
+check('D8 · il pulsante ha misure da pulsante, non da banda',
+      s.btn && s.btn.h <= 56 && s.btn.w < s.vw * 0.75, JSON.stringify(s.btn) + ' vw=' + s.vw);
 check('D7 · le quattro sezioni richieste', JSON.stringify(s.h2).includes('Il metodo in 4 fasi') && JSON.stringify(s.h2).includes('Cosa sapere prima di sentirci') && JSON.stringify(s.h2).includes('Oltre 20 host'), JSON.stringify(s.h2));
 
 // ---------- E: niente eccezioni ----------
