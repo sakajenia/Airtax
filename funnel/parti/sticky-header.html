@@ -1,0 +1,135 @@
+<!-- ==========================================================================
+     STICKY HEADER PROPROMANAGER  ·  logo a sinistra + CTA "shiny" a destra
+     --------------------------------------------------------------------------
+     Sorgente unica: funnel/parti/sticky-header.html
+     Viene iniettato dentro calcolatore-v2.html e avanzato.html fra i due marcatori generati
+     in cima e in fondo al blocco: non modificarlo dentro quelle pagine,
+     modificalo qui e rilancia  tools/applica-header.py .
+
+     Il pulsante riprende lo "shiny button" di 21st.dev / magicui: la scritta e
+     il bordo vengono attraversati da una lama di luce che scorre. Li' e' React
+     + framer-motion; qui e' solo CSS, perche' dentro un blocco codice di GHL
+     non gira React. L'animazione muove la custom property --ppm-shine, che va
+     registrata con @property: e' l'unico modo di far interpolare una
+     percentuale dentro un gradiente. inherits:true e' obbligatorio, altrimenti
+     lo pseudo-elemento della lama e la cornice non vedono il valore animato e
+     il pulsante resta immobile. Dove @property non esiste resta fermo ma
+     perfettamente leggibile (il valore di fallback e' 100%).
+     ========================================================================== -->
+<style>
+  @property --ppm-shine{ syntax:'<percentage>'; inherits:true; initial-value:100%; }
+
+  .ppmhdr{
+    --ppm-coral:#801820; --ppm-coral-hi:#9a2029; --ppm-coral-lo:#5f000e;
+    position:sticky; top:0; z-index:9999; width:100%; box-sizing:border-box;
+    background:rgba(252,249,248,.86);
+    -webkit-backdrop-filter:saturate(180%) blur(14px);
+            backdrop-filter:saturate(180%) blur(14px);
+    border-bottom:1px solid rgba(28,27,27,.08);
+  }
+  /* Filo di colore sotto la riga: fa "prodotto", non "template". */
+  .ppmhdr::after{
+    content:''; position:absolute; left:0; right:0; bottom:-1px; height:1px;
+    background:linear-gradient(90deg, transparent, rgba(128,24,32,.35), transparent);
+    pointer-events:none;
+  }
+  .ppmhdr *{box-sizing:border-box;}
+  .ppmhdr-in{
+    max-width:1060px; margin:0 auto; padding:10px 16px;
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+  }
+  .ppmhdr-logo{display:block; flex:0 0 auto; line-height:0;}
+  .ppmhdr-logo img{height:32px; width:auto; display:block;}
+
+  /* ---------- shiny button ---------- */
+  .ppm-shiny{
+    --ppm-shine:100%;                       /* fallback senza @property */
+    position:relative; flex:0 0 auto;
+    display:inline-flex; align-items:center; justify-content:center;
+    padding:11px 18px; border:0; border-radius:999px;
+    background:linear-gradient(180deg, var(--ppm-coral-hi) 0%, var(--ppm-coral) 52%, var(--ppm-coral-lo) 100%);
+    color:#fff; text-decoration:none; white-space:nowrap; cursor:pointer;
+    font-family:inherit; font-size:.88rem; font-weight:700; line-height:1; letter-spacing:.005em;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.22), 0 6px 16px -5px rgba(128,24,32,.55);
+    transition:transform .18s cubic-bezier(.2,.8,.3,1), box-shadow .18s ease;
+    animation:ppm-shine-run 3.6s linear infinite;
+    -webkit-tap-highlight-color:transparent;
+  }
+  @keyframes ppm-shine-run{
+    0%{--ppm-shine:100%} 55%{--ppm-shine:-100%} 100%{--ppm-shine:-100%}
+  }
+  /* la lama di luce sulla superficie */
+  .ppm-shiny::before{
+    content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+    background:linear-gradient(-75deg,
+      transparent            calc(var(--ppm-shine) + 14%),
+      rgba(255,255,255,.10)  calc(var(--ppm-shine) + 22%),
+      rgba(255,255,255,.55)  calc(var(--ppm-shine) + 27%),
+      rgba(255,255,255,.10)  calc(var(--ppm-shine) + 32%),
+      transparent            calc(var(--ppm-shine) + 42%));
+  }
+  /* il bordo che si illumina: due maschere in xor = solo la cornice di 1px */
+  .ppm-shiny-ring{
+    position:absolute; inset:0; border-radius:inherit; padding:1px; pointer-events:none;
+    background:linear-gradient(-75deg,
+      rgba(255,255,255,.14) calc(var(--ppm-shine) + 20%),
+      rgba(255,255,255,.90) calc(var(--ppm-shine) + 25%),
+      rgba(255,255,255,.14) calc(var(--ppm-shine) + 100%));
+    -webkit-mask:linear-gradient(#000,#000) content-box, linear-gradient(#000,#000);
+            mask:linear-gradient(#000,#000) content-box, linear-gradient(#000,#000);
+    -webkit-mask-composite:xor; mask-composite:exclude;
+  }
+  /* la scritta attraversata dalla stessa lama */
+  .ppm-shiny-lbl{
+    position:relative; z-index:1; display:inline-flex; align-items:center; gap:.45rem;
+    -webkit-mask-image:linear-gradient(-75deg,
+      #000                calc(var(--ppm-shine) + 18%),
+      rgba(0,0,0,.62)     calc(var(--ppm-shine) + 27%),
+      #000                calc(var(--ppm-shine) + 38%));
+            mask-image:linear-gradient(-75deg,
+      #000                calc(var(--ppm-shine) + 18%),
+      rgba(0,0,0,.62)     calc(var(--ppm-shine) + 27%),
+      #000                calc(var(--ppm-shine) + 38%));
+  }
+  .ppm-shiny-lbl svg{flex:none; width:15px; height:15px;}
+  .ppm-shiny:hover{transform:translateY(-1px); box-shadow:inset 0 1px 0 rgba(255,255,255,.28), 0 10px 22px -6px rgba(128,24,32,.6);}
+  .ppm-shiny:active{transform:translateY(0) scale(.985);}
+  .ppm-shiny:focus-visible{outline:3px solid var(--ppm-coral); outline-offset:3px;}
+  .ppm-only-wide{display:inline;}
+  .ppm-only-narrow{display:none;}
+
+  @media (max-width:560px){
+    .ppmhdr-in{padding:9px 12px;}
+    .ppmhdr-logo img{height:26px;}
+    .ppm-shiny{padding:10px 14px; font-size:.82rem;}
+    .ppm-only-wide{display:none;}
+    .ppm-only-narrow{display:inline;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .ppm-shiny{animation:none;}
+    .ppm-shiny::before{background:none;}
+  }
+</style>
+
+<header class="ppmhdr">
+  <div class="ppmhdr-in">
+    <a class="ppmhdr-logo" href="https://tools.affittibreviaroma.com/" aria-label="ProProManager, torna alla home">
+      <img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/b99a11a9-9a35-410d-a09f-3f9d026b22fd.webp"
+           alt="ProProManager" height="32" decoding="async">
+    </a>
+
+    <!-- Dove porta la CTA: la pagina VSL. Cambia solo questo href se un domani
+         le dai un indirizzo dedicato (es. /meno-tasse). -->
+    <a class="ppm-shiny" href="https://tools.affittibreviaroma.com/grazie">
+      <span class="ppm-shiny-lbl">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M22 17 13.5 8.5l-5 5L2 7"></path><path d="M16 17h6v-6"></path>
+        </svg>
+        <span class="ppm-only-wide">Scopri come pagare meno tasse</span>
+        <span class="ppm-only-narrow">Paga meno tasse</span>
+      </span>
+      <span class="ppm-shiny-ring" aria-hidden="true"></span>
+    </a>
+  </div>
+</header>

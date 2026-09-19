@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<!-- GENERATO da tools/anteprima-vsl.py: non modificare a mano, si modifica
+     funnel/vsl/grazie-vsl.html e si rilancia lo script.
+     Questo file serve solo per guardare la pagina in un browser: su GHL si
+     incolla grazie-vsl.html, non questo. -->
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anteprima VSL - ProProManager</title>
+<style>
+  html,body{margin:0;padding:0}
+  /* approssimazione dei font di default di una pagina GHL: il blocco non
+     imposta font-family e li eredita da qui, come fa su GHL */
+  body{font-family:Roboto,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+       background:#FCF9F8}
+</style>
+</head>
+<body>
+<!-- ==========================================================================
+     PAGINA VSL  ·  sostituisce la thank you page /grazie
+     --------------------------------------------------------------------------
+     Un unico blocco "Custom JS/HTML" (Code) da incollare nella pagina GHL.
+     Struttura ripresa dalla thank you page di riferimento, testi e colori
+     ProProManager.
+
+     TRE COSE DA METTERE A MANO, cercale con "DA METTERE":
+       1. l'indirizzo del video principale  (Media Library -> copia link)
+       2. le miniature e i video delle 8 obiezioni (facoltativi: senza, le card
+          restano comunque belle)
+       3. le foto delle testimonianze nel muro scorrevole in fondo
+
+     I FONT: non ne imposta nessuno, eredita quelli della pagina GHL.
+     Se un giorno vuoi i font della pagina di riferimento, togli il commento
+     al <link> qui sotto e ai due --ppm-font-* dentro .ppm-page.
+     ========================================================================== -->
+<!--
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+-->
+
+<!-- PPM-HEADER-START (generato da tools/applica-header.py) -->
+<!-- ==========================================================================
+     STICKY HEADER PROPROMANAGER  ·  logo a sinistra + CTA "shiny" a destra
+     --------------------------------------------------------------------------
+     Sorgente unica: funnel/parti/sticky-header.html
+     Viene iniettato dentro calcolatore-v2.html e avanzato.html fra i due marcatori generati
+     in cima e in fondo al blocco: non modificarlo dentro quelle pagine,
+     modificalo qui e rilancia  tools/applica-header.py .
+
+     Il pulsante riprende lo "shiny button" di 21st.dev / magicui: la scritta e
+     il bordo vengono attraversati da una lama di luce che scorre. Li' e' React
+     + framer-motion; qui e' solo CSS, perche' dentro un blocco codice di GHL
+     non gira React. L'animazione muove la custom property --ppm-shine, che va
+     registrata con @property: e' l'unico modo di far interpolare una
+     percentuale dentro un gradiente. inherits:true e' obbligatorio, altrimenti
+     lo pseudo-elemento della lama e la cornice non vedono il valore animato e
+     il pulsante resta immobile. Dove @property non esiste resta fermo ma
+     perfettamente leggibile (il valore di fallback e' 100%).
+     ========================================================================== -->
+<style>
+  @property --ppm-shine{ syntax:'<percentage>'; inherits:true; initial-value:100%; }
+
+  .ppmhdr{
+    --ppm-coral:#801820; --ppm-coral-hi:#9a2029; --ppm-coral-lo:#5f000e;
+    position:sticky; top:0; z-index:9999; width:100%; box-sizing:border-box;
+    background:rgba(252,249,248,.86);
+    -webkit-backdrop-filter:saturate(180%) blur(14px);
+            backdrop-filter:saturate(180%) blur(14px);
+    border-bottom:1px solid rgba(28,27,27,.08);
+  }
+  /* Filo di colore sotto la riga: fa "prodotto", non "template". */
+  .ppmhdr::after{
+    content:''; position:absolute; left:0; right:0; bottom:-1px; height:1px;
+    background:linear-gradient(90deg, transparent, rgba(128,24,32,.35), transparent);
+    pointer-events:none;
+  }
+  .ppmhdr *{box-sizing:border-box;}
+  .ppmhdr-in{
+    max-width:1060px; margin:0 auto; padding:10px 16px;
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+  }
+  .ppmhdr-logo{display:block; flex:0 0 auto; line-height:0;}
+  .ppmhdr-logo img{height:32px; width:auto; display:block;}
+
+  /* ---------- shiny button ---------- */
+  .ppm-shiny{
+    --ppm-shine:100%;                       /* fallback senza @property */
+    position:relative; flex:0 0 auto;
+    display:inline-flex; align-items:center; justify-content:center;
+    padding:11px 18px; border:0; border-radius:999px;
+    background:linear-gradient(180deg, var(--ppm-coral-hi) 0%, var(--ppm-coral) 52%, var(--ppm-coral-lo) 100%);
+    color:#fff; text-decoration:none; white-space:nowrap; cursor:pointer;
+    font-family:inherit; font-size:.88rem; font-weight:700; line-height:1; letter-spacing:.005em;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.22), 0 6px 16px -5px rgba(128,24,32,.55);
+    transition:transform .18s cubic-bezier(.2,.8,.3,1), box-shadow .18s ease;
+    animation:ppm-shine-run 3.6s linear infinite;
+    -webkit-tap-highlight-color:transparent;
+  }
+  @keyframes ppm-shine-run{
+    0%{--ppm-shine:100%} 55%{--ppm-shine:-100%} 100%{--ppm-shine:-100%}
+  }
+  /* la lama di luce sulla superficie */
+  .ppm-shiny::before{
+    content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+    background:linear-gradient(-75deg,
+      transparent            calc(var(--ppm-shine) + 14%),
+      rgba(255,255,255,.10)  calc(var(--ppm-shine) + 22%),
+      rgba(255,255,255,.55)  calc(var(--ppm-shine) + 27%),
+      rgba(255,255,255,.10)  calc(var(--ppm-shine) + 32%),
+      transparent            calc(var(--ppm-shine) + 42%));
+  }
+  /* il bordo che si illumina: due maschere in xor = solo la cornice di 1px */
+  .ppm-shiny-ring{
+    position:absolute; inset:0; border-radius:inherit; padding:1px; pointer-events:none;
+    background:linear-gradient(-75deg,
+      rgba(255,255,255,.14) calc(var(--ppm-shine) + 20%),
+      rgba(255,255,255,.90) calc(var(--ppm-shine) + 25%),
+      rgba(255,255,255,.14) calc(var(--ppm-shine) + 100%));
+    -webkit-mask:linear-gradient(#000,#000) content-box, linear-gradient(#000,#000);
+            mask:linear-gradient(#000,#000) content-box, linear-gradient(#000,#000);
+    -webkit-mask-composite:xor; mask-composite:exclude;
+  }
+  /* la scritta attraversata dalla stessa lama */
+  .ppm-shiny-lbl{
+    position:relative; z-index:1; display:inline-flex; align-items:center; gap:.45rem;
+    -webkit-mask-image:linear-gradient(-75deg,
+      #000                calc(var(--ppm-shine) + 18%),
+      rgba(0,0,0,.62)     calc(var(--ppm-shine) + 27%),
+      #000                calc(var(--ppm-shine) + 38%));
+            mask-image:linear-gradient(-75deg,
+      #000                calc(var(--ppm-shine) + 18%),
+      rgba(0,0,0,.62)     calc(var(--ppm-shine) + 27%),
+      #000                calc(var(--ppm-shine) + 38%));
+  }
+  .ppm-shiny-lbl svg{flex:none; width:15px; height:15px;}
+  .ppm-shiny:hover{transform:translateY(-1px); box-shadow:inset 0 1px 0 rgba(255,255,255,.28), 0 10px 22px -6px rgba(128,24,32,.6);}
+  .ppm-shiny:active{transform:translateY(0) scale(.985);}
+  .ppm-shiny:focus-visible{outline:3px solid var(--ppm-coral); outline-offset:3px;}
+  .ppm-only-wide{display:inline;}
+  .ppm-only-narrow{display:none;}
+
+  @media (max-width:560px){
+    .ppmhdr-in{padding:9px 12px;}
+    .ppmhdr-logo img{height:26px;}
+    .ppm-shiny{padding:10px 14px; font-size:.82rem;}
+    .ppm-only-wide{display:none;}
+    .ppm-only-narrow{display:inline;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .ppm-shiny{animation:none;}
+    .ppm-shiny::before{background:none;}
+  }
+</style>
+
+<header class="ppmhdr">
+  <div class="ppmhdr-in">
+    <a class="ppmhdr-logo" href="https://tools.affittibreviaroma.com/" aria-label="ProProManager, torna alla home">
+      <img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/b99a11a9-9a35-410d-a09f-3f9d026b22fd.webp"
+           alt="ProProManager" height="32" decoding="async">
+    </a>
+
+    <!-- Dove porta la CTA: la pagina VSL. Cambia solo questo href se un domani
+         le dai un indirizzo dedicato (es. /meno-tasse). -->
+    <a class="ppm-shiny" href="#ppm-prenota">
+      <span class="ppm-shiny-lbl">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M22 17 13.5 8.5l-5 5L2 7"></path><path d="M16 17h6v-6"></path>
+        </svg>
+        <span class="ppm-only-wide">Scopri come pagare meno tasse</span>
+        <span class="ppm-only-narrow">Paga meno tasse</span>
+      </span>
+      <span class="ppm-shiny-ring" aria-hidden="true"></span>
+    </a>
+  </div>
+</header>
+<!-- PPM-HEADER-END -->
+
+<div class="ppm-page">
+
+<!-- ppm:00-base ============================================================
+     Token, reset, tipografia, componenti condivisi, reveal, toast.
+     Nessun markup visibile: da qui in giu' tutto e' scopato a .ppm-page,
+     cosi' non tocca niente di quello che GHL disegna intorno.
+     ====================================================================== -->
+<style>
+.ppm-page{
+  --ppm-paper:#FCF9F8; --ppm-card:#FFFFFF; --ppm-ink:#1C1B1B; --ppm-ink-2:#3B3230;
+  --ppm-muted:#6B5A58; --ppm-line:#E5E2E1;
+  --ppm-accent:#801820; --ppm-accent-ink:#5F000E; --ppm-accent-soft:#FFE1E0;
+  --ppm-accent-glow:rgba(128,24,32,.30);
+  --ppm-warm:#F7EAE8; --ppm-gold:#D99A00; --ppm-ok:#0A6B4A; --ppm-ok-soft:#E6F2EC;
+  /* font: vuoti apposta, eredita la pagina GHL.
+     Per i font della pagina di riferimento:
+     --ppm-font-display:"Bricolage Grotesque",system-ui,sans-serif;
+     --ppm-font-body:"Manrope",system-ui,sans-serif; */
+  --ppm-font-display:inherit; --ppm-font-body:inherit;
+  --ppm-radius-xl:28px; --ppm-radius-lg:20px; --ppm-radius-md:14px; --ppm-radius-pill:999px;
+  --ppm-container:1120px; --ppm-narrow:760px;
+  --ppm-shadow-card:0 1px 2px rgba(28,27,27,.04),0 14px 36px -14px rgba(28,27,27,.14);
+  --ppm-shadow-soft:0 1px 2px rgba(28,27,27,.03),0 10px 26px -14px rgba(28,27,27,.13);
+  --ppm-shadow-lift:0 2px 4px rgba(28,27,27,.04),0 26px 54px -22px rgba(28,27,27,.24);
+  --ppm-ease:cubic-bezier(.16,1,.3,1);
+  --ppm-section-y:clamp(44px,7.5vw,110px);
+  --ppm-gutter:clamp(20px,5vw,40px);
+  font-family:var(--ppm-font-body); color:var(--ppm-ink); background:var(--ppm-paper);
+  font-size:17px; line-height:1.6; font-weight:400;
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  text-size-adjust:100%; -webkit-text-size-adjust:100%;
+  overflow-x:clip; padding-bottom:1px;
+}
+
+/* --- reset, solo dentro .ppm-page --- */
+.ppm-page *,.ppm-page *::before,.ppm-page *::after{box-sizing:border-box}
+.ppm-page img,.ppm-page video,.ppm-page svg,.ppm-page picture{max-width:100%;display:block}
+.ppm-page img,.ppm-page video{height:auto}
+.ppm-page h1,.ppm-page h2,.ppm-page h3,.ppm-page p,.ppm-page figure,.ppm-page ul,.ppm-page ol{margin:0}
+.ppm-page ul,.ppm-page ol{padding:0;list-style:none}
+.ppm-page a{color:inherit;text-decoration:none}
+.ppm-page button{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ppm-page [hidden]{display:none !important}
+.ppm-page ::selection{background:var(--ppm-accent-soft);color:var(--ppm-accent-ink)}
+
+/* --- tipografia --- */
+.ppm-page h1,.ppm-page h2,.ppm-page h3,.ppm-page .ppm-display{
+  font-family:var(--ppm-font-display);font-weight:700;letter-spacing:-.02em;line-height:1.15;color:var(--ppm-ink);
+}
+.ppm-h1{font-size:clamp(33px,5.6vw,56px);line-height:1.05;letter-spacing:-.025em;font-weight:800;text-wrap:balance}
+.ppm-h2{font-size:clamp(27px,4.2vw,42px);line-height:1.08;letter-spacing:-.022em;font-weight:700;text-wrap:balance}
+.ppm-h3{font-size:clamp(19px,2.1vw,22px);line-height:1.25;letter-spacing:-.015em;font-weight:700}
+.ppm-lead{font-size:clamp(16.5px,1.4vw,19px);line-height:1.62;color:var(--ppm-muted);text-wrap:pretty}
+.ppm-small{font-size:14px;line-height:1.5;color:var(--ppm-muted)}
+
+/* --- layout --- */
+.ppm-page .ppm-container{width:100%;max-width:var(--ppm-container);margin-inline:auto;padding-inline:var(--ppm-gutter)}
+.ppm-page .ppm-section{padding-top:var(--ppm-section-y);padding-bottom:var(--ppm-section-y);position:relative}
+.ppm-page .ppm-head{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;max-width:var(--ppm-narrow);margin-inline:auto}
+.ppm-page .ppm-head .ppm-lead{max-width:56ch}
+
+/* --- componenti condivisi ---
+   scopati .ppm-page .classe (0,2,0): il reset `.ppm-page button` vale (0,1,1)
+   e batterebbe una classe singola, lasciando i pulsanti trasparenti. */
+.ppm-page .ppm-pill{
+  display:inline-flex;align-items:center;gap:8px;padding:9px 16px;
+  border-radius:var(--ppm-radius-pill);background:var(--ppm-accent-soft);color:var(--ppm-accent-ink);
+  border:1px solid rgba(128,24,32,.18);
+  font-size:13px;font-weight:700;line-height:1;white-space:nowrap;
+}
+.ppm-page .ppm-pill svg{width:15px;height:15px;flex:0 0 auto}
+
+/* pulsante "shiny": stessa lama di luce della sticky header */
+@property --ppm-shine{ syntax:'<percentage>'; inherits:true; initial-value:100%; }
+.ppm-page .ppm-btn{
+  --ppm-shine:100%;
+  position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  min-height:52px;padding:0 26px;border:0;border-radius:var(--ppm-radius-pill);
+  background:linear-gradient(180deg,#9A2029 0%,var(--ppm-accent) 52%,var(--ppm-accent-ink) 100%);
+  color:#fff;font-weight:800;font-size:16px;line-height:1.25;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 14px 30px -14px rgba(128,24,32,.85);
+  transition:transform .18s var(--ppm-ease),box-shadow .25s var(--ppm-ease);
+  animation:ppm-shine-run 3.6s linear infinite;
+}
+@keyframes ppm-shine-run{0%{--ppm-shine:100%}55%{--ppm-shine:-100%}100%{--ppm-shine:-100%}}
+.ppm-page .ppm-btn::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(-75deg,
+    transparent           calc(var(--ppm-shine) + 14%),
+    rgba(255,255,255,.10) calc(var(--ppm-shine) + 22%),
+    rgba(255,255,255,.55) calc(var(--ppm-shine) + 27%),
+    rgba(255,255,255,.10) calc(var(--ppm-shine) + 32%),
+    transparent           calc(var(--ppm-shine) + 42%));
+}
+.ppm-page .ppm-btn .ppm-ring{
+  position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;
+  background:linear-gradient(-75deg,
+    rgba(255,255,255,.14) calc(var(--ppm-shine) + 20%),
+    rgba(255,255,255,.90) calc(var(--ppm-shine) + 25%),
+    rgba(255,255,255,.14) calc(var(--ppm-shine) + 100%));
+  -webkit-mask:linear-gradient(#000,#000) content-box,linear-gradient(#000,#000);
+          mask:linear-gradient(#000,#000) content-box,linear-gradient(#000,#000);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+}
+.ppm-page .ppm-btn .ppm-lbl{
+  position:relative;z-index:1;display:inline-flex;align-items:center;gap:10px;
+  -webkit-mask-image:linear-gradient(-75deg,#000 calc(var(--ppm-shine) + 18%),rgba(0,0,0,.62) calc(var(--ppm-shine) + 27%),#000 calc(var(--ppm-shine) + 38%));
+          mask-image:linear-gradient(-75deg,#000 calc(var(--ppm-shine) + 18%),rgba(0,0,0,.62) calc(var(--ppm-shine) + 27%),#000 calc(var(--ppm-shine) + 38%));
+}
+.ppm-page .ppm-btn .ppm-lbl svg{width:19px;height:19px;flex:0 0 auto}
+.ppm-page .ppm-btn:hover{transform:translateY(-2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 20px 38px -16px rgba(128,24,32,.9)}
+.ppm-page .ppm-btn:active{transform:translateY(0) scale(.99)}
+
+/* bottone play: cerchio bianco con triangolo, come nella pagina di riferimento */
+.ppm-page .ppm-play{
+  display:grid;place-items:center;width:56px;height:56px;padding:0;border:0;border-radius:50%;
+  background:rgba(255,255,255,.92);
+  -webkit-backdrop-filter:blur(12px) saturate(1.4);backdrop-filter:blur(12px) saturate(1.4);
+  box-shadow:0 10px 28px -10px rgba(28,27,27,.5),inset 0 0 0 1px rgba(255,255,255,.75);
+  transition:transform .3s var(--ppm-ease),background .3s var(--ppm-ease);
+}
+.ppm-page .ppm-play::before{
+  content:"";width:0;height:0;margin-left:5px;border-left:16px solid var(--ppm-ink);
+  border-top:10px solid transparent;border-bottom:10px solid transparent;
+}
+.ppm-page .ppm-play:hover{transform:scale(1.07);background:#fff}
+.ppm-page .ppm-play:active{transform:scale(.97)}
+/* a video partito il play sparisce del tutto: se resta trasparente si vede lo stesso */
+.ppm-page .is-playing .ppm-play{display:none !important}
+.ppm-page video::-webkit-media-controls-overlay-play-button{display:none !important}
+.ppm-page video::-webkit-media-controls-start-playback-button{display:none !important}
+@media (max-width:640px){
+  .ppm-page .ppm-play{width:52px;height:52px}
+  .ppm-page .ppm-play::before{border-left-width:14px;border-top-width:9px;border-bottom-width:9px}
+}
+
+/* muro scorrevole delle testimonianze: due file in direzioni opposte */
+.ppm-page .ppm-wall{display:grid;gap:clamp(10px,1.4vw,16px);width:100%}
+.ppm-page .ppm-wall-row{overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%);
+          mask-image:linear-gradient(90deg,transparent 0,#000 7%,#000 93%,transparent 100%)}
+.ppm-page .ppm-wall-track{display:flex;align-items:flex-start;width:max-content;
+  gap:clamp(10px,1.4vw,16px);will-change:transform;
+  animation:ppm-wall-slide var(--dur,90s) linear infinite}
+.ppm-page .ppm-wall-row--rev .ppm-wall-track{animation-direction:reverse}
+.ppm-page .ppm-wall:hover .ppm-wall-track{animation-play-state:paused}
+@keyframes ppm-wall-slide{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
+.ppm-page .ppm-wall-card{flex:0 0 auto;overflow:hidden;border-radius:14px;
+  background:var(--ppm-card);border:1px solid var(--ppm-line);
+  box-shadow:0 1px 2px rgba(28,27,27,.05),0 14px 28px -20px rgba(28,27,27,.4)}
+@media (prefers-reduced-motion:reduce){
+  .ppm-page .ppm-wall-row{-webkit-mask-image:none;mask-image:none;overflow-x:auto}
+  .ppm-page .ppm-wall-track{animation:none;width:auto}
+  .ppm-page .ppm-wall-row--rev{display:none}
+}
+
+.ppm-page :focus-visible{outline:3px solid var(--ppm-accent);outline-offset:3px;border-radius:8px}
+
+/* comparsa allo scroll: si nasconde solo se il JS e' partito, altrimenti
+   senza JS la pagina resterebbe bianca */
+.ppm-page.ppm-js .ppm-reveal{opacity:0;transform:translateY(18px);transition:opacity .7s var(--ppm-ease),transform .7s var(--ppm-ease)}
+.ppm-page.ppm-js .ppm-reveal.is-in{opacity:1;transform:none}
+
+.ppm-page .ppm-toast{
+  position:fixed;left:50%;bottom:26px;z-index:60;max-width:min(92vw,440px);padding:13px 22px;
+  border-radius:var(--ppm-radius-pill);background:var(--ppm-ink);color:#FCF9F8;
+  font-size:14.5px;font-weight:500;line-height:1.35;text-align:center;
+  box-shadow:0 20px 44px -18px rgba(28,27,27,.55);
+  transform:translate(-50%,16px);opacity:0;pointer-events:none;
+  transition:opacity .3s var(--ppm-ease),transform .3s var(--ppm-ease);
+}
+.ppm-page .ppm-toast.is-in{opacity:1;transform:translate(-50%,0)}
+.ppm-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+@media (prefers-reduced-motion:reduce){
+  .ppm-page *,.ppm-page *::before,.ppm-page *::after{
+    animation-duration:.001ms !important;animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;scroll-behavior:auto !important;
+  }
+  .ppm-page .ppm-reveal{opacity:1 !important;transform:none !important}
+  .ppm-page .ppm-btn::before{background:none}
+}
+</style>
+
+<script>
+/* ppm:00-base — namespace condiviso window.PPM: reveal, toast, un video alla volta. */
+(function () {
+  "use strict";
+  var PPM = (window.PPM = window.PPM || {});
+  if (PPM.__base) return;
+  PPM.__base = true;
+
+  var pages = document.querySelectorAll(".ppm-page");
+  for (var pi = 0; pi < pages.length; pi++) pages[pi].classList.add("ppm-js");
+
+  var mq = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
+  PPM.reduceMotion = !!(mq && mq.matches);
+  if (mq && mq.addEventListener) mq.addEventListener("change", function (e) { PPM.reduceMotion = e.matches; });
+
+  /* ---- comparsa allo scroll ---- */
+  var io = null, sweepBound = false, sweepPending = false;
+  function show(el) { el.classList.add("is-in"); if (io) io.unobserve(el); }
+
+  /* rete di sicurezza: uno scroll a salti puo' non far mai scattare
+     l'observer, e un blocco resterebbe invisibile per sempre */
+  function sweep() {
+    var nodes = document.querySelectorAll(".ppm-reveal:not(.is-in)");
+    var vh = window.innerHeight || document.documentElement.clientHeight;
+    for (var i = 0; i < nodes.length; i++) {
+      if (nodes[i].getBoundingClientRect().top < vh * 0.94) show(nodes[i]);
+    }
+    if (!document.querySelector(".ppm-reveal:not(.is-in)")) {
+      window.removeEventListener("scroll", onSweep);
+      window.removeEventListener("resize", onSweep);
+      sweepBound = false;
+    }
+  }
+  function onSweep() {
+    if (sweepPending) return;
+    sweepPending = true;
+    requestAnimationFrame(function () { sweepPending = false; sweep(); });
+  }
+
+  PPM.reveal = function (root) {
+    var scope = root || document;
+    var nodes = scope.querySelectorAll ? scope.querySelectorAll(".ppm-reveal:not(.is-in)") : [];
+    if (!nodes.length) return;
+    if (PPM.reduceMotion || !("IntersectionObserver" in window)) {
+      for (var i = 0; i < nodes.length; i++) show(nodes[i]);
+      return;
+    }
+    if (!io) {
+      io = new IntersectionObserver(function (entries) {
+        for (var j = 0; j < entries.length; j++) {
+          var en = entries[j];
+          if (en.isIntersecting || en.boundingClientRect.top < 0) show(en.target);
+        }
+      }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
+    }
+    if (!sweepBound) {
+      sweepBound = true;
+      window.addEventListener("scroll", onSweep, { passive: true });
+      window.addEventListener("resize", onSweep, { passive: true });
+    }
+    for (var k = 0; k < nodes.length; k++) {
+      var el = nodes[k], parent = el.parentNode;
+      if (parent && parent.nodeType === 1 && parent.hasAttribute("data-ppm-stagger")) {
+        var idx = 0, sib = el.previousElementSibling;
+        while (sib) { if (sib.classList.contains("ppm-reveal")) idx++; sib = sib.previousElementSibling; }
+        el.style.transitionDelay = Math.min(idx * 70, 350) + "ms";
+      }
+      io.observe(el);
+    }
+  };
+
+  /* ---- toast ---- */
+  var toastEl = null, toastTimer = null, hideTimer = null;
+  PPM.toast = function (msg, ms) {
+    if (!msg) return;
+    if (!toastEl) {
+      toastEl = document.createElement("div");
+      toastEl.className = "ppm-toast";
+      toastEl.setAttribute("role", "status");
+      toastEl.setAttribute("aria-live", "polite");
+      (document.querySelector(".ppm-page") || document.body).appendChild(toastEl);
+    }
+    clearTimeout(toastTimer); clearTimeout(hideTimer);
+    toastEl.textContent = msg;
+    toastEl.hidden = false;
+    requestAnimationFrame(function () { toastEl.classList.add("is-in"); });
+    toastTimer = setTimeout(function () {
+      toastEl.classList.remove("is-in");
+      hideTimer = setTimeout(function () { if (toastEl) toastEl.hidden = true; }, 320);
+    }, ms || 2600);
+  };
+
+  /* ---- un solo video alla volta ---- */
+  PPM.pauseOthers = function (current) {
+    var vids = document.querySelectorAll(".ppm-page video");
+    for (var i = 0; i < vids.length; i++) if (vids[i] !== current && !vids[i].paused) vids[i].pause();
+  };
+  document.addEventListener("play", function (e) {
+    if (e.target && e.target.tagName === "VIDEO") PPM.pauseOthers(e.target);
+  }, true);
+
+  function boot() { PPM.reveal(document); }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
+  window.addEventListener("load", function () { PPM.reveal(document); });
+})();
+</script>
+
+
+<!-- ppm:01-hero ============================================================
+     "Aspetta" + titolo + video 16:9 con alone corallo.
+     ====================================================================== -->
+<style>
+.ppm-page .ppm-hero{position:relative;overflow:hidden;
+  padding-top:clamp(46px,7vw,90px);padding-bottom:clamp(30px,4.4vw,56px)}
+.ppm-page .ppm-hero::before{
+  content:"";position:absolute;left:0;right:0;top:0;height:min(620px,78%);
+  background:radial-gradient(115% 88% at 50% -12%,var(--ppm-warm),transparent 62%);
+  opacity:.75;pointer-events:none;z-index:0;
+}
+.ppm-page .ppm-hero .ppm-container{position:relative;z-index:1}
+.ppm-page .ppm-hero-copy{display:flex;flex-direction:column;align-items:center;
+  gap:clamp(15px,2.2vw,21px);text-align:center;max-width:min(100%,940px);margin-inline:auto}
+/* (0,3,0) per battere .ppm-page .ppm-pill della base */
+.ppm-page .ppm-hero .ppm-hero-badge{background:var(--ppm-card);border-color:var(--ppm-line);
+  color:var(--ppm-accent-ink);box-shadow:var(--ppm-shadow-soft);padding:9px 18px 9px 12px}
+.ppm-page .ppm-hero .ppm-hero-badge svg{color:var(--ppm-accent)}
+.ppm-page .ppm-hero .ppm-hero-badge .dot{width:9px;height:9px;border-radius:50%;
+  background:var(--ppm-accent);animation:ppm-batte 1.8s ease-in-out infinite}
+@keyframes ppm-batte{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.72)}}
+.ppm-page .ppm-hero-title{max-width:none;font-size:clamp(33px,5.2vw,54px);line-height:1.06;letter-spacing:-.028em}
+.ppm-page .ppm-hero-title .ev{color:var(--ppm-accent);
+  background:linear-gradient(180deg,transparent 72%,rgba(128,24,32,.16) 72%)}
+
+/* --- player --- */
+.ppm-page .ppm-hero-media{position:relative;width:100%;max-width:940px;margin:clamp(30px,4.2vw,52px) auto 0}
+.ppm-page .ppm-hero-media::before{
+  content:"";position:absolute;left:50%;top:52%;width:100%;height:104%;
+  transform:translate(-50%,-50%) scale(1.06);
+  background:radial-gradient(closest-side,var(--ppm-accent-glow),rgba(128,24,32,0) 74%);
+  filter:blur(48px);z-index:0;pointer-events:none;
+}
+.ppm-page .ppm-hero-frame{
+  position:relative;z-index:1;border-radius:var(--ppm-radius-xl);overflow:hidden;
+  background:#15130F;isolation:isolate;
+  box-shadow:0 0 0 1px rgba(28,27,27,.07),var(--ppm-shadow-lift);
+}
+.ppm-page .ppm-hero-frame video{width:100%;aspect-ratio:16/9;object-fit:cover;background:#15130F}
+.ppm-page .ppm-hero-cover{
+  position:absolute;inset:0;z-index:2;display:grid;place-items:center;
+  background:
+    linear-gradient(180deg,rgba(21,19,15,.34) 0%,rgba(21,19,15,0) 34%,rgba(21,19,15,0) 62%,rgba(21,19,15,.24) 100%),
+    radial-gradient(120% 120% at 50% 40%,#3a2a2b 0%,#1a1213 70%);
+  pointer-events:none;opacity:1;visibility:visible;
+  transition:opacity .4s var(--ppm-ease),visibility .4s var(--ppm-ease);
+}
+.ppm-page .ppm-hero-cover .ppm-play{pointer-events:auto;width:76px;height:76px}
+.ppm-page .ppm-hero-cover .ppm-play::before{border-left-width:21px;border-top-width:13px;border-bottom-width:13px;margin-left:6px}
+.ppm-page .ppm-hero-frame.is-playing .ppm-hero-cover{opacity:0;visibility:hidden}
+.ppm-page .ppm-hero-label{
+  position:absolute;left:clamp(12px,1.6vw,18px);top:clamp(12px,1.6vw,18px);z-index:2;
+  display:inline-flex;align-items:center;padding:8px 14px;border-radius:var(--ppm-radius-pill);
+  background:rgba(255,255,255,.9);
+  -webkit-backdrop-filter:blur(10px) saturate(1.3);backdrop-filter:blur(10px) saturate(1.3);
+  color:var(--ppm-ink);font-size:12.5px;font-weight:700;line-height:1;
+  box-shadow:0 6px 18px -10px rgba(28,27,27,.5);
+  max-width:calc(100% - 24px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+@media (max-width:640px){
+  .ppm-page .ppm-hero-cover .ppm-play{width:62px;height:62px}
+  .ppm-page .ppm-hero-cover .ppm-play::before{border-left-width:17px;border-top-width:11px;border-bottom-width:11px;margin-left:5px}
+  .ppm-page .ppm-hero-label{font-size:11.5px;padding:7px 12px}
+  .ppm-page .ppm-hero-frame{border-radius:var(--ppm-radius-lg)}
+}
+</style>
+
+<!-- ppm:015-conto =========================================================
+     Il conto, dentro l'eroe, subito sotto al titolo. Una domanda sola:
+     quanto di tasse oggi, quanto con noi. Due barre e due numeri, nient'altro:
+     e' la prima cosa che si vede, deve reggere un'occhiata di un secondo.
+     I numeri diventano quelli della persona se il calcolatore ne ha lasciati
+     nel browser: vedi lo script ppm:015b.
+     ====================================================================== -->
+<style>
+.ppm-page .ppm-conto{
+  width:100%;max-width:560px;margin:clamp(22px,3.4vw,34px) auto 0;
+  background:var(--ppm-card);border:1px solid var(--ppm-line);
+  border-radius:var(--ppm-radius-lg);box-shadow:var(--ppm-shadow-soft);
+  padding:clamp(18px,2.6vw,26px);
+}
+.ppm-page .ppm-conto-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px 14px}
+.ppm-page .ppm-conto-top p{font-size:14.5px;line-height:1.45;color:var(--ppm-muted)}
+.ppm-page .ppm-conto-top p b{color:var(--ppm-ink);font-weight:800}
+.ppm-page .ppm-tuoi{display:inline-flex;align-items:center;gap:5px;flex:0 0 auto;
+  padding:4px 9px;border-radius:var(--ppm-radius-pill);
+  background:var(--ppm-ok-soft);color:var(--ppm-ok);
+  font-size:11px;font-weight:800;line-height:1;white-space:nowrap}
+.ppm-page .ppm-tuoi svg{width:12px;height:12px;flex:0 0 auto}
+
+.ppm-page .ppm-righe{display:grid;gap:11px;margin-top:18px}
+.ppm-page .ppm-riga{display:grid;grid-template-columns:4.4rem minmax(0,1fr) auto;
+  align-items:center;gap:clamp(9px,1.4vw,14px)}
+.ppm-page .ppm-riga .k{font-size:12.5px;font-weight:800;letter-spacing:.02em;color:var(--ppm-muted)}
+.ppm-page .ppm-riga .b{height:12px;border-radius:99px;background:var(--ppm-warm)}
+.ppm-page .ppm-riga .b i{display:block;height:100%;border-radius:99px;background:var(--ppm-accent);
+  transform:scaleX(var(--w,1));transform-origin:left}
+.ppm-page .ppm-riga .v{font-family:var(--ppm-font-display);font-weight:800;
+  font-size:clamp(20px,2.6vw,26px);line-height:1;letter-spacing:-.02em;
+  white-space:nowrap;font-variant-numeric:tabular-nums}
+.ppm-page .ppm-riga.oggi .v{color:var(--ppm-ink-2)}
+.ppm-page .ppm-riga.noi .k,.ppm-page .ppm-riga.noi .v{color:var(--ppm-ok)}
+.ppm-page .ppm-riga.noi .b i{background:var(--ppm-ok)}
+
+/* le barre entrano da sinistra quando la card compare. Senza JS non c'e'
+   nessun is-in: restano piene, che e' lo stato giusto da leggere. */
+.ppm-page.ppm-js .ppm-conto .ppm-riga .b i{transform:scaleX(0);
+  transition:transform 1s cubic-bezier(.16,1,.3,1) .12s}
+.ppm-page.ppm-js .ppm-conto.is-in .ppm-riga .b i{transform:scaleX(var(--w,1))}
+
+
+@media (max-width:560px){
+  /* la pillola sopra, la frase sotto a tutta riga: altrimenti il testo si
+     spezzava in tre righe per far posto al badge */
+  .ppm-page .ppm-conto-top{flex-direction:column-reverse;align-items:flex-start;gap:10px}
+  .ppm-page .ppm-riga{grid-template-columns:3.4rem minmax(0,1fr) auto;gap:9px}
+  .ppm-page .ppm-riga .k{font-size:11.5px}
+  .ppm-page .ppm-riga .b{height:10px}
+}
+@media (prefers-reduced-motion:reduce){
+  .ppm-page.ppm-js .ppm-conto .ppm-riga .b i{transform:scaleX(var(--w,1));transition:none}
+}
+</style>
+
+<section class="ppm-hero" id="ppm-hero" data-ppm-toast="Il video arriva a breve. Intanto trovi tutto qui sotto.">
+  <div class="ppm-container">
+    <div class="ppm-hero-copy" data-ppm-stagger>
+      <p class="ppm-pill ppm-hero-badge ppm-reveal">
+        <span class="dot" aria-hidden="true"></span>
+        Aspetta, non hai ancora finito
+      </p>
+
+      <!-- Il nome arriva da GHL: il merge tag qui sotto viene risolto dalla
+           pagina prima che il browser la veda. Se il contatto non si sa (link
+           diretto, altro dispositivo) resta il titolo senza nome, che e'
+           scritto qui dentro ed e' quello che si vede anche senza JavaScript. -->
+      <h1 class="ppm-h1 ppm-hero-title ppm-reveal" data-ppm-h1>Stai pagando tasse anche sui soldi che <span class="ev">non hai mai incassato</span></h1>
+      <span data-ppm-merge="first_name" hidden>{{contact.first_name}}</span>
+    </div>
+
+    <div class="ppm-conto ppm-reveal" id="ppm-conto">
+      <div class="ppm-conto-top">
+        <p id="ppm-caso">Su <b>340 &euro;</b> che versa l&rsquo;ospite, di tasse paghi</p>
+        <span class="ppm-tuoi" id="ppm-tuoi" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 6 9 17l-5-5"></path>
+          </svg>
+          I tuoi numeri
+        </span>
+      </div>
+      <div class="ppm-righe">
+        <div class="ppm-riga oggi">
+          <span class="k">oggi</span>
+          <span class="b"><i style="--w:1"></i></span>
+          <span class="v" id="ppm-tasse-oggi">71,40 &euro;</span>
+        </div>
+        <div class="ppm-riga noi">
+          <span class="k">con noi</span>
+          <span class="b"><i id="ppm-barra-noi" style="--w:.493"></i></span>
+          <span class="v" id="ppm-tasse-noi">35,22 &euro;</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ppm-hero-media ppm-reveal">
+      <div class="ppm-hero-frame">
+        <!-- DA METTERE (1 di 3): l'indirizzo del video.
+             GHL -> Media Storage -> carica il video -> copia il link, poi
+             aggiungi src (e poster, se hai una copertina) al tag qui sotto:
+               <video controls playsinline preload="none"
+                      src="URL-DEL-VIDEO" poster="URL-COPERTINA"
+                      data-ppm-video="vsl-principale"></video>
+             Finche' src non c'e', il play mostra solo un avviso: la pagina
+             non si rompe, e la percentuale guardata non parte. -->
+        <video controls playsinline preload="none" data-ppm-video="vsl-principale"></video>
+        <span class="ppm-hero-cover">
+          <button class="ppm-play" type="button" aria-label="Guarda il video"></button>
+        </span>
+        <span class="ppm-hero-label">Guardalo prima di prenotare &middot; 3 min</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+/* ppm:01-hero — player + quanto e' stato guardato il video.
+   -------------------------------------------------------------------------
+   A 25/50/75/100% manda la percentuale al Worker Cloudflare, che la scrive
+   sul contatto nel campo "Video VSL Pct". Il contatto lo riconosciamo dal
+   cid: arriva in querystring dalla landing, oppure e' quello che il
+   calcolatore ha gia' messo in localStorage con la stessa chiave.
+   Se il contatto non si sa, non si manda niente: meglio niente che dati
+   appiccicati alla persona sbagliata.
+   ------------------------------------------------------------------------- */
+(function () {
+  "use strict";
+  var PPM = (window.PPM = window.PPM || {});
+  var root = document.getElementById("ppm-hero");
+  if (!root) return;
+
+  var WEBHOOK = "https://ghl-autosave-airtax.blionbg.workers.dev/";
+  var CID_KEY = "airtax_cid";                 /* la stessa del calcolatore */
+  var TAPPE = [25, 50, 75, 100];
+
+  function qs(nome) {
+    try { return (new URLSearchParams(window.location.search).get(nome) || "").trim(); }
+    catch (e) { return ""; }
+  }
+  function ricorda(v) { try { localStorage.setItem(CID_KEY, v); } catch (e) {} }
+  function getCid() {
+    var v = qs("cid") || qs("contact_id");
+    if (v) { ricorda(v); return v; }
+    try { return localStorage.getItem(CID_KEY) || ""; } catch (e) { return ""; }
+  }
+
+  /* text/plain e' "safelisted": niente preflight OPTIONS, che sendBeacon
+     non saprebbe gestire. */
+  function manda(dati) {
+    var corpo = JSON.stringify(dati);
+    try {
+      if (navigator.sendBeacon) {
+        var blob = new Blob([corpo], { type: "text/plain;charset=UTF-8" });
+        if (navigator.sendBeacon(WEBHOOK, blob)) return;
+      }
+    } catch (e) {}
+    try {
+      fetch(WEBHOOK, { method: "POST", body: corpo, keepalive: true,
+                       headers: { "Content-Type": "text/plain;charset=UTF-8" }, mode: "cors" });
+    } catch (e) {}
+  }
+
+  var video = root.querySelector("[data-ppm-video]");
+  var frame = root.querySelector(".ppm-hero-frame");
+  var btn = root.querySelector(".ppm-play");
+  if (!video || !frame || !btn) return;
+
+  /* ---- percentuale guardata ---- */
+  var maxVisto = 0, mandate = {};
+  function segnala(pct) {
+    if (mandate[pct]) return;
+    var cid = getCid();
+    if (!cid) return;
+    mandate[pct] = true;
+    manda({ contact_id: cid, fonte: "vsl-grazie-video", video_vsl_pct: pct });
+  }
+  video.addEventListener("timeupdate", function () {
+    var d = video.duration;
+    if (!d || !isFinite(d) || d <= 0) return;
+    var pct = (video.currentTime / d) * 100;
+    if (pct <= maxVisto) return;              /* riavvolgere non conta */
+    maxVisto = pct;
+    for (var i = 0; i < TAPPE.length; i++) if (maxVisto >= TAPPE[i]) segnala(TAPPE[i]);
+  });
+  video.addEventListener("ended", function () { maxVisto = 100; segnala(100); });
+  PPM.videoPct = function () { return Math.round(maxVisto); };
+
+  /* ---- play ---- */
+  var avviso = root.getAttribute("data-ppm-toast") || "Il video sara' disponibile a breve";
+  btn.addEventListener("click", function () {
+    if (!video.getAttribute("src")) { if (PPM.toast) PPM.toast(avviso); return; }
+    frame.classList.add("is-playing");
+    var p = video.play();
+    if (p && p.catch) p.catch(function () { frame.classList.remove("is-playing"); });
+  });
+  video.addEventListener("play", function () { frame.classList.add("is-playing"); });
+  video.addEventListener("pause", function () { frame.classList.remove("is-playing"); });
+  video.addEventListener("ended", function () { frame.classList.remove("is-playing"); });
+
+  /* il cid va ricordato appena si arriva, non solo quando parte il video */
+  getCid();
+})();
+</script>
+
+
+<!-- ppm:02-cta ============================================================
+     Il pulsante, subito sotto al video.
+     ====================================================================== -->
+<style>
+.ppm-page .ppm-ctasec{padding:clamp(24px,3.4vw,40px) 0 clamp(6px,1.2vw,14px);text-align:center}
+.ppm-page .ppm-rassicura{display:flex;flex-wrap:wrap;justify-content:center;gap:9px 22px;
+  margin-top:18px;font-size:14.5px;color:var(--ppm-muted)}
+.ppm-page .ppm-rassicura span{display:inline-flex;align-items:center;gap:7px}
+.ppm-page .ppm-rassicura svg{width:15px;height:15px;color:var(--ppm-ok);flex:0 0 auto}
+/* su telefono resta un pulsante, non una banda: a tutta larghezza sembrava
+   un blocco di colore e perdeva la forma di cosa cliccabile */
+@media (max-width:560px){
+  .ppm-page .ppm-btn{min-height:48px;padding:0 22px;font-size:15px}
+  .ppm-page .ppm-btn .ppm-lbl svg{width:17px;height:17px}
+}
+</style>
+
+<section class="ppm-ctasec" id="ppm-prenota">
+  <div class="ppm-container">
+    <a class="ppm-btn ppm-reveal" href="https://api.leadconnectorhq.com/widget/bookings/call-strategica-affitti"
+       target="_blank" rel="noopener">
+      <span class="ppm-lbl">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="18" rx="2.5"></rect>
+          <path d="M16 2v4M8 2v4M3 10h18"></path>
+        </svg>
+        Prenota la call gratuita
+      </span>
+      <span class="ppm-ring" aria-hidden="true"></span>
+    </a>
+
+    <p class="ppm-rassicura ppm-reveal">
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg>15 minuti, in videochiamata</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg>Gratuita e senza impegno</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg>Se non conviene, te lo diciamo noi</span>
+    </p>
+  </div>
+</section>
+
+<!-- ppm:03-fiducia ========================================================
+     Prova sociale in una riga + la riga "metodo esclusivo".
+     ====================================================================== -->
+<style>
+.ppm-page .ppm-fiducia{padding-top:clamp(16px,2.6vw,30px);padding-bottom:clamp(20px,3vw,40px)}
+.ppm-page .ppm-fiducia-row{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;
+  gap:clamp(14px,2.4vw,26px)}
+.ppm-page .ppm-badge{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.ppm-page .ppm-avgroup{display:flex;align-items:center;justify-content:center}
+/* DA METTERE (facoltativo): al posto di ogni <b> puoi mettere
+   <img src="..." alt="" width="42" height="42"> con la foto di un host.
+   Le iniziali funzionano bene anche cosi', e non serve nessun permesso. */
+.ppm-page .ppm-avgroup b,.ppm-page .ppm-avgroup img{
+  width:42px;height:42px;border-radius:50%;object-fit:cover;
+  border:2px solid var(--ppm-paper);box-shadow:0 3px 10px -5px rgba(28,27,27,.45);
+  display:flex;align-items:center;justify-content:center;
+  background:var(--ppm-accent);color:#fff;font-size:13px;font-weight:800;letter-spacing:.01em;
+}
+.ppm-page .ppm-avgroup b + b,.ppm-page .ppm-avgroup img + img,
+.ppm-page .ppm-avgroup img + b,.ppm-page .ppm-avgroup b + img{margin-left:-9px}
+.ppm-page .ppm-avgroup b:nth-child(2){background:#9A3D33}
+.ppm-page .ppm-avgroup b:nth-child(3){background:#6D5150}
+.ppm-page .ppm-avgroup b:nth-child(4){background:#8B7170}
+.ppm-page .ppm-avgroup b.piu{background:var(--ppm-accent-soft);color:var(--ppm-accent-ink)}
+.ppm-page .ppm-stars-line{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.ppm-page .ppm-stars{display:inline-flex;gap:3px}
+.ppm-page .ppm-stars svg{width:17px;height:17px;color:var(--ppm-gold)}
+.ppm-page .ppm-stars-score{font-family:var(--ppm-font-display);font-size:19px;font-weight:800;
+  letter-spacing:-.02em;line-height:1;color:var(--ppm-ink)}
+.ppm-page .ppm-badge-txt{font-size:15px;line-height:1.45;color:var(--ppm-muted)}
+.ppm-page .ppm-badge-txt b{color:var(--ppm-ink);font-weight:800}
+
+/* riga "metodo esclusivo" */
+.ppm-page .ppm-spots-line{display:flex;justify-content:center;margin-top:clamp(18px,2.6vw,26px)}
+.ppm-page .ppm-spots{display:inline-flex;align-items:flex-start;gap:10px;max-width:660px;
+  color:var(--ppm-ink-2);font-size:15px;line-height:1.5;text-align:left}
+.ppm-page .ppm-spots svg{width:18px;height:18px;flex:0 0 auto;color:var(--ppm-accent);margin-top:2px}
+.ppm-page .ppm-spots b{color:var(--ppm-ink);font-weight:800}
+.ppm-page .ppm-spots span{color:var(--ppm-muted)}
+</style>
+
+<section class="ppm-fiducia" id="ppm-fiducia">
+  <div class="ppm-container">
+    <div class="ppm-fiducia-row" data-ppm-stagger>
+      <div class="ppm-badge ppm-reveal">
+        <span class="ppm-avgroup" aria-hidden="true">
+          <b>GC</b><b>LM</b><b>AR</b><b>SD</b><b class="piu">+20</b>
+        </span>
+        <span class="ppm-stars-line">
+          <span class="ppm-stars" role="img" aria-label="Valutazione 4,9 su 5">
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 1.6l2.47 5.1 5.53.78-4 3.96.95 5.6L10 14.4l-4.95 2.64.95-5.6-4-3.96 5.53-.78L10 1.6z"></path></svg>
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 1.6l2.47 5.1 5.53.78-4 3.96.95 5.6L10 14.4l-4.95 2.64.95-5.6-4-3.96 5.53-.78L10 1.6z"></path></svg>
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 1.6l2.47 5.1 5.53.78-4 3.96.95 5.6L10 14.4l-4.95 2.64.95-5.6-4-3.96 5.53-.78L10 1.6z"></path></svg>
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 1.6l2.47 5.1 5.53.78-4 3.96.95 5.6L10 14.4l-4.95 2.64.95-5.6-4-3.96 5.53-.78L10 1.6z"></path></svg>
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 1.6l2.47 5.1 5.53.78-4 3.96.95 5.6L10 14.4l-4.95 2.64.95-5.6-4-3.96 5.53-.78L10 1.6z"></path></svg>
+          </span>
+          <span class="ppm-stars-score ppm-display">4,9</span>
+        </span>
+        <span class="ppm-badge-txt">Oltre <b>20 host</b> a Roma si affidano gi&agrave; a ProProManager</span>
+      </div>
+    </div>
+
+    <p class="ppm-spots-line ppm-reveal">
+      <span class="ppm-spots">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 2.6l2.6 5.5 5.9.85-4.3 4.25 1.02 6.0L12 16.3l-5.22 2.9 1.02-6.0-4.3-4.25 5.9-.85L12 2.6z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"></path>
+        </svg>
+        <span><b>Metodo esclusivo, riservato a chi gestisce immobili da solo.</b>
+        Non lavoriamo con chi ha gi&agrave; un&rsquo;agenzia, n&eacute; con chi ha decine di appartamenti.</span>
+      </span>
+    </p>
+  </div>
+</section>
+
+
+
+<script>
+/* ppm:012-nome — il nome della persona nel titolo.
+   -------------------------------------------------------------------------
+   Tre posti da cui puo' arrivare, in quest'ordine:
+     1. la querystring  (?nome= , messo nel redirect del form)
+     2. il merge tag di GHL, risolto dalla pagina prima che il browser la veda
+     3. il localStorage, se una pagina precedente dello stesso dominio lo ha
+        gia' visto
+   Se non si sa, il titolo resta quello scritto nell'HTML: senza nome, giusto
+   lo stesso. Meglio nessun nome che un "{{contact.first_name}}" in faccia.
+   ------------------------------------------------------------------------- */
+(function () {
+  "use strict";
+  var NOME_KEY = "airtax_nome";
+  var h1 = document.querySelector("[data-ppm-h1]");
+  if (!h1) return;
+
+  function daQuery(chiavi) {
+    var q;
+    try { q = new URLSearchParams(window.location.search); } catch (e) { return ""; }
+    for (var i = 0; i < chiavi.length; i++) {
+      var v = q.get(chiavi[i]);
+      if (v && v.trim()) return v.trim();
+    }
+    return "";
+  }
+
+  function pulisci(grezzo) {
+    if (!grezzo) return "";
+    var s = String(grezzo).trim();
+    /* un merge tag non risolto arriva tale e quale: "{{contact.first_name}}" */
+    if (!s || s.indexOf("{") > -1 || s.indexOf("}") > -1) return "";
+    if (/^(null|undefined|none|n\/a|nome)$/i.test(s)) return "";
+    s = s.split(/[\s,]+/)[0].replace(/[.,;:]+$/, "");
+    if (s.length > 20) return "";                  /* non e' un nome */
+    if (!/^[A-Za-z\u00C0-\u017F'\u2019-]+$/.test(s)) return "";
+    return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+  }
+
+  var nome = pulisci(daQuery(["nome", "first_name", "firstname", "name"]));
+  if (!nome) {
+    var merge = document.querySelector('[data-ppm-merge="first_name"]');
+    if (merge) nome = pulisci(merge.textContent);
+  }
+  if (!nome) { try { nome = pulisci(localStorage.getItem(NOME_KEY)); } catch (e) {} }
+  if (!nome) return;
+
+  try { localStorage.setItem(NOME_KEY, nome); } catch (e) {}
+
+  /* Si infila davanti al testo che c'e' gia', cosi' l'evidenziatore sulla
+     parte finale del titolo resta dov'e'. */
+  var primo = h1.firstChild;
+  if (primo && primo.nodeType === 3 && /Stai/.test(primo.nodeValue)) {
+    primo.nodeValue = primo.nodeValue.replace("Stai", nome + ", stai");
+  }
+  window.PPM = window.PPM || {};
+  window.PPM.nome = nome;
+})();
+</script>
+
+<script>
+/* ppm:015b-caso — il conto con i numeri di chi sta guardando.
+   -------------------------------------------------------------------------
+   Il calcolatore, sullo stesso dominio, lascia in localStorage gli
+   ingredienti del suo conto (chiave "airtax_caso"). Qui li rileggiamo e
+   rifacciamo le due righe con quei numeri, al posto dell'esempio.
+   Non esce niente dal browser: e' roba sua, mostrata a lui.
+
+   Se non c'e' niente da leggere, o i numeri non reggono, resta l'esempio
+   gia' scritto nell'HTML: la pagina non se ne accorge e nessuno vede un buco.
+
+   L'UNICO numero da cambiare e' FEE_GESTIONE: regge sia l'esempio sia il
+   caso personale.
+   ------------------------------------------------------------------------- */
+(function () {
+  "use strict";
+
+  var FEE_GESTIONE = 0.20;          /* <-- la vostra quota di gestione */
+  var IVA = 0.22, COMM_NUOVA = 0.155;
+  var GIORNI_VALIDI = 60;           /* oltre, il dato e' vecchio: meglio l'esempio */
+
+  if (!document.getElementById("ppm-conto")) return;
+
+  var euro0 = new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  var euro2 = new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  function testo(id, s) { var e = document.getElementById(id); if (e) e.textContent = s; }
+
+  /* Un conto solo, usato sia per l'esempio sia per il caso vero: due formule
+     in due posti diversi divergono, e qui e' gia' successo una volta. */
+  function conteggio(d) {
+    var lordo = d.price * d.nights + d.cleaning;
+    var tua = lordo * (1 - d.effN - FEE_GESTIONE) - d.cleaning;
+    return {
+      lordo: lordo, tua: tua,
+      tasseOggi: lordo * d.t,
+      tasseNoi: tua * d.t,
+      quota: lordo > 0 ? tua / lordo : 0       /* quanto del lordo ti arriva */
+    };
+  }
+
+  function disegna(d, personale) {
+    var c = conteggio(d);
+    if (!(c.lordo > 0) || !(c.tua > 0)) return false;
+
+    testo("ppm-tasse-oggi", euro2.format(c.tasseOggi));
+    testo("ppm-tasse-noi", euro2.format(c.tasseNoi));
+    document.getElementById("ppm-barra-noi").style.setProperty("--w", c.quota.toFixed(3));
+
+    var caso = document.getElementById("ppm-caso");
+    caso.innerHTML = "";
+    caso.appendChild(document.createTextNode("Su "));
+    var forte = document.createElement("b");
+    forte.textContent = euro0.format(c.lordo);
+    caso.appendChild(forte);
+    caso.appendChild(document.createTextNode(
+      personale ? " di una tua prenotazione tipo, di tasse paghi"
+                : " che versa l\u2019ospite, di tasse paghi"));
+
+    return true;
+  }
+
+  function caso() {
+    var raw = null;
+    try { raw = localStorage.getItem("airtax_caso"); } catch (e) { return null; }
+    if (!raw) return null;
+    var d = null;
+    try { d = JSON.parse(raw); } catch (e) { return null; }
+    if (!d || d.v !== 1) return null;
+    if (!d.ts || (Date.now() - d.ts) > GIORNI_VALIDI * 864e5) return null;
+
+    d.price = Number(d.price); d.cleaning = Number(d.cleaning) || 0;
+    d.nights = Math.round(Number(d.nights)) || 0;
+    d.effN = Number(d.effN); d.t = Number(d.t);
+    /* Il regime impresa non paga un'imposta sul lordo: il confronto sarebbe
+       zero contro zero. Meglio l'esempio. */
+    if (!(d.price > 0) || !(d.nights >= 1) || !(d.t > 0) || !(d.effN > 0)) return null;
+    return d;
+  }
+
+  var mio = caso();
+  if (mio && disegna(mio, true)) {
+    document.getElementById("ppm-tuoi").hidden = false;
+  } else {
+    disegna({ price: 100, cleaning: 40, nights: 3, regime: "ced21",
+              t: 0.21, effN: COMM_NUOVA * (1 + IVA) }, false);
+  }
+})();
+</script>
+<!-- ppm:04-metodo =========================================================
+     "Il metodo in 4 fasi" — binario a capsula e card unica, come nella
+     pagina di riferimento. In fondo, il conto spiegato con una barra sola.
+     ====================================================================== -->
+<style>
+.ppm-page .ppm-metodo{background:var(--ppm-paper)}
+.ppm-page .ppm-metodo .ppm-head{margin-bottom:clamp(34px,5vw,58px)}
+
+.ppm-page .ppm-tl{--rail:52px;--gap:clamp(16px,2.4vw,30px);
+  display:grid;grid-template-columns:var(--rail) minmax(0,1fr);gap:var(--gap);
+  width:100%;max-width:760px;margin-inline:auto;align-items:stretch}
+.ppm-page .ppm-tl-rail{position:relative;width:var(--rail);overflow:visible}
+.ppm-page .ppm-tl-fill{position:absolute;left:0;top:0;width:100%;height:0;border-radius:120px;
+  background:linear-gradient(180deg,var(--ppm-accent) 0%,var(--ppm-paper) 100%);z-index:0}
+.ppm-page .ppm-tl-dot{position:absolute;left:50%;transform:translate(-50%,-50%);
+  width:16px;height:16px;border-radius:50%;background:#fff;z-index:2;
+  transition:background-color .4s var(--ppm-ease),border-color .4s var(--ppm-ease)}
+.ppm-page .ppm-tl-dot.is-pale{border:1.5px solid var(--ppm-line)}
+.ppm-page .ppm-tl-seg{position:absolute;left:50%;transform:translateX(-50%);
+  width:6px;border-radius:24px;background:#fff;z-index:1;
+  transition:background-color .4s var(--ppm-ease)}
+.ppm-page .ppm-tl-seg.is-pale{background:var(--ppm-line)}
+
+.ppm-page .ppm-tl-card{background:var(--ppm-card);border:1px solid var(--ppm-line);
+  border-radius:var(--ppm-radius-lg);box-shadow:var(--ppm-shadow-soft);
+  padding:clamp(16px,2.2vw,24px);display:flex;flex-direction:column;gap:clamp(20px,2.8vw,30px)}
+.ppm-page .ppm-tl-block{display:flex;flex-direction:column;gap:5px}
+.ppm-page .ppm-tl-step{font-size:13.5px;font-weight:800;letter-spacing:.02em;line-height:1.35;color:var(--ppm-accent)}
+.ppm-page .ppm-tl-title{font-family:var(--ppm-font-display);font-weight:800;font-size:clamp(18px,2vw,21px);
+  line-height:1.2;letter-spacing:-.015em;color:var(--ppm-ink);margin-top:2px}
+.ppm-page .ppm-tl-body{font-size:16px;line-height:1.6;color:var(--ppm-muted);max-width:60ch;margin-top:3px}
+.ppm-page .ppm-tl-body .ev{color:var(--ppm-accent);font-weight:700}
+
+@media (max-width:640px){
+  .ppm-page .ppm-tl{--rail:34px;--gap:14px}
+  .ppm-page .ppm-tl-dot{width:13px;height:13px}
+  .ppm-page .ppm-tl-seg{width:5px}
+  .ppm-page .ppm-tl-body{font-size:15.5px}
+}
+</style>
+
+<section class="ppm-section ppm-metodo" id="ppm-metodo">
+  <div class="ppm-container">
+
+    <header class="ppm-head ppm-reveal">
+      <h2 class="ppm-h2">Il metodo in 4 fasi</h2>
+      <p class="ppm-lead">Quattro fasi. Nella terza succede la cosa che ti fa pagare meno.</p>
+    </header>
+
+    <div class="ppm-tl" data-ppm-tl>
+      <div class="ppm-tl-rail" data-ppm-tl-rail aria-hidden="true"><span class="ppm-tl-fill" data-ppm-tl-fill></span></div>
+      <ol class="ppm-tl-card" data-ppm-tl-card>
+        <li class="ppm-tl-block ppm-reveal" data-ppm-step>
+          <p class="ppm-tl-step">Fase 1</p>
+          <h3 class="ppm-tl-title">Valutiamo la tua situazione, e quanto possiamo farti risparmiare davvero</h3>
+          <p class="ppm-tl-body">Quindici minuti sui tuoi numeri veri: annuncio, zona, notti vendute, prezzo. Se non ha senso per tutti e due, te lo diciamo subito.</p>
+        </li>
+        <li class="ppm-tl-block ppm-reveal" data-ppm-step>
+          <p class="ppm-tl-step">Fase 2</p>
+          <h3 class="ppm-tl-title">Ti facciamo vedere esattamente quanto in pi&ugrave; puoi guadagnare</h3>
+          <p class="ppm-tl-body">L&rsquo;immobile resta tuo, il resto lo mettiamo noi: un team di oltre 20 persone specializzate, prezzi dinamici, annunci su tantissime piattaforme, prenotazione diretta, il nostro sistema di gestione ospiti prioritario ProProManager, assistenza 24/7 e molto altro ancora. In media i numeri dicono che lo facciamo rendere <span class="ev">dal 35% al 60% in pi&ugrave;</span> di quando la gestione la facevi da solo.</p>
+        </li>
+        <li class="ppm-tl-block ppm-reveal" data-ppm-step>
+          <p class="ppm-tl-step">Fase 3</p>
+          <h3 class="ppm-tl-title">Attiviamo il sostituto d&rsquo;imposta</h3>
+          <p class="ppm-tl-body">L&rsquo;incasso non ti arriva pi&ugrave; lordo da Airbnb: passa da noi, e siamo noi a trattenere e versare l&rsquo;imposta al posto tuo. Come fa il datore di lavoro con la busta paga. Il commercialista lo paghiamo noi, le tasse le versiamo noi: <span class="ev">tu non fai nulla</span>.</p>
+        </li>
+        <li class="ppm-tl-block ppm-reveal" data-ppm-step>
+          <p class="ppm-tl-step">Fase 4</p>
+          <h3 class="ppm-tl-title">Ti godi una vera rendita immobiliare</h3>
+          <p class="ppm-tl-body">Ad oggi, in Italia, questo &egrave; l&rsquo;unico modo di godersi una vera e propria rendita immobiliare: l&rsquo;immobile lavora, e tu non ci pensi pi&ugrave;.</p>
+        </li>
+      </ol>
+    </div>
+
+  </div>
+</section>
+
+<script>
+/* ppm:04-metodo — pallini del binario allineati alle quattro fasi,
+   riempimento legato allo scroll. */
+(function () {
+  "use strict";
+  var PPM = (window.PPM = window.PPM || {});
+  var root = document.getElementById("ppm-metodo");
+  if (!root) return;
+
+  var rail = root.querySelector("[data-ppm-tl-rail]");
+  var card = root.querySelector("[data-ppm-tl-card]");
+  var fill = root.querySelector("[data-ppm-tl-fill]");
+  if (!rail || !card || !fill) return;
+  var blocks = card.querySelectorAll("[data-ppm-step]");
+  if (!blocks.length) return;
+
+  var dots = [], segs = [], marks = [], railH = 0, cur = 0, target = 0, running = false;
+
+  function build() {
+    railH = rail.offsetHeight;
+    if (!railH) return;
+
+    /* Le posizioni si prendono da offsetTop, non da getBoundingClientRect:
+       i blocchi hanno la comparsa allo scroll, che li trasla di 18px, e con
+       il rect i pallini finivano fuori posto finche' non si ridimensionava
+       la finestra. offsetTop ignora le transform. Rail e card sono due celle
+       della stessa riga di griglia, quindi partono dalla stessa quota. */
+    var ys = [];
+    for (var i = 0; i < blocks.length; i++) {
+      ys.push(Math.round(blocks[i].offsetTop - card.offsetTop + 11));
+    }
+    marks = ys;
+
+    var html = "";
+    for (var k = 0; k < ys.length - 1; k++) {
+      var top = ys[k] + 14, h = ys[k + 1] - 14 - top;
+      if (h > 0) html += '<span class="ppm-tl-seg" style="top:' + top + 'px;height:' + h + 'px"></span>';
+    }
+    for (var j = 0; j < ys.length; j++) html += '<span class="ppm-tl-dot" style="top:' + ys[j] + 'px"></span>';
+
+    /* Prima si buttano via i vecchi, poi si disegnano i nuovi. Al contrario
+       (com'era) i nuovi finiscono PRIMA dei vecchi nel documento, e la
+       ripulitura dall'inizio cancellava proprio quelli appena fatti: dopo un
+       ridimensionamento restavano in piedi i pallini di prima, fermi dov'erano. */
+    var vecchi = rail.querySelectorAll(".ppm-tl-dot, .ppm-tl-seg");
+    for (var q = 0; q < vecchi.length; q++) vecchi[q].parentNode.removeChild(vecchi[q]);
+    fill.insertAdjacentHTML("afterend", html);
+    dots = rail.querySelectorAll(".ppm-tl-dot");
+    segs = rail.querySelectorAll(".ppm-tl-seg");
+    paint(cur);
+  }
+
+  /* il fondo del binario passa da carta a corallo mentre si riempie */
+  var PAPER = [252, 249, 248], ACC = [128, 24, 32];
+  function mix(p) {
+    return "rgb(" + Math.round(PAPER[0] + (ACC[0] - PAPER[0]) * p) + "," +
+                    Math.round(PAPER[1] + (ACC[1] - PAPER[1]) * p) + "," +
+                    Math.round(PAPER[2] + (ACC[2] - PAPER[2]) * p) + ")";
+  }
+  function paint(p) {
+    var q = Math.max(0, Math.min(1, p)), h = q * railH;
+    fill.style.height = h.toFixed(1) + "px";
+    fill.style.backgroundImage = "linear-gradient(180deg,var(--ppm-accent) 0%," + mix(q) + " 100%)";
+    for (var i = 0; i < dots.length; i++) {
+      dots[i].classList.toggle("is-pale", !(marks[i] !== undefined && marks[i] <= h + 2));
+    }
+    for (var k = 0; k < segs.length; k++) {
+      segs[k].classList.toggle("is-pale", !((parseFloat(segs[k].style.top) || 0) + 6 <= h));
+    }
+  }
+  function computeTarget() {
+    var box = rail.getBoundingClientRect();
+    if (!box.height) return;
+    var doc = document.documentElement, vh = window.innerHeight || doc.clientHeight;
+    var p = (vh * 0.8 - box.top) / box.height;
+    if ((window.pageYOffset || doc.scrollTop) + vh >= doc.scrollHeight - 2) p = 1;
+    target = p < 0 ? 0 : (p > 1 ? 1 : p);
+  }
+  function tick() {
+    cur += (target - cur) * 0.16;
+    if (Math.abs(target - cur) < 0.001) cur = target;
+    paint(cur);
+    if (cur !== target) requestAnimationFrame(tick); else running = false;
+  }
+  function request() {
+    computeTarget();
+    if (!running) { running = true; requestAnimationFrame(tick); }
+  }
+
+  build();
+  if (PPM.reduceMotion) { cur = target = 1; paint(1); }
+  else {
+    var ticking = false;
+    window.addEventListener("scroll", function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () { ticking = false; request(); });
+    }, { passive: true });
+    request();
+  }
+  window.addEventListener("resize", function () { build(); request(); }, { passive: true });
+  window.addEventListener("load", function () { build(); request(); });
+  if (window.ResizeObserver) { try { new ResizeObserver(function () { build(); request(); }).observe(card); } catch (e) {} }
+})();
+</script>
+
+
+
+<!-- ppm:05-obiezioni ======================================================
+     "Cosa sapere prima di sentirci" — otto card 16:9 con titolo in overlay.
+     Ogni card funziona anche senza immagine e senza video: il fondo e' un
+     gradiente, e il play avvisa che il video sta arrivando.
+     ====================================================================== -->
+<style>
+.ppm-page .ppm-obj{background:var(--ppm-card);border-top:1px solid var(--ppm-line)}
+.ppm-page .ppm-obj .ppm-head{margin-bottom:clamp(28px,4vw,46px)}
+.ppm-page .ppm-obj-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(14px,2.4vw,22px)}
+@media (min-width:760px){.ppm-page .ppm-obj-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.ppm-page .ppm-vcard{position:relative;isolation:isolate;overflow:hidden;aspect-ratio:16/9;
+  /* su telefono otto card 16:9 di fila sono oltre 1600px di scroll: le
+     schiacciamo, il titolo resta grande uguale */
+  border-radius:var(--ppm-radius-lg);cursor:pointer;
+  background:linear-gradient(145deg,#3a1418 0%,#1b1012 100%);
+  box-shadow:0 1px 2px rgba(28,27,27,.06),0 18px 40px -22px rgba(28,27,27,.45);
+  transition:transform .5s var(--ppm-ease),box-shadow .5s var(--ppm-ease)}
+/* ogni card un fondo un po' diverso, se non c'e' la miniatura */
+.ppm-page .ppm-vcard:nth-child(2){background:linear-gradient(145deg,#4a1a16 0%,#1d1210 100%)}
+.ppm-page .ppm-vcard:nth-child(3){background:linear-gradient(145deg,#2f1c1b 0%,#171011 100%)}
+.ppm-page .ppm-vcard:nth-child(4){background:linear-gradient(145deg,#431720 0%,#1a1013 100%)}
+.ppm-page .ppm-vcard:nth-child(5){background:linear-gradient(145deg,#39201c 0%,#181110 100%)}
+.ppm-page .ppm-vcard:nth-child(6){background:linear-gradient(145deg,#2c1a1f 0%,#150f12 100%)}
+.ppm-page .ppm-vcard:nth-child(7){background:linear-gradient(145deg,#452028 0%,#1c1214 100%)}
+.ppm-page .ppm-vcard:nth-child(8){background:linear-gradient(145deg,#33181a 0%,#160f10 100%)}
+.ppm-page .ppm-vcard:hover{transform:translateY(-3px);
+  box-shadow:0 1px 2px rgba(28,27,27,.06),0 28px 56px -24px rgba(28,27,27,.5)}
+.ppm-page .ppm-vcard-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;
+  transform:scale(1.01);transition:transform .9s var(--ppm-ease)}
+.ppm-page .ppm-vcard:hover .ppm-vcard-img{transform:scale(1.055)}
+.ppm-page .ppm-vcard-scrim{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg,rgba(12,11,10,.28) 0%,rgba(12,11,10,0) 24%,rgba(12,11,10,.42) 56%,rgba(12,11,10,.88) 100%)}
+.ppm-page .ppm-vcard-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:4;background:#14120F}
+.ppm-page .ppm-vcard-body{position:absolute;left:0;right:0;bottom:0;z-index:2;
+  padding:clamp(14px,2.6vw,24px);display:grid;gap:7px}
+.ppm-page .ppm-vcard-kicker{display:flex;align-items:flex-start;gap:9px;
+  font-size:11px;line-height:1.4;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
+  color:rgba(255,255,255,.88);text-shadow:0 1px 10px rgba(0,0,0,.55)}
+.ppm-page .ppm-vcard-kicker::before{content:"";flex:0 0 auto;width:16px;height:2px;margin-top:.62em;
+  border-radius:2px;background:var(--ppm-accent-soft)}
+.ppm-page .ppm-vcard-title{color:#fff;font-family:var(--ppm-font-display);font-weight:800;
+  font-size:clamp(18px,4.4vw,29px);line-height:1.05;letter-spacing:-.018em;text-transform:uppercase;
+  text-wrap:balance;text-shadow:0 2px 22px rgba(0,0,0,.5)}
+@media (min-width:760px){.ppm-page .ppm-vcard-title{font-size:clamp(19px,2.2vw,28px)}}
+.ppm-page .ppm-vcard-dur{position:absolute;top:12px;right:12px;z-index:2;
+  padding:5px 11px;border-radius:var(--ppm-radius-pill);
+  font-size:12px;font-weight:700;color:#fff;
+  background:rgba(20,18,15,.44);border:1px solid rgba(255,255,255,.24);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+/* il fondo bianco del play va ridichiarato: `.ppm-page button{background:none}`
+   vale (0,1,1) e batterebbe .ppm-play da solo */
+.ppm-page .ppm-vcard .ppm-play{position:absolute;inset:0;margin:auto;z-index:3;background:rgba(255,255,255,.92)}
+.ppm-page .ppm-vcard:hover .ppm-play{transform:scale(1.07);background:#fff}
+@media (max-width:759px){
+  .ppm-page .ppm-vcard{aspect-ratio:2/1}
+  .ppm-page .ppm-vcard .ppm-play{inset:0 0 34% 0}
+}
+.ppm-page .ppm-vcard.is-playing{cursor:default}
+.ppm-page .ppm-vcard.is-playing .ppm-vcard-img,
+.ppm-page .ppm-vcard.is-playing .ppm-vcard-scrim,
+.ppm-page .ppm-vcard.is-playing .ppm-vcard-body,
+.ppm-page .ppm-vcard.is-playing .ppm-vcard-dur,
+.ppm-page .ppm-vcard.is-playing .ppm-play{opacity:0;pointer-events:none;transition:opacity .3s ease}
+@media (prefers-reduced-motion:reduce){
+  .ppm-page .ppm-vcard:hover{transform:none}
+  .ppm-page .ppm-vcard:hover .ppm-vcard-img{transform:scale(1.01)}
+}
+</style>
+
+<section class="ppm-section ppm-obj" id="ppm-obiezioni" aria-labelledby="ppm-obj-title">
+  <div class="ppm-container">
+    <header class="ppm-head ppm-reveal">
+      <h2 class="ppm-h2" id="ppm-obj-title">Cosa sapere prima di sentirci</h2>
+      <p class="ppm-lead">Le otto che ci fanno sempre. Te le togliamo prima, cos&igrave; in call non perdiamo tempo.</p>
+    </header>
+
+    <div class="ppm-obj-grid" data-ppm-stagger data-ppm-obj-grid>
+      <article class="ppm-vcard ppm-reveal" data-id="guadagno-meno">
+        <!-- DA METTERE (2 di 3), facoltativo: miniatura e video della risposta.
+             <img class="ppm-vcard-img" src="URL-MINIATURA" alt="" loading="lazy" decoding="async">
+             <video class="ppm-vcard-video" src="URL-VIDEO" controls playsinline preload="none" hidden></video>
+             Senza, la card resta il gradiente e il play mostra "Video in arrivo". -->
+        <span class="ppm-vcard-scrim"></span>
+        <span class="ppm-vcard-dur">1 min</span>
+        <button class="ppm-play" type="button" aria-label="Guarda il video: Se lo do in gestione guadagno di meno"></button>
+        <div class="ppm-vcard-body">
+          <p class="ppm-vcard-kicker">Il conto che sbagliano tutti</p>
+          <h3 class="ppm-vcard-title">&laquo;SE LO DO IN GESTIONE GUADAGNO DI MENO&raquo;</h3>
+        </div>
+      </article>
+      <article class="ppm-vcard ppm-reveal" data-id="non-mi-fido">
+        <!-- DA METTERE (2 di 3), facoltativo: miniatura e video della risposta.
+             <img class="ppm-vcard-img" src="URL-MINIATURA" alt="" loading="lazy" decoding="async">
+             <video class="ppm-vcard-video" src="URL-VIDEO" controls playsinline preload="none" hidden></video>
+             Senza, la card resta il gradiente e il play mostra "Video in arrivo". -->
+        <span class="ppm-vcard-scrim"></span>
+        <span class="ppm-vcard-dur">1 min</span>
+        <button class="ppm-play" type="button" aria-label="Guarda il video: Non mi fido"></button>
+        <div class="ppm-vcard-body">
+          <p class="ppm-vcard-kicker">Giusto così. Ecco come ti fai un&rsquo;idea prima di firmare</p>
+          <h3 class="ppm-vcard-title">&laquo;NON MI FIDO&raquo;</h3>
+        </div>
+      </article>
+      <article class="ppm-vcard ppm-reveal" data-id="gia-provato">
+        <!-- DA METTERE (2 di 3), facoltativo: miniatura e video della risposta.
+             <img class="ppm-vcard-img" src="URL-MINIATURA" alt="" loading="lazy" decoding="async">
+             <video class="ppm-vcard-video" src="URL-VIDEO" controls playsinline preload="none" hidden></video>
+             Senza, la card resta il gradiente e il play mostra "Video in arrivo". -->
+        <span class="ppm-vcard-scrim"></span>
+        <span class="ppm-vcard-dur">1 min</span>
+        <button class="ppm-play" type="button" aria-label="Guarda il video: Ho già provato con altri"></button>
+        <div class="ppm-vcard-body">
+          <p class="ppm-vcard-kicker">Perché con le altre agenzie non è andata, quasi sempre</p>
+          <h3 class="ppm-vcard-title">&laquo;HO GI&Agrave; PROVATO CON ALTRI&raquo;</h3>
+        </div>
+      </article>
+      <article class="ppm-vcard ppm-reveal" data-id="perdo-controllo">
+        <!-- DA METTERE (2 di 3), facoltativo: miniatura e video della risposta.
+             <img class="ppm-vcard-img" src="URL-MINIATURA" alt="" loading="lazy" decoding="async">
+             <video class="ppm-vcard-video" src="URL-VIDEO" controls playsinline preload="none" hidden></video>
+             Senza, la card resta il gradiente e il play mostra "Video in arrivo". -->
+        <span class="ppm-vcard-scrim"></span>
+        <span class="ppm-vcard-dur">1 min</span>
+        <button class="ppm-play" type="button" aria-label="Guarda il video: Poi perdo il controllo"></button>
+        <div class="ppm-vcard-body">
+          <p class="ppm-vcard-kicker">Chi decide cosa, messo nero su bianco</p>
+          <h3 class="ppm-vcard-title">&laquo;POI PERDO IL CONTROLLO&raquo;</h3>
+        </div>
+      </article>
+      <article class="ppm-vcard ppm-reveal" data-id="faccio-da-solo">
+        <!-- DA METTERE (2 di 3), facoltativo: miniatura e video della risposta.
+             <img class="ppm-vcard-img" src="URL-MINIATURA" alt="" loading="lazy" decoding="async">
+             <video class="ppm-vcard-video" src="URL-VIDEO" controls playsinline preload="none" hidden></video>
+             Senza, la card resta il gradiente e il play mostra "Video in arrivo". -->
+        <span class="ppm-vcard-scrim"></span>
+        <span class="ppm-vcard-dur">1 min</span>
+        <button class="ppm-play" type="button" aria-label="Guarda il video: Me la cavo bene da solo"></button>
+        <div class="ppm-vcard-body">
+          <p class="ppm-vcard-kicker">Può darsi. Ma la cedolare, su cosa la stai pagando?</p>
+          <h3 class="ppm-vcard-title">&laquo;ME LA CAVO BENE DA SOLO&raquo;</h3>
+        </div>
+      </article>
+      <article class="ppm-vcard ppm-reveal" data-id="quanto-costa">
+        <!-- DA METTERE (2 di 3), facoltativo: miniatura e video della risposta.
+             <img class="ppm-vcard-img" src="URL-MINIATURA" alt="" loading="lazy" decoding="async">
+             <video class="ppm-vcard-video" src="URL-VIDEO" controls playsinline preload="none" hidden></video>
+             Senza, la card resta il gradiente e il play mostra "Video in arrivo". -->
+        <span class="ppm-vcard-scrim"></span>
+        <span class="ppm-vcard-dur">1 min</span>
+        <button class="ppm-play" type="button" aria-label="Guarda il video: Quanto vi prendete"></button>
+        <div class="ppm-vcard-body">
+          <p class="ppm-vcard-kicker">Il numero te lo diamo in call, prima di qualsiasi firma</p>
+          <h3 class="ppm-vcard-title">&laquo;QUANTO VI PRENDETE?&raquo;</h3>
+        </div>
+      </article>
+      <article class="ppm-vcard ppm-reveal" data-id="commercialista">
+        <!-- DA METTERE (2 di 3), facoltativo: miniatura e video della risposta.
+             <img class="ppm-vcard-img" src="URL-MINIATURA" alt="" loading="lazy" decoding="async">
+             <video class="ppm-vcard-video" src="URL-VIDEO" controls playsinline preload="none" hidden></video>
+             Senza, la card resta il gradiente e il play mostra "Video in arrivo". -->
+        <span class="ppm-vcard-scrim"></span>
+        <span class="ppm-vcard-dur">1 min</span>
+        <button class="ppm-play" type="button" aria-label="Guarda il video: Il commercialista dice così"></button>
+        <div class="ppm-vcard-body">
+          <p class="ppm-vcard-kicker">Non sbaglia. Cambia chi incassa, non il calcolo</p>
+          <h3 class="ppm-vcard-title">&laquo;IL COMMERCIALISTA DICE COS&Igrave;&raquo;</h3>
+        </div>
+      </article>
+      <article class="ppm-vcard ppm-reveal" data-id="vincolo">
+        <!-- DA METTERE (2 di 3), facoltativo: miniatura e video della risposta.
+             <img class="ppm-vcard-img" src="URL-MINIATURA" alt="" loading="lazy" decoding="async">
+             <video class="ppm-vcard-video" src="URL-VIDEO" controls playsinline preload="none" hidden></video>
+             Senza, la card resta il gradiente e il play mostra "Video in arrivo". -->
+        <span class="ppm-vcard-scrim"></span>
+        <span class="ppm-vcard-dur">1 min</span>
+        <button class="ppm-play" type="button" aria-label="Guarda il video: Devo vincolarmi per anni"></button>
+        <div class="ppm-vcard-body">
+          <p class="ppm-vcard-kicker">Durata e modi di uscita, scritti prima di firmare</p>
+          <h3 class="ppm-vcard-title">&laquo;DEVO VINCOLARMI PER ANNI?&raquo;</h3>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<script>
+/* ppm:05-obiezioni — click sulla card: parte il video se c'e', altrimenti avvisa. */
+(function () {
+  "use strict";
+  var grid = document.querySelector("[data-ppm-obj-grid]");
+  if (!grid) return;
+  var PPM = (window.PPM = window.PPM || {});
+
+  var cards = grid.querySelectorAll(".ppm-vcard");
+  for (var i = 0; i < cards.length; i++) {
+    (function (card) {
+      var video = card.querySelector("video");
+      card.addEventListener("click", function (ev) {
+        if (card.classList.contains("is-playing")) return;
+        if (ev) ev.preventDefault();
+        if (!video || !video.getAttribute("src")) {
+          if (PPM.toast) PPM.toast("Video in arrivo. Intanto prenota pure la call.");
+          return;
+        }
+        video.hidden = false;
+        card.classList.add("is-playing");
+        if (typeof PPM.pauseOthers === "function") PPM.pauseOthers(video);
+        var p = video.play();
+        if (p && p.catch) p.catch(function () { video.controls = true; });
+      });
+      if (video) video.addEventListener("click", function (ev) { ev.stopPropagation(); });
+    })(cards[i]);
+  }
+})();
+</script>
+
+
+<!-- ppm:06-testimonianze ==================================================
+     Muro scorrevole, due file in direzioni opposte.
+     ====================================================================== -->
+<style>
+.ppm-page .ppm-rev .ppm-head{margin-bottom:clamp(26px,4vw,42px)}
+.ppm-page .ppm-wall-card{height:230px}
+.ppm-page .ppm-wall-card img{height:100%;width:100%;object-fit:cover;object-position:top left}
+/* riquadro vuoto: sparisce appena ci metti l'immagine al suo posto */
+.ppm-page .ppm-wall-vuota{display:flex;align-items:center;justify-content:center;text-align:center;
+  padding:18px;border-style:dashed;border-color:var(--ppm-line);background:var(--ppm-paper);
+  color:var(--ppm-muted);font-size:14px;line-height:1.5;box-shadow:none}
+.ppm-page .ppm-wall-vuota i{font-style:normal;font-size:12.5px;opacity:.75}
+.ppm-page .ppm-rev-foot{margin-top:clamp(20px,2.6vw,28px);text-align:center;
+  font-size:14px;line-height:1.5;color:var(--ppm-muted)}
+@media (max-width:900px){
+  .ppm-page .ppm-wall-card{height:170px;width:auto !important;max-width:78vw}
+  .ppm-page .ppm-wall-card img{width:auto;height:100%;object-fit:contain}
+}
+/* su telefono una fila sola: due nastri che scorrono in senso opposto
+   raddoppiano l'altezza e non aggiungono niente */
+@media (max-width:560px){ .ppm-page .ppm-wall-row--rev{display:none} }
+</style>
+
+<section class="ppm-section ppm-rev" id="ppm-testimonianze" aria-labelledby="ppm-rev-title">
+  <div class="ppm-container">
+    <header class="ppm-head ppm-reveal">
+      <h2 class="ppm-h2" id="ppm-rev-title">Oltre 20 host a Roma, gi&agrave; aiutati a pagare meno tasse</h2>
+      <p class="ppm-lead">Sono i loro messaggi, non i nostri.</p>
+    </header>
+  </div>
+
+  <!-- DA METTERE (3 di 3): al posto di ogni <figure class="ppm-wall-vuota">...</figure>
+       incolla una riga fatta cosi', con il link dell'immagine che hai gia' su GHL
+       (Media Storage -> apri l'immagine -> copia il link):
+
+         <figure class="ppm-wall-card" style="width:460px">
+           <img src="URL-IMMAGINE" alt="Testimonianza di un host" width="460" height="230" loading="lazy" decoding="async">
+         </figure>
+
+       Ogni riquadro compare DUE volte, una per meta' del nastro: sostituiscile
+       entrambe, altrimenti il giro continuo si vede saltare. -->
+  <div class="ppm-wall ppm-reveal" role="list" aria-label="Testimonianze degli host">
+    <div class="ppm-wall-row" style="--dur:96s">
+      <div class="ppm-wall-track">
+          <figure class="ppm-wall-card ppm-wall-vuota" style="width:460px"><span>Testimonianza 1<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
+          <figure class="ppm-wall-card ppm-wall-vuota" style="width:340px"><span>Testimonianza 2<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
+          <figure class="ppm-wall-card ppm-wall-vuota" style="width:410px"><span>Testimonianza 3<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
+          <figure class="ppm-wall-card ppm-wall-vuota" style="width:500px"><span>Testimonianza 4<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
+          <figure class="ppm-wall-card ppm-wall-vuota" style="width:380px"><span>Testimonianza 5<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
+          <figure class="ppm-wall-card ppm-wall-vuota" style="width:470px"><span>Testimonianza 6<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
+          <figure class="ppm-wall-card ppm-wall-vuota" style="width:460px"><span>Testimonianza 1<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
+          <figure class="ppm-wall-card ppm-wall-vuota" style="width:340px"><span>Testimonianza 2<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
+          <figure class="ppm-wall-card ppm-wall-vuota" style="width:410px"><span>Testimonianza 3<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
+          <figure class="ppm-wall-card ppm-wall-vuota" style="width:500px"><span>Testimonianza 4<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
+          <figure class="ppm-wall-card ppm-wall-vuota" style="width:380px"><span>Testimonianza 5<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
+          <figure class="ppm-wall-card ppm-wall-vuota" style="width:470px"><span>Testimonianza 6<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
+      </div>
+    </div>
+    <div class="ppm-wall-row ppm-wall-row--rev" style="--dur:112s">
+      <div class="ppm-wall-track">
+          <figure class="ppm-wall-card ppm-wall-vuota" style="width:400px"><span>Testimonianza 7<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
+          <figure class="ppm-wall-card ppm-wall-vuota" style="width:490px"><span>Testimonianza 8<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
+          <figure class="ppm-wall-card ppm-wall-vuota" style="width:360px"><span>Testimonianza 9<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
+          <figure class="ppm-wall-card ppm-wall-vuota" style="width:450px"><span>Testimonianza 10<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
+          <figure class="ppm-wall-card ppm-wall-vuota" style="width:420px"><span>Testimonianza 11<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
+          <figure class="ppm-wall-card ppm-wall-vuota" style="width:510px"><span>Testimonianza 12<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
+          <figure class="ppm-wall-card ppm-wall-vuota" style="width:400px"><span>Testimonianza 7<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
+          <figure class="ppm-wall-card ppm-wall-vuota" style="width:490px"><span>Testimonianza 8<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
+          <figure class="ppm-wall-card ppm-wall-vuota" style="width:360px"><span>Testimonianza 9<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
+          <figure class="ppm-wall-card ppm-wall-vuota" style="width:450px"><span>Testimonianza 10<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
+          <figure class="ppm-wall-card ppm-wall-vuota" style="width:420px"><span>Testimonianza 11<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
+          <figure class="ppm-wall-card ppm-wall-vuota" style="width:510px"><span>Testimonianza 12<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
+      </div>
+    </div>
+  </div>
+
+  <div class="ppm-container">
+    <p class="ppm-rev-foot ppm-reveal">Nomi e volti li mostriamo solo con il loro consenso.</p>
+  </div>
+</section>
+
+
+<!-- ppm:07-chiusura + footer ============================================== -->
+<style>
+.ppm-page .ppm-chiusura{text-align:center;background:var(--ppm-card);border-top:1px solid var(--ppm-line);
+  padding-top:clamp(44px,6vw,84px);padding-bottom:clamp(44px,6vw,84px)}
+.ppm-page .ppm-chiusura .ppm-head{margin-bottom:clamp(24px,3.2vw,34px)}
+.ppm-page .ppm-foot{padding-block:clamp(26px,4vw,40px);background:var(--ppm-paper);
+  border-top:1px solid var(--ppm-line)}
+.ppm-page .ppm-foot-in{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:10px 22px}
+.ppm-page .ppm-foot-id{font-size:14px;line-height:1.5;color:var(--ppm-ink-2)}
+.ppm-page .ppm-foot-id b{font-family:var(--ppm-font-display);font-weight:800;color:var(--ppm-ink)}
+.ppm-page .ppm-foot-id span{color:var(--ppm-muted)}
+.ppm-page .ppm-foot-id span::before{content:"\00B7";margin:0 7px;color:var(--ppm-line)}
+.ppm-page .ppm-foot-links{display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px}
+.ppm-page .ppm-foot-links a{font-size:14px;font-weight:600;color:var(--ppm-accent-ink);
+  border-bottom:1px solid transparent;padding:4px 0;transition:border-color .25s ease}
+.ppm-page .ppm-foot-links a:hover{border-bottom-color:var(--ppm-accent)}
+.ppm-page .ppm-foot-note{flex:1 0 100%;margin-top:8px;font-size:13px;line-height:1.55;color:var(--ppm-muted)}
+@media (max-width:639px){
+  .ppm-page .ppm-foot-in{justify-content:flex-start}
+  .ppm-page .ppm-foot-id{flex:1 0 100%}
+}
+</style>
+
+<section class="ppm-chiusura" id="ppm-chiusura">
+  <div class="ppm-container">
+    <header class="ppm-head ppm-reveal">
+      <h2 class="ppm-h2">Quindici minuti per sapere quanto stai pagando di troppo</h2>
+      <p class="ppm-lead">Ne prendiamo pochi: se il tuo immobile non &egrave; adatto, te lo diciamo in call.</p>
+    </header>
+
+    <a class="ppm-btn ppm-reveal" href="https://api.leadconnectorhq.com/widget/bookings/call-strategica-affitti"
+       target="_blank" rel="noopener">
+      <span class="ppm-lbl">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="18" rx="2.5"></rect>
+          <path d="M16 2v4M8 2v4M3 10h18"></path>
+        </svg>
+        Prenota la call gratuita
+      </span>
+      <span class="ppm-ring" aria-hidden="true"></span>
+    </a>
+  </div>
+</section>
+
+<footer class="ppm-foot" id="ppm-footer">
+  <div class="ppm-container ppm-foot-in">
+    <p class="ppm-foot-id"><b>ProProManager</b><span>Gestione affitti brevi &middot; Roma</span></p>
+    <nav class="ppm-foot-links" aria-label="Link utili">
+      <a href="https://tools.affittibreviaroma.com/privacypolicy">Informativa privacy</a>
+      <a href="https://tools.affittibreviaroma.com/cookiepolicy">Cookie policy</a>
+    </nav>
+    <p class="ppm-foot-note">
+      Contenuti a scopo informativo, non costituiscono consulenza fiscale. Non affiliati ad Airbnb.
+      Titolare del trattamento: M2B SRLS.
+    </p>
+  </div>
+</footer>
+
+</div>
+
+</body>
+</html>
