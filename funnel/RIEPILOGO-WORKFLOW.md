@@ -154,9 +154,13 @@ Il contenuto demo inglese di GHL non c'è più.
 
 **Ma il workflow non lo manda.** Il template è a posto, il collegamento no.
 
-Unico difetto residuo nel template: al saluto c'è ancora
-`{{contact.first_name | Host}}` — il fallback "Host" che avevamo tolto ovunque.
-Se il nome manca, l'email dice "Ciao Host,".
+> **Correzione (20/09, dopo verifica).** In una prima lettura avevo segnalato che
+> nel template restava il fallback `{{contact.first_name | Host}}`. **È falso: nel
+> template non c'è.** Avevo letto il `previewUrl` restituito dall'API, che è
+> un'istantanea su Firebase rigenerata con comodo, non il contenuto vivo: quella
+> che ho scaricato alle 10:47 era di agosto. Rileggendola alle 11:06, dopo che il
+> file era stato rigenerato, il fallback non c'è più. **Vedi §8 su come non
+> ricascarci.**
 
 ### M5 — Il report via WhatsApp (NON ESISTE)
 Il ramo `canale_report = whatsapp` non ha mai avuto l'azione di invio.
@@ -194,10 +198,9 @@ E c'è uno spazio di troppo dopo "Salve".
 | 6 | **Opportunity doppie.** 6 lead su 7 che hanno chiesto il report hanno **due** opportunity: una in 🔵 Registrato e una in 🟢 Report inviato. Il workflow ne crea una nuova invece di spostare quella esistente. | Cristina, Mani, Alberto, Liliana, Filippo, Nicoletta | 🟠 |
 | 7 | **Refuso nel dominio dell'altro funnel:** `info@propromanger.com` — manca la "a" di *manager*. | 10 email a settembre | 🟠 |
 | 8 | **Footer di disiscrizione in inglese** in fondo a email italiane. | tutte | 🟠 |
-| 9 | **`{{contact.first_name \| Host}}`** ancora nel template del report. | template scaricato oggi | 🟡 |
-| 10 | **Ramo WhatsApp del report ancora vuoto.** | nessun invio, mai | 🟡 |
-| 11 | **Nessun workflow reagisce a `calcolatore-compilato`.** L'autosave dal 19/09 scrive i dati sul contatto e poi non li usa nessuno. | tag presente, zero automazioni | 🟡 |
-| 12 | **Timezone del sub-account `Europe/Amsterdam`** invece di `Europe/Rome`. | diagnosi 05/08, non corretta | 🟡 |
+| 9 | **Ramo WhatsApp del report ancora vuoto.** | nessun invio, mai | 🟡 |
+| 10 | **Nessun workflow reagisce a `calcolatore-compilato`.** L'autosave dal 19/09 scrive i dati sul contatto e poi non li usa nessuno. | tag presente, zero automazioni | 🟡 |
+| 11 | **Timezone del sub-account `Europe/Amsterdam`** invece di `Europe/Rome`. | diagnosi 05/08, non corretta | 🟡 |
 
 ---
 
@@ -259,3 +262,34 @@ nei workflow**. I prompt pronti per i punti 1 e 2 sono già in `funnel/FIX-REPOR
   nessun appuntamento è mai stato preso dal funnel, quindi non c'è un messaggio
   reale da leggere.
 - **Il contenuto dei tre `AA - *`.** Stesso motivo.
+
+---
+
+## 8. Come leggere davvero l'aggiornato via API
+
+Imparato sbagliando, il 20/09. Due fonti dell'API GHL **non** sono affidabili
+come fotografia dell'oggi, e una lo è.
+
+| Fonte | Aggiornata? | Perché |
+|---|---|---|
+| `previewUrl` dei template email | ❌ **no** | è un file su Firebase Storage rigenerato **con comodo** (a quanto pare quando il template viene aperto nell'interfaccia). L'`Last-Modified` dell'oggetto dice quando è stato rigenerato, **non** quando il template è stato modificato. Il 20/09 alle 10:47 ho scaricato una copia di agosto; alle 11:06 lo stesso URL restituiva la versione attuale, 739 byte più grande. |
+| `updatedAt` dei template | ⚠️ **sospetto** | diceva 05/08 su un template che nel frattempo era stato toccato |
+| messaggi realmente inviati (`export-messages-by-location`, `search-conversation`) | ✅ **sì** | sono i fatti: cosa è uscito, quando, a chi, con che corpo |
+
+**Regola operativa:** per sapere *cosa riceve il lead* non si guarda mai la
+configurazione, si guardano i messaggi partiti — e si incrocia con un secondo
+endpoint. Esempio: Laura Pigliapoco (15/09) risulta senza email sia da
+`export-messages-by-location` (totale 0 su tutti i canali) sia da
+`search-conversation` (una sola conversazione, `messageTypes: [100]`, cioè solo
+un evento di attività, nessun messaggio). Due endpoint indipendenti, stessa
+risposta: il report non le è arrivato.
+
+Prima di controllare un `previewUrl`, **scaricarlo con cache-buster e leggere gli
+header**:
+
+```
+curl -sS -D - -o tpl.html "<previewUrl>&cb=$(date +%s)" | grep -i 'last-modified\|x-goog-generation'
+```
+
+Se `Last-Modified` è vecchio, il file è vecchio: apri il template
+nell'interfaccia GHL una volta, poi riscarica.
