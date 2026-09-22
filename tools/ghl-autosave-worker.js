@@ -41,6 +41,10 @@ const CAMPI = {
   netto_oggi:         'uDf9DzrIiWU3TXIjSLjn',
   netto_nuovo:        'buoVJFSNhqnYwWqsbYCr',
   perdita_anno:       'QoVDV6jGxRvRYr2Vuonk',
+  // il conto su base annua, quello che l'email del report racconta a parole
+  notti_anno:         'VG0H7s4VWr1YPSQTOJwR',
+  tasse_anno_oggi:    'onrQ4IDVcYENyL09cPzD',
+  tasse_anno_noi:     'wGh2sRK2lJLQ7pKwlIvI',
   // quanto ha guardato del video sulla pagina VSL: 25, 50, 75 o 100
   video_vsl_pct:      '3Nv64YyptlobUcqyDWRa',
 };

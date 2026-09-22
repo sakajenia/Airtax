@@ -241,6 +241,18 @@ nei workflow**. I prompt pronti per i punti 1 e 2 sono già in `funnel/FIX-REPOR
    è ferma da sei settimane. Aprire `WF - Report Calcolatore` → ramo
    `canale_report = email` → verificare che l'azione Send Email esista e punti al
    template *"Il tuo report SalvaGuadagno Host"*. Poi il ramo `whatsapp`, che è vuoto.
+
+   > **Il testo nuovo è `funnel/report-email-v3.html`** (sostituisce `report-email.html`).
+   > Racconta il conto su base annua: quanto paghi di tasse oggi, quanto con il
+   > sostituto d'imposta, e un bottone verso la pagina che lo spiega.
+   > Servono tre custom field, **già creati via API il 22/09**:
+   > `contact.notti_anno`, `contact.tasse_anno_oggi`, `contact.tasse_anno_noi`.
+   > Il calcolatore li calcola e il Worker li scrive, ma **il Worker online va
+   > ricaricato** perché la versione in produzione non li conosce ancora.
+   > I tre campi restano vuoti quando il conto annuo non regge (zero notti/anno,
+   > regime azienda, quota negativa): nel workflow, prima del Send Email, mettere
+   > una condizione **Tasse Anno Oggi "is not empty"**, altrimenti a quei lead
+   > arriva un'email con tre frasi monche.
 2. **Spegnere M1, M2, M3.** Tre messaggi in quattro secondi, due dei quali dicono
    una cosa falsa, sono il modo più veloce per bruciare i 31 contatti che abbiamo.
 3. **Autenticare il dominio mittente.** Finché le mail partono da `ec1.msgsndr.org`

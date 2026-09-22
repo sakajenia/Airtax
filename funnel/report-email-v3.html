@@ -1,4 +1,57 @@
-<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Anteprima report email</title><style>body{margin:0}</style></head><body><div style="margin:0;padding:0;background-color:#f2efee;">
+<!--
+  ============================================================================
+  REPORT CALCOLATORE AIRBNB — email di testo (GHL) — brand ProProManager
+  ============================================================================
+  Testo semplice, 17px, nessun riquadro colorato, nessuna tabella di dati:
+  si legge dall'alto in basso come una lettera. L'unico elemento grafico e'
+  il bottone in fondo, con le stesse misure e gli stessi colori di quello
+  della thank you page (pillola, gradiente bordeaux, 16px, bold, min 52px).
+
+  SOSTITUISCE funnel/report-email.html e funnel/report-email-v2.html.
+
+  DOVE VA INCOLLATA
+    Workflow «WF - Report Calcolatore» → ramo canale_report = email
+    → azione Send Email → editor "Code / Import HTML" → incolla TUTTO questo file.
+    (Oppure: Marketing → Emails → Templates → "Il tuo report SalvaGuadagno Host"
+     → Import HTML → e punta il workflow a quel template.)
+
+  OGGETTO
+    {{contact.prezzo_consigliato}} €/notte: il tuo nuovo prezzo
+  PREHEADER
+    E il conto delle tasse che nessuno ti ha fatto.
+
+  ⚠️ IL LINK DEL BOTTONE E' UN SEGNAPOSTO
+    Punta a /meno-tasse, la pagina che spiega il sostituto d'imposta e che non
+    esiste ancora. Prima di pubblicare, sostituire lo slug con quello vero.
+    La querystring (?cid=&nome=) serve alla pagina per personalizzarsi: va tenuta.
+
+  MERGE TAG USATI (7)
+    {{contact.first_name}}          nome
+    {{contact.prezzo_attuale}}      prezzo/notte di oggi              es. 250
+    {{contact.prezzo_consigliato}}  nuovo prezzo/notte consigliato    es. 339
+    {{contact.regime_calc}}         regime fiscale scelto (testo)
+    {{contact.notti_anno}}          notti affittate in un anno        es. 250
+    {{contact.tasse_anno_oggi}}     tasse in un anno, metodo di oggi  es. 17798
+    {{contact.tasse_anno_noi}}      tasse in un anno, col sostituto   es. 10873
+
+  ⚠️ NON SPEDIRE A CAMPI VUOTI
+    notti_anno, tasse_anno_oggi e tasse_anno_noi restano vuoti quando il conto
+    annuo non ha senso: zero notti/anno, regime "azienda" (non paga sul lordo,
+    quindi il discorso non lo riguarda) o quota che resta negativa. In quei casi
+    tre frasi dell'email diventano monche. Nel workflow, prima del Send Email,
+    mettere una condizione: Tasse Anno Oggi "is not empty".
+
+  NOTE
+  - I numeri arrivano SENZA simbolo: "€" e "%" stanno FUORI dal merge tag, cosi'
+    se un campo fosse vuoto la frase resta leggibile.
+  - Niente fallback sul nome: il form ha Nome obbligatorio.
+  - Il logo e' .webp: Outlook desktop non lo mostra, l'alt text resta leggibile.
+  - Il gradiente del bottone non lo rende Outlook: sotto c'e' il colore pieno
+    #801820, quindi il bottone resta un bottone bordeaux anche li'.
+  - Il link di disiscrizione lo aggiunge GHL da solo.
+  ============================================================================
+-->
+<div style="margin:0;padding:0;background-color:#f2efee;">
 
   <div style="display:none;max-height:0;overflow:hidden;opacity:0;font-size:1px;line-height:1px;color:#f2efee;">
     E il conto delle tasse che nessuno ti ha fatto.
@@ -21,16 +74,16 @@
           <tr>
             <td style="padding:22px 28px 26px;font-size:17px;line-height:1.65;color:#1c1b1b;">
 
-              <p style="margin:0 0 18px;">Ciao Laura,</p>
+              <p style="margin:0 0 18px;">Ciao {{contact.first_name}},</p>
 
               <p style="margin:0 0 18px;">
-                oggi il tuo prezzo &egrave; <strong>250&nbsp;&euro;</strong> a notte.
+                oggi il tuo prezzo &egrave; <strong>{{contact.prezzo_attuale}}&nbsp;&euro;</strong> a notte.
               </p>
 
               <p style="margin:0 0 18px;">
                 Dal 13 ottobre Airbnb passa alla commissione unica del 15,5%, a carico tuo.
                 Per restare con gli stessi soldi in tasca devi metterlo a
-                <strong>339&nbsp;&euro;</strong> a notte.
+                <strong>{{contact.prezzo_consigliato}}&nbsp;&euro;</strong> a notte.
               </p>
 
               <p style="margin:0 0 18px;">
@@ -38,9 +91,9 @@
               </p>
 
               <p style="margin:0 0 18px;">
-                Se affitti <strong>250</strong> notti l&rsquo;anno a
-                339&nbsp;&euro;, col tuo regime (una casa (cedolare 21%))
-                di tasse paghi <strong>17.798&nbsp;&euro;</strong> in un anno.
+                Se affitti <strong>{{contact.notti_anno}}</strong> notti l&rsquo;anno a
+                {{contact.prezzo_consigliato}}&nbsp;&euro;, col tuo regime fiscale,
+                {{contact.regime_calc}}, di tasse paghi <strong>{{contact.tasse_anno_oggi}}&nbsp;&euro;</strong> in un anno.
               </p>
 
               <p style="margin:0 0 18px;">
@@ -54,8 +107,8 @@
 
               <p style="margin:0 0 18px;">
                 Abbiamo una soluzione che ti permette di pagare
-                <strong>10.873&nbsp;&euro;</strong> invece di
-                17.798&nbsp;&euro;.
+                <strong>{{contact.tasse_anno_noi}}&nbsp;&euro;</strong> invece di
+                {{contact.tasse_anno_oggi}}&nbsp;&euro;.
               </p>
 
               <p style="margin:0 0 24px;">
@@ -66,7 +119,7 @@
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 26px;">
                 <tr>
                   <td align="center" bgcolor="#801820" style="border-radius:999px;background-color:#801820;background-image:linear-gradient(180deg,#9A2029 0%,#801820 52%,#5f000e 100%);">
-                    <a href="https://tools.affittibreviaroma.com/meno-tasse?cid=rQlYydhMRsMktLjs7iN6&amp;nome=Laura"
+                    <a href="https://tools.affittibreviaroma.com/meno-tasse?cid={{contact.id}}&amp;nome={{contact.first_name}}"
                        style="display:inline-block;padding:16px 26px;font-size:16px;font-weight:800;line-height:1.25;color:#ffffff;text-decoration:none;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
                       Scopri di pi&ugrave;
                     </a>
@@ -96,4 +149,3 @@
     </tr>
   </table>
 </div>
-</body></html>

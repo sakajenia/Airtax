@@ -673,6 +673,26 @@
     var netOld=net(baseOld,p.effO), netNothing=net(baseOld,p.effN), netNew=net(baseNew,p.effN);
     var loss=netOld-netNothing;
 
+    /* ---- il conto su base annua, quello che racconta l'email del report ----
+       Oggi le imposte si pagano sul lordo pieno: commissione Airbnb e pulizie
+       comprese, cioe' anche su soldi che all'host non arrivano mai. Col sostituto
+       d'imposta si versa solo su quello che gli arriva davvero.
+       baseNew e' gia' "imponibile a notte col nuovo prezzo" (pulizie spalmate
+       sulle notti del soggiorno), quindi basta moltiplicarlo per le notti/anno.
+       FEE_GESTIONE deve restare uguale a quella della pagina VSL
+       (funnel/vsl/grazie-vsl.html, blocco ppm:015b-caso): se cambia li', cambiala
+       anche qui, altrimenti email e pagina raccontano due conti diversi. */
+    var FEE_GESTIONE = 0.20;
+    var lordoAnno    = baseNew * nightsYear;
+    var pulizieAnno  = cpnNew  * nightsYear;
+    var tasseAnnoOggi = lordoAnno * p.t;
+    var tuaAnno       = lordoAnno * (1 - p.effN - FEE_GESTIONE) - pulizieAnno;
+    var tasseAnnoNoi  = tuaAnno * p.t;
+    /* Si mandano solo quando il conto ha senso: niente notti/anno, regime azienda
+       (che non paga sul lordo, quindi il discorso non lo riguarda) o quota che
+       resta negativa lasciano i campi vuoti, e l'email non va spedita. */
+    var contoAnnoValido = (nightsYear > 0 && p.t > 0 && tuaAnno > 0);
+
     // HERO
     var lbls={net:'👉 Il prezzo che ti consigliamo', guest:'👉 Per non far spendere di più gli ospiti:', payout:'👉 Per ricevere gli stessi soldi:'};
     $('heroLbl').textContent=lbls[goal];
@@ -844,6 +864,10 @@
       netto_oggi: vOld,
       netto_nuovo: vNew,
       perdita_anno: nightsYear>0 ? Math.round(loss*nightsYear) : '',
+      // il conto annuo per l'email del report
+      notti_anno:      contoAnnoValido ? nightsYear : '',
+      tasse_anno_oggi: contoAnnoValido ? Math.round(tasseAnnoOggi) : '',
+      tasse_anno_noi:  contoAnnoValido ? Math.round(tasseAnnoNoi)  : '',
       // ---- dati immobile (v2) ----
       citta_immobile: propVal('citta'),
       zona_immobile: propVal('zona'),
@@ -949,7 +973,8 @@
   var SAVE_DELAY = 800;
   var LS_INPUTS = ['price','cleaning','nights','nightsYear','citta','zona','via','camere','postiletto'];
   var CALC_KEYS = ['prezzo_attuale','prezzo_consigliato','aumento_pct','regime_calc',
-                   'obiettivo_calc','netto_oggi','netto_nuovo','perdita_anno'];
+                   'obiettivo_calc','netto_oggi','netto_nuovo','perdita_anno',
+                   'notti_anno','tasse_anno_oggi','tasse_anno_noi'];
   var saveTimer = null, lastSent = '', restoring = false;
 
   // id del contatto: dalla querystring, poi memorizzato (sopravvive a un refresh)
