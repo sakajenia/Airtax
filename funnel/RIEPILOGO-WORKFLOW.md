@@ -253,6 +253,14 @@ nei workflow**. I prompt pronti per i punti 1 e 2 sono già in `funnel/FIX-REPOR
    > regime azienda, quota negativa): nel workflow, prima del Send Email, mettere
    > una condizione **Tasse Anno Oggi "is not empty"**, altrimenti a quei lead
    > arriva un'email con tre frasi monche.
+   >
+   > Il 22/09 il valore predefinito delle notti/anno è passato da 130 a **200**
+   > in tutte e sette le copie del calcolatore. Copre il caso "zero notti", che
+   > però era già raro (il campo non era mai partito vuoto). **Non copre il caso
+   > del regime azienda**, che non paga sul lordo e quindi lascia i campi vuoti
+   > comunque: la condizione nel workflow serve lo stesso.
+   > Effetto collaterale voluto: tutti i numeri su base annua, `perdita_anno`
+   > compresa, salgono del 54% per chi non tocca il campo.
 2. **Spegnere M1, M2, M3.** Tre messaggi in quattro secondi, due dei quali dicono
    una cosa falsa, sono il modo più veloce per bruciare i 31 contatti che abbiamo.
 3. **Autenticare il dominio mittente.** Finché le mail partono da `ec1.msgsndr.org`
