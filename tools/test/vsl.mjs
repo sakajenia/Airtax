@@ -5,9 +5,16 @@ const SRC = '/home/user/Airtax/funnel/vsl/anteprima.html';
 const PORT = 8911;
 const HOOK = `http://127.0.0.1:${PORT}/hook`;
 
-const html = fs.readFileSync(SRC, 'utf8')
+const originale = fs.readFileSync(SRC, 'utf8')
   .replace('"https://ghl-autosave-airtax.blionbg.workers.dev/"', JSON.stringify(HOOK));
-if (!html.includes(HOOK)) { console.error('FATAL: webhook non sostituito'); process.exit(1); }
+if (!originale.includes(HOOK)) { console.error('FATAL: webhook non sostituito'); process.exit(1); }
+
+// Senza src la pagina nasconde il riquadro e non traccia nulla (va provato a parte,
+// su /senza-video). Per le prove sul tracciamento gli si da' un src finto: con
+// preload="none" il browser non lo scarica, durata e tempo li fissa guarda().
+const VIDEO = '<video controls playsinline preload="none" data-ppm-video="vsl-principale"></video>';
+if (!originale.includes(VIDEO)) { console.error('FATAL: tag del video non trovato'); process.exit(1); }
+const html = originale.replace(VIDEO, VIDEO.replace(' data-ppm-video', ' src="/finto.mp4" data-ppm-video'));
 
 const ricevuti = [];
 const srv = http.createServer((req, res) => {
@@ -19,7 +26,8 @@ const srv = http.createServer((req, res) => {
     });
     return;
   }
-  res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }); res.end(html);
+  res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+  res.end(req.url.startsWith('/senza-video') ? originale : html);
 });
 await new Promise(r => srv.listen(PORT, '127.0.0.1', r));
 
@@ -47,6 +55,17 @@ async function guarda(pagina, secondi) {
   }, secondi);
   await wait(120);
 }
+
+// ---------- 0: finche' il video non c'e', il riquadro non si vede ----------
+await p.goto(`http://127.0.0.1:${PORT}/senza-video?cid=rQlYydhMRsMktLjs7iN6`);
+const senza = await p.evaluate(() => {
+  const m = document.querySelector('.ppm-hero-media');
+  return { hidden: !!m && m.hidden, alto: m ? m.getBoundingClientRect().height : -1 };
+});
+await guarda(p, 160);
+check('01 · senza src il riquadro del video non si vede', senza.hidden && senza.alto === 0, JSON.stringify(senza));
+check('02 · e non si manda nessuna percentuale', ricevuti.length === 0, `${ricevuti.length} invii`);
+await p.evaluate(() => { try { localStorage.clear(); } catch (e) {} });
 
 // ---------- A: senza cid non si manda niente ----------
 await p.goto(`http://127.0.0.1:${PORT}/`);

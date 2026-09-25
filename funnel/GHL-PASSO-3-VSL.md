@@ -266,22 +266,22 @@ Torna da solo all'esempio, senza rompere niente, se:
 - il dato è più vecchio di 60 giorni;
 - i numeri non reggono, o il `localStorage` è corrotto.
 
-### L'unico numero da decidere: la quota di gestione
+### La quota di gestione: 20% + IVA
 
 Dentro `funnel/vsl/grazie-vsl.html`, nel blocco `ppm:035b-caso`:
 
 ```js
-var FEE_GESTIONE = 0.20;          /* <-- la vostra quota di gestione */
+var FEE_GESTIONE = 0.20 * 1.22;   /* <-- la vostra quota di gestione: 20% + IVA 22% */
 ```
 
-Quella costante regge **sia** l'esempio **sia** il caso personale: si cambia
-lì e basta.
+Quella costante regge **sia** l'esempio **sia** il caso personale della VSL.
+La stessa identica costante sta anche in `funnel/calcolatore-v2.html`, dove
+calcola `tasse_anno_noi` per l'email del report: se ne cambi una, cambia
+anche l'altra, o email e pagina raccontano due conti diversi.
 
 Quanto è lunga la barra verde dipende da quanto pesano commissione, pulizie e
-gestione sul lordo, quindi cambia da host a host: con il 20% di gestione il
-risparmio va da circa un terzo a circa la metà delle tasse. Nessuna
+gestione sul lordo, quindi cambia da host a host: con 20% + IVA di gestione il
+risparmio va da poco più di un terzo a poco più della metà delle tasse. Nessuna
 percentuale viene scritta a parole, quindi non c'è più niente che possa
 contraddire il titolo: si vedono i due numeri e le due barre, e basta.
-
-Dammi la tua percentuale di gestione e la aggiorno.
 

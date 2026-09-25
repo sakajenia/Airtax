@@ -89,9 +89,9 @@ await p.goto(`http://127.0.0.1:${PORT}/vsl`);
 await p.evaluate(() => { try { localStorage.clear(); } catch (e) {} });
 let v = await leggiVsl();
 check('A1 · senza dati resta l esempio', v.caso === 'Su 340 € che versa l’ospite, di tasse paghi', v.caso);
-check('A2 · con i suoi due numeri', v.oggi === '71,40 €' && v.noi === '35,22 €', `${v.oggi} / ${v.noi}`);
+check('A2 · con i suoi due numeri', v.oggi === '71,40 €' && v.noi === '32,08 €', `${v.oggi} / ${v.noi}`);
 check('A3 · niente badge "I tuoi numeri"', !v.badge && !v.rifai, `badge ${v.badge}`);
-check('A4 · la barra verde e lunga quanto la quota dell esempio', v.w === '0.493', v.w);
+check('A4 · la barra verde e lunga quanto la quota dell esempio', v.w === '0.449', v.w);
 check('A5 · titolo senza nome quando non si sa chi e', /^Stai pagando tasse/.test(v.titolo), v.titolo);
 
 // ---------- B: il calcolatore lascia il caso ----------
@@ -102,14 +102,14 @@ check('B3 · e con aliquota e commissione', d && Math.abs(d.t - 0.21) < 1e-9 && 
 check('B4 · niente dati personali nel caso', d && !('via' in d) && !('email' in d), Object.keys(d || {}).join(','));
 
 // ---------- C: la VSL li usa ----------
-// lordo 460 · tua quota 221,01 (tolti Airbnb 18,91%, gestione 20%, pulizie 60)
-// tasse oggi 21% di 460 = 96,60 · con noi 21% di 221,01 = 46,41 · −51%
+// lordo 460 · tua quota 200,77 (tolti Airbnb 18,91%, gestione 20% + IVA = 24,4%, pulizie 60)
+// tasse oggi 21% di 460 = 96,60 · con noi 21% di 200,77 = 42,16 · −56%
 v = await leggiVsl();
 check('C1 · badge "I tuoi numeri" acceso', v.badge === true, `badge ${v.badge}`);
 check('C2 · la riga parla della SUA prenotazione', v.caso === 'Su 460 € di una tua prenotazione tipo, di tasse paghi', v.caso);
 check('C3 · tasse di oggi sul lordo', v.oggi === '96,60 €', v.oggi);
-check('C4 · tasse col sostituto d imposta', v.noi === '46,41 €', v.noi);
-check('C5 · la barra verde e lunga quanto la sua quota', v.w === '0.480', v.w);
+check('C4 · tasse col sostituto d imposta', v.noi === '42,16 €', v.noi);
+check('C5 · la barra verde e lunga quanto la sua quota', v.w === '0.436', v.w);
 check('C6 · i pallini del binario stanno sui loro blocchi', v.scarti && v.scarti.every(s => s <= 3), JSON.stringify(v.scarti));
 check('C7 · il binario resta a fianco della card, alto uguale', v.binario.aFianco && v.binario.altezze <= 2, JSON.stringify(v.binario));
 
@@ -120,16 +120,16 @@ check('D1 · impresa (nessuna imposta sul lordo): torna all esempio', !v.badge &
 
 await compila({ price: 180, cleaning: 30, nights: 4, regime: 'forf' });
 v = await leggiVsl();
-check('D2 · forfettario: personalizzato', v.badge && v.w === '0.571', `${v.badge} ${v.w}`);
+check('D2 · forfettario: personalizzato', v.badge && v.w === '0.527', `${v.badge} ${v.w}`);
 
 await compila({ price: 90, cleaning: 25, nights: 3, regime: 'ced26' });
 v = await leggiVsl();
-check('D3 · cedolare 26%: aliquota applicata', v.badge && v.oggi === '76,70 €' && v.noi === '40,36 €', `${v.oggi} / ${v.noi}`);
+check('D3 · cedolare 26%: aliquota applicata', v.badge && v.oggi === '76,70 €' && v.noi === '36,98 €', `${v.oggi} / ${v.noi}`);
 
 // senza pulizie il risparmio scende sotto il 50%: deve dirlo, non arrotondare a favore
 await compila({ price: 120, cleaning: 0, nights: 2, regime: 'ced21' });
 v = await leggiVsl();
-check('D4 · senza pulizie la barra verde e molto piu lunga (risparmio minore)', v.badge && v.w === '0.611', v.w);
+check('D4 · senza pulizie la barra verde e molto piu lunga (risparmio minore)', v.badge && v.w === '0.567', v.w);
 
 // dato vecchio: non si usa
 await p.evaluate(() => {

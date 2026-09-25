@@ -1,6 +1,6 @@
 # Prove automatiche
 
-Tre file, si lanciano con node. Servono Playwright e Chromium, gia' presenti
+Cinque file, si lanciano con node. Servono Playwright e Chromium, gia' presenti
 nell'ambiente di sviluppo:
 
 ```
@@ -8,6 +8,7 @@ node tools/test/worker.mjs        # il Worker Cloudflare, senza toccare GHL
 node tools/test/calcolatore.mjs   # calcolatore v2 in un browser vero
 node tools/test/vsl.mjs           # pagina VSL + percentuale di video guardata
 node tools/test/caso-studio.mjs   # i numeri che passano dal calcolatore alla VSL
+node tools/test/conto-anno.mjs    # il conto annuo delle tasse che finisce nell'email
 ```
 
 `caso-studio.mjs` serve le due pagine dalla **stessa** origine, come su

@@ -682,7 +682,7 @@
        FEE_GESTIONE deve restare uguale a quella della pagina VSL
        (funnel/vsl/grazie-vsl.html, blocco ppm:015b-caso): se cambia li', cambiala
        anche qui, altrimenti email e pagina raccontano due conti diversi. */
-    var FEE_GESTIONE = 0.20;
+    var FEE_GESTIONE = 0.20 * 1.22;   // 20% di gestione + IVA 22%, come nella VSL
     var lordoAnno    = baseNew * nightsYear;
     var pulizieAnno  = cpnNew  * nightsYear;
     var tasseAnnoOggi = lordoAnno * p.t;

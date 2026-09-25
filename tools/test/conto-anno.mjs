@@ -34,7 +34,7 @@ async function scenario({ price, cleaning, nights, nightsYear, regime, goal }) {
 }
 
 /* --- caso base: 250 €/notte, niente pulizie, 250 notti l'anno, cedolare 21% --- */
-const VAT = 0.22, F_OLD = 0.03, F_NEW = 0.155, MARG = 0.08, FEE = 0.20;
+const VAT = 0.22, F_OLD = 0.03, F_NEW = 0.155, MARG = 0.08, FEE = 0.20 * 1.22;  // gestione 20% + IVA, come calcolatore e VSL
 const effO = F_OLD * (1 + VAT), effN = F_NEW * (1 + VAT);
 
 function atteso({ price, cleaning, nights, nightsYear, t }) {
