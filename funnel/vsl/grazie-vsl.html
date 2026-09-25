@@ -5,15 +5,18 @@
      Struttura ripresa dalla thank you page di riferimento, testi e colori
      ProProManager.
 
-     TRE COSE DA METTERE A MANO, cercale con "DA METTERE":
-       1. l'indirizzo del video principale  (Media Library -> copia link)
-       2. le miniature e i video delle 8 obiezioni (facoltativi: senza, le card
-          restano comunque belle)
-       3. le foto delle testimonianze nel muro scorrevole in fondo
+     COSE DA METTERE A MANO, cercale con "DA METTERE":
+       1. l'indirizzo del video principale  (Media Library -> copia link).
+          Finche' manca, il riquadro del video non si vede.
+       2. le miniature e i video delle 8 obiezioni. Finche' non ce n'e'
+          nemmeno uno, la sezione obiezioni non si vede.
+       3. FATTO: le 15 recensioni WhatsApp nel muro scorrevole in fondo.
 
-     I FONT: non ne imposta nessuno, eredita quelli della pagina GHL.
+     I FONT: Poppins (titoli) e Inter (testo), caricati con lo stesso @import
+     di calcolatore-v2.html in cima al blocco ppm:00-base. Prima ereditava
+     quelli della pagina GHL, che non ne imposta nessuno: usciva Times New Roman.
      Se un giorno vuoi i font della pagina di riferimento, togli il commento
-     al <link> qui sotto e ai due --ppm-font-* dentro .ppm-page.
+     al <link> qui sotto e cambia i due --ppm-font-* dentro .ppm-page.
      ========================================================================== -->
 <!--
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -165,17 +168,36 @@
      cosi' non tocca niente di quello che GHL disegna intorno.
      ====================================================================== -->
 <style>
+/* [patch b] font espliciti, stesso @import di calcolatore-v2.html. Deve restare la
+   prima regola di questo <style>. */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600;700&display=swap');
+/* il riquadro del video e la sezione obiezioni si nascondono finche' manca il video */
+.ppm-page .ppm-hero-media[hidden],.ppm-page .ppm-obj[hidden]{display:none !important}
+/* GHL non imposta il font del <body>: senza questa riga resta Times New Roman */
+body{font-family:'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif}
+/* [patch b] l'header sticky sta fuori da .ppm-page: stesso font del testo. */
+.ppmhdr{font-family:'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif}
+/* [patch c] sotto 767px GHL forza .c-row{padding-left:10px!important;padding-right:10px!important}
+   e la pagina non arriva ai bordi. Qui si azzera SOLO sulla riga GHL che contiene
+   questo blocco (.c-row:has(.ppm-page) = specificita' 0,2,0, batte .c-row = 0,1,0).
+   Fallback: i browser senza :has() (Chrome<105, Safari<15.4, Firefox<121) scartano
+   la regola e restano i 10px di GHL, cioe' come prima. Nessun altro wrapper toccato. */
+@media only screen and (max-width:767px){
+  .c-row:has(.ppm-page){padding-left:0!important;padding-right:0!important}
+}
 .ppm-page{
   --ppm-paper:#FCF9F8; --ppm-card:#FFFFFF; --ppm-ink:#1C1B1B; --ppm-ink-2:#3B3230;
   --ppm-muted:#6B5A58; --ppm-line:#E5E2E1;
   --ppm-accent:#801820; --ppm-accent-ink:#5F000E; --ppm-accent-soft:#FFE1E0;
   --ppm-accent-glow:rgba(128,24,32,.30);
   --ppm-warm:#F7EAE8; --ppm-gold:#D99A00; --ppm-ok:#0A6B4A; --ppm-ok-soft:#E6F2EC;
-  /* font: vuoti apposta, eredita la pagina GHL.
+  /* font: gli stessi di calcolatore-v2.html (Poppins titoli, Inter testo), caricati
+     dall'@import in cima a questo <style>. Con "inherit" GHL dava Times New Roman.
      Per i font della pagina di riferimento:
      --ppm-font-display:"Bricolage Grotesque",system-ui,sans-serif;
      --ppm-font-body:"Manrope",system-ui,sans-serif; */
-  --ppm-font-display:inherit; --ppm-font-body:inherit;
+  --ppm-font-display:'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --ppm-font-body:'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --ppm-radius-xl:28px; --ppm-radius-lg:20px; --ppm-radius-md:14px; --ppm-radius-pill:999px;
   --ppm-container:1120px; --ppm-narrow:760px;
   --ppm-shadow-card:0 1px 2px rgba(28,27,27,.04),0 14px 36px -14px rgba(28,27,27,.14);
@@ -609,8 +631,8 @@
         </div>
         <div class="ppm-riga noi">
           <span class="k">con noi</span>
-          <span class="b"><i id="ppm-barra-noi" style="--w:.493"></i></span>
-          <span class="v" id="ppm-tasse-noi">35,22 &euro;</span>
+          <span class="b"><i id="ppm-barra-noi" style="--w:0.449"></i></span>
+          <span class="v" id="ppm-tasse-noi">32,08 &euro;</span>
         </div>
       </div>
     </div>
@@ -686,6 +708,15 @@
   var frame = root.querySelector(".ppm-hero-frame");
   var btn = root.querySelector(".ppm-play");
   if (!video || !frame || !btn) return;
+
+  /* Finche' il video non c'e', il riquadro non si mostra: un play che risponde
+     "arriva a breve" promette una cosa che non c'e'. Appena metti src, ricompare. */
+  if (!video.getAttribute("src")) {
+    var media = root.querySelector(".ppm-hero-media");
+    if (media) media.hidden = true;
+    getCid();
+    return;
+  }
 
   /* ---- percentuale guardata ---- */
   var maxVisto = 0, mandate = {};
@@ -918,7 +949,7 @@
 (function () {
   "use strict";
 
-  var FEE_GESTIONE = 0.20;          /* <-- la vostra quota di gestione */
+  var FEE_GESTIONE = 0.20 * 1.22;   /* <-- la vostra quota di gestione: 20% + IVA 22% */
   var IVA = 0.22, COMM_NUOVA = 0.155;
   var GIORNI_VALIDI = 60;           /* oltre, il dato e' vecchio: meglio l'esempio */
 
@@ -1370,6 +1401,16 @@
   var PPM = (window.PPM = window.PPM || {});
 
   var cards = grid.querySelectorAll(".ppm-vcard");
+
+  /* Finche' nessuna card ha il suo video, la sezione resta nascosta: otto play che
+     rispondono "video in arrivo" sembrano una pagina non finita. Basta mettere il src
+     di un solo video perche' ricompaia. */
+  var conVideo = grid.querySelectorAll("video[src]:not([src=''])").length;
+  if (!conVideo) {
+    var sez = document.getElementById("ppm-obiezioni");
+    if (sez) sez.hidden = true;
+    return;
+  }
   for (var i = 0; i < cards.length; i++) {
     (function (card) {
       var video = card.querySelector("video");
@@ -1424,7 +1465,11 @@
     </header>
   </div>
 
-  <!-- DA METTERE (3 di 3): al posto di ogni <figure class="ppm-wall-vuota">...</figure>
+  <!-- FATTO (3 di 3): le 15 "recensione-whatsapp-NN.webp" della Media Library di GHL.
+       Ogni fila e' ripetuta 4 volte: il nastro scorre di meta' della sua lunghezza,
+       e 2 ripetizioni non bastavano a coprire gli schermi larghi.
+       Per aggiungerne una, copia una riga <figure> in TUTTE e 4 le ripetizioni della fila.
+       Com'era la riga vuota:
        incolla una riga fatta cosi', con il link dell'immagine che hai gia' su GHL
        (Media Storage -> apri l'immagine -> copia il link):
 
@@ -1435,36 +1480,72 @@
        Ogni riquadro compare DUE volte, una per meta' del nastro: sostituiscile
        entrambe, altrimenti il giro continuo si vede saltare. -->
   <div class="ppm-wall ppm-reveal" role="list" aria-label="Testimonianze degli host">
-    <div class="ppm-wall-row" style="--dur:96s">
+    <div class="ppm-wall-row" style="--dur:192s">
       <div class="ppm-wall-track">
-          <figure class="ppm-wall-card ppm-wall-vuota" style="width:460px"><span>Testimonianza 1<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
-          <figure class="ppm-wall-card ppm-wall-vuota" style="width:340px"><span>Testimonianza 2<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
-          <figure class="ppm-wall-card ppm-wall-vuota" style="width:410px"><span>Testimonianza 3<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
-          <figure class="ppm-wall-card ppm-wall-vuota" style="width:500px"><span>Testimonianza 4<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
-          <figure class="ppm-wall-card ppm-wall-vuota" style="width:380px"><span>Testimonianza 5<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
-          <figure class="ppm-wall-card ppm-wall-vuota" style="width:470px"><span>Testimonianza 6<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
-          <figure class="ppm-wall-card ppm-wall-vuota" style="width:460px"><span>Testimonianza 1<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
-          <figure class="ppm-wall-card ppm-wall-vuota" style="width:340px"><span>Testimonianza 2<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
-          <figure class="ppm-wall-card ppm-wall-vuota" style="width:410px"><span>Testimonianza 3<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
-          <figure class="ppm-wall-card ppm-wall-vuota" style="width:500px"><span>Testimonianza 4<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
-          <figure class="ppm-wall-card ppm-wall-vuota" style="width:380px"><span>Testimonianza 5<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
-          <figure class="ppm-wall-card ppm-wall-vuota" style="width:470px"><span>Testimonianza 6<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:200px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/054a7bae-2f9e-4e6f-9eff-918ccad3115c.webp" alt="Recensione WhatsApp di un host" width="200" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:198px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/4e2d423f-1596-4eef-baeb-2c886b0d36e3.webp" alt="Recensione WhatsApp di un host" width="198" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:166px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/a1d64649-eadc-44c3-8c1d-4a39af6fe77d.webp" alt="Recensione WhatsApp di un host" width="166" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:157px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/3b47317b-f003-4045-a3fb-39c56f08934a.webp" alt="Recensione WhatsApp di un host" width="157" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:166px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/f044b723-437b-4246-b762-ca5ac4620fad.webp" alt="Recensione WhatsApp di un host" width="166" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:171px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/2fda739c-57c6-4af5-99d6-2a7af9c06742.webp" alt="Recensione WhatsApp di un host" width="171" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:160px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/c46fd7f7-a910-4b1a-859d-e385b74c89f4.webp" alt="Recensione WhatsApp di un host" width="160" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:158px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/84145925-3d3a-450c-9cf5-096864303031.webp" alt="Recensione WhatsApp di un host" width="158" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:200px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/054a7bae-2f9e-4e6f-9eff-918ccad3115c.webp" alt="Recensione WhatsApp di un host" width="200" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:198px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/4e2d423f-1596-4eef-baeb-2c886b0d36e3.webp" alt="Recensione WhatsApp di un host" width="198" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:166px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/a1d64649-eadc-44c3-8c1d-4a39af6fe77d.webp" alt="Recensione WhatsApp di un host" width="166" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:157px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/3b47317b-f003-4045-a3fb-39c56f08934a.webp" alt="Recensione WhatsApp di un host" width="157" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:166px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/f044b723-437b-4246-b762-ca5ac4620fad.webp" alt="Recensione WhatsApp di un host" width="166" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:171px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/2fda739c-57c6-4af5-99d6-2a7af9c06742.webp" alt="Recensione WhatsApp di un host" width="171" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:160px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/c46fd7f7-a910-4b1a-859d-e385b74c89f4.webp" alt="Recensione WhatsApp di un host" width="160" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:158px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/84145925-3d3a-450c-9cf5-096864303031.webp" alt="Recensione WhatsApp di un host" width="158" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:200px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/054a7bae-2f9e-4e6f-9eff-918ccad3115c.webp" alt="Recensione WhatsApp di un host" width="200" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:198px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/4e2d423f-1596-4eef-baeb-2c886b0d36e3.webp" alt="Recensione WhatsApp di un host" width="198" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:166px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/a1d64649-eadc-44c3-8c1d-4a39af6fe77d.webp" alt="Recensione WhatsApp di un host" width="166" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:157px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/3b47317b-f003-4045-a3fb-39c56f08934a.webp" alt="Recensione WhatsApp di un host" width="157" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:166px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/f044b723-437b-4246-b762-ca5ac4620fad.webp" alt="Recensione WhatsApp di un host" width="166" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:171px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/2fda739c-57c6-4af5-99d6-2a7af9c06742.webp" alt="Recensione WhatsApp di un host" width="171" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:160px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/c46fd7f7-a910-4b1a-859d-e385b74c89f4.webp" alt="Recensione WhatsApp di un host" width="160" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:158px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/84145925-3d3a-450c-9cf5-096864303031.webp" alt="Recensione WhatsApp di un host" width="158" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:200px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/054a7bae-2f9e-4e6f-9eff-918ccad3115c.webp" alt="Recensione WhatsApp di un host" width="200" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:198px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/4e2d423f-1596-4eef-baeb-2c886b0d36e3.webp" alt="Recensione WhatsApp di un host" width="198" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:166px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/a1d64649-eadc-44c3-8c1d-4a39af6fe77d.webp" alt="Recensione WhatsApp di un host" width="166" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:157px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/3b47317b-f003-4045-a3fb-39c56f08934a.webp" alt="Recensione WhatsApp di un host" width="157" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:166px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/f044b723-437b-4246-b762-ca5ac4620fad.webp" alt="Recensione WhatsApp di un host" width="166" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:171px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/2fda739c-57c6-4af5-99d6-2a7af9c06742.webp" alt="Recensione WhatsApp di un host" width="171" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:160px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/c46fd7f7-a910-4b1a-859d-e385b74c89f4.webp" alt="Recensione WhatsApp di un host" width="160" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:158px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/84145925-3d3a-450c-9cf5-096864303031.webp" alt="Recensione WhatsApp di un host" width="158" height="320" loading="lazy" decoding="async"></figure>
       </div>
     </div>
-    <div class="ppm-wall-row ppm-wall-row--rev" style="--dur:112s">
+    <div class="ppm-wall-row ppm-wall-row--rev" style="--dur:224s">
       <div class="ppm-wall-track">
-          <figure class="ppm-wall-card ppm-wall-vuota" style="width:400px"><span>Testimonianza 7<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
-          <figure class="ppm-wall-card ppm-wall-vuota" style="width:490px"><span>Testimonianza 8<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
-          <figure class="ppm-wall-card ppm-wall-vuota" style="width:360px"><span>Testimonianza 9<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
-          <figure class="ppm-wall-card ppm-wall-vuota" style="width:450px"><span>Testimonianza 10<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
-          <figure class="ppm-wall-card ppm-wall-vuota" style="width:420px"><span>Testimonianza 11<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
-          <figure class="ppm-wall-card ppm-wall-vuota" style="width:510px"><span>Testimonianza 12<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
-          <figure class="ppm-wall-card ppm-wall-vuota" style="width:400px"><span>Testimonianza 7<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
-          <figure class="ppm-wall-card ppm-wall-vuota" style="width:490px"><span>Testimonianza 8<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
-          <figure class="ppm-wall-card ppm-wall-vuota" style="width:360px"><span>Testimonianza 9<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
-          <figure class="ppm-wall-card ppm-wall-vuota" style="width:450px"><span>Testimonianza 10<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
-          <figure class="ppm-wall-card ppm-wall-vuota" style="width:420px"><span>Testimonianza 11<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
-          <figure class="ppm-wall-card ppm-wall-vuota" style="width:510px"><span>Testimonianza 12<br><i>incolla qui il link dell&rsquo;immagine</i></span></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:177px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/bc6467ea-6db7-43f0-97ab-36a3835fb9e2.webp" alt="Recensione WhatsApp di un host" width="177" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:207px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/684076be-070a-474c-9cc0-149e2695dc25.webp" alt="Recensione WhatsApp di un host" width="207" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:201px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/61985058-1a61-4dfb-8666-be3d4aff640c.webp" alt="Recensione WhatsApp di un host" width="201" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:165px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/d658e2f2-116c-4741-84a8-272fb38b2e87.webp" alt="Recensione WhatsApp di un host" width="165" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:164px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/d1f2d64a-caa9-4612-bc0a-2cfebab2a51b.webp" alt="Recensione WhatsApp di un host" width="164" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:237px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/3f73f319-b29c-48ba-aa16-7f9565e67522.webp" alt="Recensione WhatsApp di un host" width="237" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:194px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/55dd8eba-e588-4868-9e22-666a5e3f9eef.webp" alt="Recensione WhatsApp di un host" width="194" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:177px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/bc6467ea-6db7-43f0-97ab-36a3835fb9e2.webp" alt="Recensione WhatsApp di un host" width="177" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:207px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/684076be-070a-474c-9cc0-149e2695dc25.webp" alt="Recensione WhatsApp di un host" width="207" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:201px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/61985058-1a61-4dfb-8666-be3d4aff640c.webp" alt="Recensione WhatsApp di un host" width="201" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:165px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/d658e2f2-116c-4741-84a8-272fb38b2e87.webp" alt="Recensione WhatsApp di un host" width="165" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:164px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/d1f2d64a-caa9-4612-bc0a-2cfebab2a51b.webp" alt="Recensione WhatsApp di un host" width="164" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:237px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/3f73f319-b29c-48ba-aa16-7f9565e67522.webp" alt="Recensione WhatsApp di un host" width="237" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:194px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/55dd8eba-e588-4868-9e22-666a5e3f9eef.webp" alt="Recensione WhatsApp di un host" width="194" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:177px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/bc6467ea-6db7-43f0-97ab-36a3835fb9e2.webp" alt="Recensione WhatsApp di un host" width="177" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:207px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/684076be-070a-474c-9cc0-149e2695dc25.webp" alt="Recensione WhatsApp di un host" width="207" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:201px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/61985058-1a61-4dfb-8666-be3d4aff640c.webp" alt="Recensione WhatsApp di un host" width="201" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:165px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/d658e2f2-116c-4741-84a8-272fb38b2e87.webp" alt="Recensione WhatsApp di un host" width="165" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:164px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/d1f2d64a-caa9-4612-bc0a-2cfebab2a51b.webp" alt="Recensione WhatsApp di un host" width="164" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:237px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/3f73f319-b29c-48ba-aa16-7f9565e67522.webp" alt="Recensione WhatsApp di un host" width="237" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:194px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/55dd8eba-e588-4868-9e22-666a5e3f9eef.webp" alt="Recensione WhatsApp di un host" width="194" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:177px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/bc6467ea-6db7-43f0-97ab-36a3835fb9e2.webp" alt="Recensione WhatsApp di un host" width="177" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:207px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/684076be-070a-474c-9cc0-149e2695dc25.webp" alt="Recensione WhatsApp di un host" width="207" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:201px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/61985058-1a61-4dfb-8666-be3d4aff640c.webp" alt="Recensione WhatsApp di un host" width="201" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:165px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/d658e2f2-116c-4741-84a8-272fb38b2e87.webp" alt="Recensione WhatsApp di un host" width="165" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:164px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/d1f2d64a-caa9-4612-bc0a-2cfebab2a51b.webp" alt="Recensione WhatsApp di un host" width="164" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:237px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/3f73f319-b29c-48ba-aa16-7f9565e67522.webp" alt="Recensione WhatsApp di un host" width="237" height="320" loading="lazy" decoding="async"></figure>
+          <figure class="ppm-wall-card" role="listitem" style="width:194px;height:320px"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/55dd8eba-e588-4868-9e22-666a5e3f9eef.webp" alt="Recensione WhatsApp di un host" width="194" height="320" loading="lazy" decoding="async"></figure>
       </div>
     </div>
   </div>
@@ -1529,7 +1610,7 @@
     </nav>
     <p class="ppm-foot-note">
       Contenuti a scopo informativo, non costituiscono consulenza fiscale. Non affiliati ad Airbnb.
-      Titolare del trattamento: M2B SRLS.
+      Titolare del trattamento: M2AB SRLS.
     </p>
   </div>
 </footer>
