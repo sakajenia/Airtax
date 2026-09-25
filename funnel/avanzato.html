@@ -12,6 +12,10 @@
     --ink:#1c1b1b; --ink-soft:#574140; --line:#e5e2e1;
     --bg:#fcf9f8; --card:#ffffff;
     --ok:#0A6B4A; --ok-bg:#E8F6F0; --warn:#9a5a00; --warn-bg:#FFF4E5; --bad:#ba1a1a; --bad-bg:#FDEDEF;
+    --info:#1c4e80; --info-bg:#EAF2FA;
+    /* La pagina e' pensata solo in chiaro: senza questo il dark mode automatico
+       del browser reinterpreta i colori e le tabelle diventano illeggibili. */
+    color-scheme: only light;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   html{-webkit-text-size-adjust:100%;}
@@ -33,7 +37,8 @@
   }
   .cols{display:grid; grid-template-columns:minmax(0,1fr); gap:20px;}
   .cols > div{min-width:0;}
-  @media(min-width:880px){ .cols{grid-template-columns:400px minmax(0,1fr); align-items:start;} .sticky{position:sticky; top:16px;} }
+  /* top = altezza dell'header sticky (58px) + aria, altrimenti il pannello ci finisce sotto */
+  @media(min-width:880px){ .cols{grid-template-columns:400px minmax(0,1fr); align-items:start;} .sticky{position:sticky; top:74px;} }
   .card{background:var(--card); border:1px solid var(--line); border-radius:1.5rem; padding:20px; margin-bottom:16px;}
   .card h2{font-size:1.05rem; margin-bottom:14px;}
   label{display:block; font-weight:600; font-size:.88rem; margin-bottom:4px;}
@@ -80,8 +85,11 @@
   .callout{border-radius:12px; padding:14px 16px; margin-bottom:16px; font-size:.9rem;}
   .callout.warn{background:var(--warn-bg); border:1px solid color-mix(in srgb, var(--warn) 35%, transparent); color:var(--ink);}
   .callout.warn b{color:var(--warn);}
-  .callout.ok{background:var(--ok-bg); border:1px solid color-mix(in srgb, var(--ok) 35%, transparent);}
-  .callout.bad{background:var(--bad-bg); border:1px solid color-mix(in srgb, var(--bad) 35%, transparent);}
+  /* fallback: su browser senza color-mix() il bordo sparirebbe del tutto */
+  .callout.ok{background:var(--ok-bg); border:1px solid #b9dbcd; border-color:color-mix(in srgb, var(--ok) 35%, transparent);}
+  .callout.bad{background:var(--bad-bg); border:1px solid #eec2c4; border-color:color-mix(in srgb, var(--bad) 35%, transparent);}
+  .callout.info{background:var(--info-bg); border:1px solid #bcd2e8;}
+  .callout.info b{color:var(--info);}
   .waterfall{font-size:.85rem;}
   .waterfall li{display:flex; justify-content:space-between; gap:12px; padding:5px 0; border-bottom:1px dashed var(--line); list-style:none;}
   .waterfall li.total{border-bottom:none; font-weight:800; border-top:2px solid var(--ink); margin-top:4px; padding-top:8px;}
@@ -94,27 +102,179 @@
   }
   .copybtn:hover{background:var(--coral-dark);}
   .copybtn:active{transform:translateY(1px);}
-  .visually-hidden{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);}
+  .visually-hidden{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;}
+  .preset{background:none; border:1px dashed var(--coral); color:var(--coral-dark); border-radius:999px;
+    padding:7px 14px; font:600 .8rem inherit; font-family:inherit; cursor:pointer; min-height:38px;}
+  .preset:hover{background:var(--coral-bg);}
+  .steps{counter-reset:s; list-style:none; margin-top:4px;}
+  .steps li{position:relative; padding:0 0 10px 30px; font-size:.88rem;}
+  .steps li::before{
+    counter-increment:s; content:counter(s); position:absolute; left:0; top:0;
+    width:21px; height:21px; border-radius:50%; background:var(--coral); color:#fff;
+    font-size:.74rem; font-weight:700; display:flex; align-items:center; justify-content:center;
+  }
+  /* Foglio da portare al commercialista: via i comandi, solo i numeri. */
+  @media print{
+    body{padding:0; background:#fff;}
+    .ppmhdr, .seg, details, .copybtn, .preset, .heroNum .chips{display:none !important;}
+    .cols{grid-template-columns:1fr !important;}
+    .sticky{position:static !important;}
+    .card, .heroNum, .callout{break-inside:avoid; border:1px solid #999;}
+    a[href]::after{content:" (" attr(href) ")"; font-size:.7rem; color:#555;}
+  }
 </style>
 </head>
 <body>
-<header style="position:sticky;top:0;z-index:50;width:100%;box-sizing:border-box;background:#fcf9f8;border-bottom:1px solid #e5e2e1;">
-  <div style="max-width:1060px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;">
-    <a href="https://tools.affittibreviaroma.com/" aria-label="ProProManager"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/b99a11a9-9a35-410d-a09f-3f9d026b22fd.webp" alt="ProProManager" height="34" style="height:34px;width:auto;display:block;"></a>
+<!-- PPM-HEADER-START (generato da tools/applica-header.py) -->
+<!-- ==========================================================================
+     STICKY HEADER PROPROMANAGER  ·  logo a sinistra + CTA "shiny" a destra
+     --------------------------------------------------------------------------
+     Sorgente unica: funnel/parti/sticky-header.html
+     Viene iniettato dentro calcolatore-v2.html e avanzato.html fra i due marcatori generati
+     in cima e in fondo al blocco: non modificarlo dentro quelle pagine,
+     modificalo qui e rilancia  tools/applica-header.py .
+
+     Il pulsante riprende lo "shiny button" di 21st.dev / magicui: la scritta e
+     il bordo vengono attraversati da una lama di luce che scorre. Li' e' React
+     + framer-motion; qui e' solo CSS, perche' dentro un blocco codice di GHL
+     non gira React. L'animazione muove la custom property --ppm-shine, che va
+     registrata con @property: e' l'unico modo di far interpolare una
+     percentuale dentro un gradiente. inherits:true e' obbligatorio, altrimenti
+     lo pseudo-elemento della lama e la cornice non vedono il valore animato e
+     il pulsante resta immobile. Dove @property non esiste resta fermo ma
+     perfettamente leggibile (il valore di fallback e' 100%).
+     ========================================================================== -->
+<style>
+  @property --ppm-shine{ syntax:'<percentage>'; inherits:true; initial-value:100%; }
+
+  .ppmhdr{
+    --ppm-coral:#801820; --ppm-coral-hi:#9a2029; --ppm-coral-lo:#5f000e;
+    position:sticky; top:0; z-index:9999; width:100%; box-sizing:border-box;
+    background:rgba(252,249,248,.86);
+    -webkit-backdrop-filter:saturate(180%) blur(14px);
+            backdrop-filter:saturate(180%) blur(14px);
+    border-bottom:1px solid rgba(28,27,27,.08);
+  }
+  /* Filo di colore sotto la riga: fa "prodotto", non "template". */
+  .ppmhdr::after{
+    content:''; position:absolute; left:0; right:0; bottom:-1px; height:1px;
+    background:linear-gradient(90deg, transparent, rgba(128,24,32,.35), transparent);
+    pointer-events:none;
+  }
+  .ppmhdr *{box-sizing:border-box;}
+  .ppmhdr-in{
+    max-width:1060px; margin:0 auto; padding:10px 16px;
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+  }
+  .ppmhdr-logo{display:block; flex:0 0 auto; line-height:0;}
+  .ppmhdr-logo img{height:32px; width:auto; display:block;}
+
+  /* ---------- shiny button ---------- */
+  .ppm-shiny{
+    --ppm-shine:100%;                       /* fallback senza @property */
+    position:relative; flex:0 0 auto;
+    display:inline-flex; align-items:center; justify-content:center;
+    padding:11px 18px; border:0; border-radius:999px;
+    background:linear-gradient(180deg, var(--ppm-coral-hi) 0%, var(--ppm-coral) 52%, var(--ppm-coral-lo) 100%);
+    color:#fff; text-decoration:none; white-space:nowrap; cursor:pointer;
+    font-family:inherit; font-size:.88rem; font-weight:700; line-height:1; letter-spacing:.005em;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.22), 0 6px 16px -5px rgba(128,24,32,.55);
+    transition:transform .18s cubic-bezier(.2,.8,.3,1), box-shadow .18s ease;
+    animation:ppm-shine-run 3.6s linear infinite;
+    -webkit-tap-highlight-color:transparent;
+  }
+  @keyframes ppm-shine-run{
+    0%{--ppm-shine:100%} 55%{--ppm-shine:-100%} 100%{--ppm-shine:-100%}
+  }
+  /* la lama di luce sulla superficie */
+  .ppm-shiny::before{
+    content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+    background:linear-gradient(-75deg,
+      transparent            calc(var(--ppm-shine) + 14%),
+      rgba(255,255,255,.10)  calc(var(--ppm-shine) + 22%),
+      rgba(255,255,255,.55)  calc(var(--ppm-shine) + 27%),
+      rgba(255,255,255,.10)  calc(var(--ppm-shine) + 32%),
+      transparent            calc(var(--ppm-shine) + 42%));
+  }
+  /* il bordo che si illumina: due maschere in xor = solo la cornice di 1px */
+  .ppm-shiny-ring{
+    position:absolute; inset:0; border-radius:inherit; padding:1px; pointer-events:none;
+    background:linear-gradient(-75deg,
+      rgba(255,255,255,.14) calc(var(--ppm-shine) + 20%),
+      rgba(255,255,255,.90) calc(var(--ppm-shine) + 25%),
+      rgba(255,255,255,.14) calc(var(--ppm-shine) + 100%));
+    -webkit-mask:linear-gradient(#000,#000) content-box, linear-gradient(#000,#000);
+            mask:linear-gradient(#000,#000) content-box, linear-gradient(#000,#000);
+    -webkit-mask-composite:xor; mask-composite:exclude;
+  }
+  /* la scritta attraversata dalla stessa lama */
+  .ppm-shiny-lbl{
+    position:relative; z-index:1; display:inline-flex; align-items:center; gap:.45rem;
+    -webkit-mask-image:linear-gradient(-75deg,
+      #000                calc(var(--ppm-shine) + 18%),
+      rgba(0,0,0,.62)     calc(var(--ppm-shine) + 27%),
+      #000                calc(var(--ppm-shine) + 38%));
+            mask-image:linear-gradient(-75deg,
+      #000                calc(var(--ppm-shine) + 18%),
+      rgba(0,0,0,.62)     calc(var(--ppm-shine) + 27%),
+      #000                calc(var(--ppm-shine) + 38%));
+  }
+  .ppm-shiny-lbl svg{flex:none; width:15px; height:15px;}
+  .ppm-shiny:hover{transform:translateY(-1px); box-shadow:inset 0 1px 0 rgba(255,255,255,.28), 0 10px 22px -6px rgba(128,24,32,.6);}
+  .ppm-shiny:active{transform:translateY(0) scale(.985);}
+  .ppm-shiny:focus-visible{outline:3px solid var(--ppm-coral); outline-offset:3px;}
+  .ppm-only-wide{display:inline;}
+  .ppm-only-narrow{display:none;}
+
+  @media (max-width:560px){
+    .ppmhdr-in{padding:9px 12px;}
+    .ppmhdr-logo img{height:26px;}
+    .ppm-shiny{padding:10px 14px; font-size:.82rem;}
+    .ppm-only-wide{display:none;}
+    .ppm-only-narrow{display:inline;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .ppm-shiny{animation:none;}
+    .ppm-shiny::before{background:none;}
+  }
+</style>
+
+<header class="ppmhdr">
+  <div class="ppmhdr-in">
+    <a class="ppmhdr-logo" href="https://tools.affittibreviaroma.com/" aria-label="ProProManager, torna alla home">
+      <img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/b99a11a9-9a35-410d-a09f-3f9d026b22fd.webp"
+           alt="ProProManager" height="32" decoding="async">
+    </a>
+
+    <!-- Dove porta la CTA: la pagina VSL. Cambia solo questo href se un domani
+         le dai un indirizzo dedicato (es. /meno-tasse). -->
+    <a class="ppm-shiny" href="https://tools.affittibreviaroma.com/grazie">
+      <span class="ppm-shiny-lbl">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M22 17 13.5 8.5l-5 5L2 7"></path><path d="M16 17h6v-6"></path>
+        </svg>
+        <span class="ppm-only-wide">Scopri come pagare meno tasse</span>
+        <span class="ppm-only-narrow">Paga meno tasse</span>
+      </span>
+      <span class="ppm-shiny-ring" aria-hidden="true"></span>
+    </a>
   </div>
 </header>
+<!-- PPM-HEADER-END -->
 <div class="wrap">
 
 <header class="hero">
-  <span class="pill">Aggiornato al 9 luglio 2026 · commissione unica in Italia annunciata per il 13 ottobre 2026</span>
+  <span class="pill">Aggiornato al 2 agosto 2026 · commissione unica in Italia dal 13 ottobre 2026</span>
   <h1>SalvaGuadagno Host 🏠</h1>
-  <p>Airbnb passa alla <strong>commissione unica del 15,5% a carico dell'host</strong> (oggi paghi il 3%, e l'ospite ~14% in più al checkout).
+  <p>Airbnb passa alla <strong>commissione unica del 15,5% a carico dell'host</strong> (oggi paghi il 3%, e l'ospite paga ~15% in più alla cassa).
   Questo calcolatore ti dice <strong>a quanto alzare il prezzo per non perdere un euro</strong> — tenendo conto del tuo regime fiscale italiano,
-  perché le imposte si pagano sul prezzo lordo esposto e la commissione <em>non è deducibile</em>: il classico «+15,5%» non basta.</p>
+  perché le imposte si pagano sul prezzo lordo esposto e per chi non ha partita IVA la commissione <em>non è deducibile</em> e porta sopra il 22% di IVA:
+  il classico «+15,5%» non basta.</p>
   <p style="margin-top:10px;"><a href="https://tools.affittibreviaroma.com/calcolatore" style="color:#fff; font-weight:700;">← Ti basta la risposta veloce? Torna al calcolatore</a></p>
 </header>
 
-<div class="cols">
+<main class="cols">
   <!-- ============ INPUTS ============ -->
   <div>
     <div class="card">
@@ -131,18 +291,29 @@
           <input type="number" id="nights" inputmode="numeric" min="1" step="1" value="3">
         </div>
         <div class="field">
-          <label for="cleaning">Pulizie per soggiorno (€)
-            <span class="hint">Anche le pulizie subiscono commissione e tasse.</span>
-          </label>
-          <input type="number" id="cleaning" inputmode="decimal" min="0" step="1" value="40">
+          <label for="cleaning">Pulizie addebitate all'ospite (€)</label>
+          <input type="number" id="cleaning" inputmode="decimal" min="0" step="1" value="40"
+                 aria-describedby="cleaningHint">
+          <span class="hint" id="cleaningHint">Anche le pulizie subiscono commissione e tasse.</span>
         </div>
       </div>
-      <div class="field">
-        <label for="nightsYear">Notti occupate all'anno
-          <span class="hint">Per la proiezione annua (media italiana ≈ 130).</span>
-        </label>
-        <input type="number" id="nightsYear" inputmode="numeric" min="0" step="5" value="130">
+      <div class="row2">
+        <div class="field">
+          <label for="nightsYear">Notti occupate all'anno</label>
+          <input type="number" id="nightsYear" inputmode="numeric" min="0" step="5" value="200"
+                 aria-describedby="nightsYearHint">
+          <span class="hint" id="nightsYearHint">Serve per la proiezione annua.</span>
+        </div>
+        <div class="field">
+          <label for="cleaningCost">Quanto TI costano le pulizie (€)</label>
+          <input type="number" id="cleaningCost" inputmode="decimal" min="0" step="1" placeholder="0"
+                 aria-describedby="cleaningCostHint">
+          <span class="hint" id="cleaningCostHint">Facoltativo. Se paghi una ditta, scrivilo: altrimenti le pulizie risultano tutto guadagno.</span>
+        </div>
       </div>
+      <p style="margin-top:4px;">
+        <button type="button" class="preset" id="presetBtn">↺ Carica l'esempio ufficiale del webinar Airbnb</button>
+      </p>
     </div>
 
     <div class="card">
@@ -176,13 +347,13 @@
           <span class="t">Il mio netto dopo le tasse (consigliato)</span>
           <span class="d">Non perdi un euro in tasca. Il totale per l'ospite sale un po' rispetto a prima.</span>
         </button>
-        <button type="button" data-target="payout" aria-pressed="false">
-          <span class="t">Il payout Airbnb (suggerimento di Airbnb)</span>
-          <span class="d">Il bonifico resta uguale, ma paghi più tasse sul prezzo più alto: netto in calo.</span>
+        <button type="button" data-target="airbnb" aria-pressed="false">
+          <span class="t">Il prezzo che mi propone Airbnb</span>
+          <span class="d">Ricalcola come fa lo strumento di Airbnb, che protegge il compenso ma ignora le tue imposte. Serve a capire perché il suo numero è più basso del nostro.</span>
         </button>
         <button type="button" data-target="guest" aria-pressed="false">
           <span class="t">Il prezzo totale per l'ospite</span>
-          <span class="d">Massima competitività: l'ospite paga come prima, tu rinunci a una piccola parte.</span>
+          <span class="d">Massima competitività: l'ospite paga come prima. Quanto ci rimetti te lo diciamo sotto, in euro.</span>
         </button>
       </div>
 
@@ -195,7 +366,9 @@
           </div>
           <div class="field">
             <label for="guestFeeOld">Commissione ospite attuale %</label>
-            <input type="number" id="guestFeeOld" inputmode="decimal" min="0" max="30" step="0.1" value="14.1">
+            <input type="number" id="guestFeeOld" inputmode="decimal" min="0" max="30" step="0.1" value="15"
+                   aria-describedby="guestFeeHint">
+            <span class="hint" id="guestFeeHint">15% è l'esempio ufficiale Airbnb (100 → 115). Nella pratica varia fra 14,1% e 16,5%.</span>
           </div>
         </div>
         <div class="row2">
@@ -210,8 +383,8 @@
           </div>
         </div>
         <div class="field">
-          <label><input type="checkbox" id="vatAdded"> IVA 22% aggiunta sopra la commissione</label>
-          <span class="hint">Airbnb dichiara la commissione «IVA inclusa, dove applicabile». Attiva questa opzione per lo scenario prudenziale (privati senza P.IVA). Per i forfettari l'IVA in reverse charge (non recuperabile) è già applicata in automatico.</span>
+          <label><input type="checkbox" id="ivaDetraibile"> La mia P.IVA scarica l'IVA sulla commissione</label>
+          <span class="hint">Di default l'IVA 22% sulla commissione è contata come costo per tutti: il privato se la vede trattenere e non la recupera, il forfettario la versa in reverse charge senza poterla detrarre. Attiva questa casella <b>solo</b> se hai P.IVA ordinaria iscritta al VIES e la scarichi davvero.</span>
         </div>
       </details>
     </div>
@@ -219,7 +392,11 @@
 
   <!-- ============ RESULTS ============ -->
   <div class="sticky">
-    <div aria-live="polite" id="results">
+    <div id="results">
+
+      <!-- Una sola frase annunciata dalla sintesi vocale: con aria-live sull'intero
+           pannello, ogni tasto premuto faceva rileggere tutta la pagina. -->
+      <p class="visually-hidden" aria-live="polite" id="srLive"></p>
 
       <div class="heroNum">
         <span class="lbl" id="heroLbl">Nuovo prezzo consigliato</span>
@@ -227,10 +404,12 @@
         <div class="sub" id="heroSub"></div>
         <div class="chips" id="chips"></div>
         <button type="button" class="copybtn" id="copyBtn">📋 Copia il riepilogo</button>
+        <span class="hint" id="copyMsg" role="status" style="margin-top:6px;"></span>
       </div>
 
       <div class="callout warn" id="airbnbWarn" hidden></div>
       <div class="callout bad" id="doNothing" hidden></div>
+      <div class="callout info" id="breakEven" hidden></div>
       <div class="callout ok" id="guestNote" hidden></div>
 
       <div class="card">
@@ -269,33 +448,48 @@
               <tbody></tbody>
             </table>
           </div>
-          <p class="hint" style="margin-top:8px;">Confronto indicativo sulle sole imposte proporzionali: per i forfettari e le imprese NON sono inclusi i contributi INPS fissi (gestione commercianti: minimo ≈ 4.612 €/anno, riducibile del 35–50%) né i costi di gestione. Dal <strong>3° immobile</strong> destinato ad affitti brevi la legge di bilancio 2026 impone la partita IVA (attività d'impresa).</p>
+          <p class="hint" style="margin-top:8px;">Confronto indicativo sulle sole imposte proporzionali: per i forfettari e le imprese NON sono inclusi i contributi INPS fissi (gestione commercianti, alcune migliaia di euro l'anno, con riduzioni che variano di anno in anno) né i costi di gestione. Dal <strong>3° immobile</strong> destinato ad affitti brevi la legge di bilancio 2026 presume l'attività d'impresa e impone la partita IVA: in quel caso il regime da scegliere qui sopra è «Impresa» o «Forfettario», non la cedolare.</p>
         </details>
+      </div>
+
+      <div class="card">
+        <h2>Cosa devi fare entro il 13 ottobre</h2>
+        <ol class="steps">
+          <li>Apri la notifica di Airbnb sul passaggio ai costi di gestione singoli e tocca <strong>Inizia</strong>.</li>
+          <li>Controlla nel calendario i prezzi corretti che Airbnb ti propone, data per data.</li>
+          <li>Tocca <strong>Conferma</strong>. Se hai più annunci, ripeti per ciascuno.</li>
+        </ol>
+        <div class="callout ok" style="margin:12px 0 0;">
+          <b>Le prenotazioni che hai già ricevuto non vengono toccate.</b> Il nuovo modello vale solo per le prenotazioni fatte dopo il passaggio.
+        </div>
+        <p class="hint" style="margin-top:10px;">Attenzione: lo strumento di Airbnb tiene conto della commissione e dell'IVA, ma <strong>non</strong> delle tue imposte sul reddito — per quelle serve il conto qui sopra. Dal 13 ottobre la commissione unica vale per tutti e non è più possibile rinunciarvi. Se non fai nulla, il prezzo resta quello di oggi e il tuo compenso scende.</p>
       </div>
 
     </div>
   </div>
-</div>
+</main>
 
 <footer>
   <h3>Come funziona il nuovo modello</h3>
-  <p>Airbnb sta eliminando la commissione divisa (3% all'host + ~14,1–16,5% all'ospite) e passa a una <strong>commissione unica del 15,5% trattenuta all'host</strong> (range 14–16% a seconda di paese, tipo di annuncio e politica di cancellazione). L'ospite non paga più alcuna commissione: il prezzo che imposti è quello che vede. La commissione si calcola sul subtotale (notti + pulizie + costi extra, esclusi tasse e cauzioni). In Italia il passaggio per gli host senza channel manager è annunciato per il <strong>13 ottobre 2026</strong>; chi usa un PMS/channel manager è già passato dal 13 aprile 2026. Le prenotazioni ricevute prima del passaggio mantengono le vecchie commissioni.</p>
+  <p>Airbnb sta eliminando la commissione divisa (3% all'host + una commissione a carico dell'ospite, storicamente fra il 14,1% e il 16,5%; l'esempio ufficiale usa il 15%) e passa a una <strong>commissione unica del 15,5% trattenuta all'host</strong>: Airbnb indica il 15,5% per la maggior parte degli host, con altri fra il 14% e il 16%. L'ospite non paga più alcuna commissione separata: il prezzo che imposti è quello che vede. La commissione si calcola sul subtotale (notti + pulizie + costi extra, esclusi tasse e cauzioni). In Italia il passaggio è fissato al <strong>13 ottobre 2026</strong> e da quella data non è possibile rinunciarvi. Le prenotazioni ricevute prima del passaggio mantengono le vecchie commissioni.</p>
   <h3>Perché «+15,5%» non basta</h3>
-  <p>Le imposte italiane sugli affitti brevi (cedolare secca, IRPEF, forfettario) si calcolano sul <strong>corrispettivo lordo</strong> — il prezzo esposto, commissione inclusa (Circolare AdE 24/E/2017): la commissione Airbnb <strong>non è deducibile</strong> per i privati. Anche la ritenuta d'acconto del 21% che Airbnb applica come sostituto d'imposta è calcolata sul lordo, pulizie incluse, prima della commissione. Alzando il prezzo aumentano quindi anche le tasse: per mantenere il netto serve un rincaro maggiore del semplice recupero della commissione.</p>
+  <p>Per due motivi che si sommano. Primo: se non hai partita IVA, Airbnb addebita <strong>l'IVA al 22% sopra la commissione</strong>, che per te è un costo definitivo e non recuperabile — il 15,5% diventa quindi 18,91%. Lo conferma l'esempio ufficiale del webinar Airbnb per gli host italiani (22 luglio 2026): un host senza partita IVA in un paese con IVA al 20% deve passare da 100 a 119 € per mantenere 97 € di compenso. Secondo: le imposte italiane sugli affitti brevi (cedolare secca, IRPEF, forfettario) si calcolano sul <strong>corrispettivo lordo</strong> e la commissione Airbnb <strong>non è deducibile</strong> per chi non ha partita IVA. Anche la ritenuta d'acconto del 21% che Airbnb applica come sostituto d'imposta è calcolata sul lordo, pulizie incluse, prima di trattenere la commissione. Alzando il prezzo aumentano quindi anche le imposte: per mantenere il netto serve un rincaro maggiore del semplice recupero della commissione.</p>
   <h3>Assunzioni e limiti</h3>
-  <p>Aliquote 2026 (L. 199/2025): cedolare 21% sul primo immobile e 26% sul secondo; obbligo di P.IVA dal terzo; IRPEF 23/33/43%; forfettario 15% (5% start-up) con coefficiente di redditività 40% (ATECO 55.20). Ritenuta 21% a titolo d'acconto per gli host senza P.IVA (per la cedolare 21% coincide con l'imposta dovuta). Non modellati: imposta di soggiorno (partita di giro), contributi INPS fissi, IMU e costi di gestione, sconti settimanali/mensili, co-hosting. La commissione è trattata come IVA inclusa salvo opzione avanzata; per i forfettari è aggiunta l'IVA 22% in reverse charge (non recuperabile).</p>
+  <p>Aliquote 2026 (L. 199 del 30 dicembre 2025): cedolare secca 21% su una sola unità scelta dal contribuente e 26% sulla seconda; la stessa legge ha ridotto da quattro a due gli appartamenti gestibili in forma non imprenditoriale, per cui <strong>dal terzo immobile si presume l'attività d'impresa</strong> con obbligo di partita IVA. La legge prevede anche un'aliquota del 30% per la terza e quarta unità: poiché convive con la presunzione d'impresa, questo calcolatore non la propone come opzione — se sei in quella situazione fatti seguire da un commercialista. IRPEF 23/33/43% sul 95% del lordo; forfettario 15% (5% start-up) con coefficiente di redditività 40% (ATECO 55.20). Ritenuta 21% a titolo d'acconto per gli host senza partita IVA (con la cedolare al 21% coincide con l'imposta dovuta). Sulla commissione è sempre aggiunta l'IVA 22%, in ogni regime: il privato se la vede trattenere da Airbnb, il forfettario la versa in reverse charge senza poterla detrarre. Solo chi ha P.IVA ordinaria iscritta al VIES può escluderla, con l'apposita casella. Non modellati: imposta di soggiorno (partita di giro), contributi INPS, IMU, sconti settimanali e mensili, co-hosting.</p>
   <h3>Fonti principali</h3>
   <p>
     <a href="https://www.airbnb.com/help/article/1857" rel="noopener">Airbnb — Costi del servizio (art. 1857)</a> ·
     <a href="https://www.airbnb.com/resources/hosting-homes/a/simplifying-service-fees-on-airbnb-771" rel="noopener">Airbnb — Commissione unica (7 lug 2026)</a> ·
     <a href="https://www.airbnb.com/help/article/3527" rel="noopener">Airbnb — Ritenuta 21% Italia (art. 3527)</a> ·
-    <a href="https://www.agenziaentrate.gov.it/portale/le-locazioni-brevi-e-la-cedolare-secca" rel="noopener">Agenzia delle Entrate — Locazioni brevi</a>
+    <a href="https://www.agenziaentrate.gov.it/portale/le-locazioni-brevi-e-la-cedolare-secca" rel="noopener">Agenzia delle Entrate — Locazioni brevi</a><br>
+    Webinar Airbnb «Costi di gestione singoli» per gli host italiani, 22 luglio 2026 (registrazione riservata ai partecipanti): è la fonte degli esempi ufficiali 100 → 115 → 97 e 119 € usati per tarare questo calcolatore.
   </p>
-  <p style="margin-top:10px;"><strong>⚠️ Questo strumento è indicativo e non costituisce consulenza fiscale.</strong> Verifica sempre la tua situazione con un commercialista. Nessun dato viene raccolto o inviato: tutto il calcolo avviene nel tuo browser. Strumento indipendente, non affiliato ad Airbnb.</p>
+  <p style="margin-top:10px;"><strong>⚠️ Questo strumento è indicativo e non costituisce consulenza fiscale.</strong> Verifica sempre la tua situazione con un commercialista. Strumento indipendente, non affiliato ad Airbnb.</p>
+  <p style="margin-top:10px;"><strong>I tuoi numeri restano tuoi.</strong> Tutti i calcoli avvengono nel tuo browser: i prezzi e i dati che inserisci non vengono salvati né trasmessi a noi. La pagina però carica il carattere tipografico da Google Fonts e il logo dal nostro servizio di hosting: come per qualsiasi contenuto esterno, questi fornitori ricevono il tuo indirizzo IP. I dettagli sono nella <a href="https://tools.affittibreviaroma.com/privacypolicy" rel="noopener">Privacy Policy</a>.</p>
   <p style="margin-top:14px; padding-top:14px; border-top:1px solid var(--line);">© ProProManager ·
     <a href="https://tools.affittibreviaroma.com/privacypolicy" rel="noopener">Privacy Policy</a> ·
     <a href="https://tools.affittibreviaroma.com/cookiepolicy" rel="noopener">Cookie Policy</a><br>
-    Titolare del trattamento: M2B SRLS
+    Titolare del trattamento: M2AB SRLS
   </p>
 </footer>
 
@@ -308,6 +502,14 @@
   var target = 'net';
 
   var $ = function(id){ return document.getElementById(id); };
+  // I campi number accettano anche la virgola: parseFloat('89,50') darebbe 89.
+  // E un campo svuotato deve tornare al suo default, non a zero: con commissione 0%
+  // il calcolatore finiva per consigliare di ABBASSARE il prezzo.
+  function num(id, min, max, dflt){
+    var v = parseFloat(String($(id).value).replace(',', '.'));
+    if(!isFinite(v)) return dflt;
+    return Math.min(max, Math.max(min, v));
+  }
   var fmtEUR = new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',maximumFractionDigits:2});
   var fmtEUR0 = new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',maximumFractionDigits:0});
   var fmtPct = new Intl.NumberFormat('it-IT',{style:'percent',minimumFractionDigits:1,maximumFractionDigits:1});
@@ -316,57 +518,109 @@
     ced21:  {label:'Cedolare secca 21%',      hint:'Sul primo immobile destinato ad affitti brevi. La ritenuta 21% di Airbnb coincide con l’imposta: nulla da versare a conguaglio.'},
     ced26:  {label:'Cedolare secca 26%',      hint:'Sul secondo immobile. Airbnb trattiene comunque il 21%: il 5% restante si versa in dichiarazione.'},
     irpef:  {label:'IRPEF ordinaria',         hint:'Tassato il 95% del lordo alla tua aliquota marginale + addizionali. La ritenuta 21% è un acconto.'},
-    forf15: {label:'Forfettario 15%',         hint:'Con P.IVA comunicata ad Airbnb niente ritenuta. IVA 22% sulla commissione in reverse charge, non recuperabile. INPS fissi esclusi dal calcolo.'},
-    forf5:  {label:'Forfettario 5% start-up', hint:'Come il forfettario 15%, con imposta ridotta per i primi 5 anni.'},
-    impresa:{label:'Impresa / P.IVA ordinaria',hint:'Commissione deducibile e IVA neutra: qui mostriamo il margine prima delle imposte sul profitto (dipendono dai tuoi costi reali — serve il commercialista).'}
+    forf15: {label:'Forfettario 15%',         hint:'Con P.IVA comunicata ad Airbnb niente ritenuta. IVA 22% sulla commissione in reverse charge: la versi tu con l’F24, quindi è un costo, ma non te la trattiene Airbnb. Contributi INPS esclusi dal calcolo.'},
+    forf5:  {label:'Forfettario 5% start-up', hint:'Come il forfettario 15%, con imposta ridotta per i primi 5 anni. Contributi INPS esclusi dal calcolo.'},
+    impresa:{label:'Impresa / P.IVA ordinaria',hint:'Commissione deducibile e IVA neutra in reverse charge — ma solo se la partita IVA è iscritta al VIES: senza iscrizione Airbnb addebita l’IVA e diventa un costo, per questo di default la contiamo: se sei iscritto e la scarichi, spunta «La mia P.IVA scarica l’IVA» nelle Opzioni avanzate. Qui mostriamo il margine prima delle imposte sul profitto (dipendono dai tuoi costi reali — serve il commercialista).'}
   };
 
   function readInputs(){
     var regime = $('regime').value;
-    var vatAdded = $('vatAdded').checked;
-    var fOld = (parseFloat($('feeOld').value)||0)/100;
-    var fNew = (parseFloat($('feeNew').value)||0)/100;
+    var ivaDetraibile = $('ivaDetraibile').checked;
+    var fOld = num('feeOld', 0, 30, 3)/100;
+    var fNew = num('feeNew', 0, 30, 15.5)/100;
+    // eff = costo economico reale della commissione (quanto ti pesa davvero).
+    /* IVA 22% sulla commissione: applicata SEMPRE, a ogni regime.
+       Il forfettario la subisce per reverse charge non recuperabile. Il privato
+       senza P.IVA se la vede trattenere da Airbnb e non la recupera. La P.IVA
+       ordinaria in teoria la scarica, ma servono iscrizione al VIES e reverse
+       charge gestito bene: troppo raro per darlo per scontato, quindi di default
+       e' un costo anche per lei. Chi sa di poterla detrarre lo dichiara con la
+       casella, che e' un opt-out esplicito e non il default.
+       Stessa identica regola del calcolatore base: i due strumenti devono dire
+       la stessa cosa. */
     function eff(f){
-      if(regime==='forf15'||regime==='forf5') return f*(1+VAT); // reverse charge non recuperabile
-      if(regime==='impresa') return f;                          // IVA neutra
-      return vatAdded ? f*(1+VAT) : f;                          // privato
+      return ivaDetraibile ? f : f*(1+VAT);
+    }
+    // cash = quanto Airbnb trattiene davvero dal bonifico. Coincide con eff tranne che per
+    // i forfettari: la loro IVA in reverse charge la versano dopo, Airbnb non la trattiene.
+    function cash(f){
+      if(regime==='forf15'||regime==='forf5') return f;
+      return eff(f);
     }
     var m = parseFloat($('irpefRate').value)||0.33;
-    var add = (parseFloat($('addiz').value)||0)/100;
-    var taxRates = {ced21:0.21, ced26:0.26, irpef:IRPEF_BASE*(m+add), forf15:0.15*FORF_COEFF, forf5:0.05*FORF_COEFF, impresa:0};
+    var add = num('addiz', 0, 5, 1.7)/100;
     return {
-      nightly: Math.max(0, parseFloat($('nightly').value)||0),
-      nights:  Math.max(1, Math.round(parseFloat($('nights').value)||1)),
-      cleaning:Math.max(0, parseFloat($('cleaning').value)||0),
-      nightsYear: Math.max(0, parseFloat($('nightsYear').value)||0),
+      nightly: Math.max(0, num('nightly', 0, 1e6, 0)),
+      nights:  Math.max(1, Math.round(num('nights', 1, 365, 1))),
+      cleaning:Math.max(0, num('cleaning', 0, 1e5, 0)),
+      cleaningCost: Math.max(0, num('cleaningCost', 0, 1e5, 0)),
+      nightsYear: Math.max(0, num('nightsYear', 0, 366, 0)),
       regime: regime,
-      gOld: (parseFloat($('guestFeeOld').value)||0)/100,
-      fOldEff: eff(fOld), fNewEff: eff(fNew),
+      gOld: num('guestFeeOld', 0, 30, 15)/100,
+      fOldEff: eff(fOld),   fNewEff: eff(fNew),
+      fOldCash: cash(fOld), fNewCash: cash(fNew),
       fOldRaw: fOld, fNewRaw: fNew,
-      t: taxRates[regime],
-      hasRitenuta: (regime==='ced21'||regime==='ced26'||regime==='irpef')
+      irpefM: m, addiz: add,
+      t: taxRate(regime, m, add),
+      hasRitenuta: haRitenuta(regime)
     };
   }
 
-  // multiplier k for a given goal, given effective fees + tax rate on gross
+  // Definite una volta sola: la tabella «Confronta i regimi» le riscriveva come costanti
+  // magiche (0.06 / 0.02) che potevano sfasarsi rispetto al calcolo principale.
+  function taxRate(regime, m, add){
+    return {ced21:0.21, ced26:0.26, irpef:IRPEF_BASE*(m+add),
+            forf15:0.15*FORF_COEFF, forf5:0.05*FORF_COEFF, impresa:0}[regime];
+  }
+  function haRitenuta(regime){
+    return regime==='ced21'||regime==='ced26'||regime==='irpef';
+  }
+  // Ricostruisce i parametri come se l'utente avesse scelto un altro regime.
+  function comeSe(s, rk, ivaDetraibile){
+    var s2 = Object.assign({}, s);
+    // stessa regola di eff(): IVA sempre, salvo opt-out esplicito
+    function e(f){ return ivaDetraibile ? f : f*(1+VAT); }
+    function c(f){ return (rk==='forf15'||rk==='forf5') ? f : e(f); }
+    s2.regime = rk;
+    s2.t = taxRate(rk, s.irpefM, s.addiz);
+    s2.hasRitenuta = haRitenuta(rk);
+    s2.fOldEff = e(s.fOldRaw);  s2.fNewEff = e(s.fNewRaw);
+    s2.fOldCash = c(s.fOldRaw); s2.fNewCash = c(s.fNewRaw);
+    return s2;
+  }
+
+  // Moltiplicatore del prezzo per ciascun obiettivo.
+  // 'payout' protegge il BONIFICO, quindi deve contare anche la ritenuta che Airbnb
+  // trattiene alla fonte: senza, la tabella accanto mostrava un accredito in calo
+  // mentre l'etichetta prometteva che restasse uguale.
   function kFor(goal, s){
     if(goal==='guest')  return 1 + s.gOld;
-    if(goal==='payout') return (1 - s.fOldEff) / (1 - s.fNewEff);
+    if(goal==='airbnb') return kAirbnb(s);
     var den = 1 - s.fNewEff - s.t;
     if(den <= 0.01) return NaN; // tassazione+commissione ≥ 100% del prezzo
     return (1 - s.fOldEff - s.t) / den;
   }
 
-  function scenario(S, feeEff, guestMul, ritenuta, t){
-    // S = subtotale (base di commissione, ritenuta e imposta)
+  // Il moltiplicatore dello strumento di Airbnb: protegge il compenso, ma ignora sia la
+  // ritenuta italiana sia le imposte sul reddito. E' il numero che l'host si vede
+  // proporre nell'app, quindi deve essere riproducibile qui dentro per confronto.
+  function kAirbnb(s){
+    var den = 1 - s.fNewEff;
+    return den > 0.01 ? (1 - s.fOldEff) / den : NaN;
+  }
+
+  function scenario(S, s, feeEff, feeCash, guestMul, ritenuta){
+    // S = subtotale (base di commissione, ritenuta e imposta).
+    // Le pulizie che paghi alla ditta sono un costo fisso: non scalano col prezzo
+    // e non sono deducibili per chi non ha partita IVA.
     return {
       S: S,
       guestTotal: S * guestMul,
       fee: S * feeEff,
       rit: ritenuta ? S * RITENUTA : 0,
-      payout: S - S*feeEff - (ritenuta ? S*RITENUTA : 0),
-      tax: S * t,
-      net: S - S*feeEff - S*t
+      payout: S - S*feeCash - (ritenuta ? S*RITENUTA : 0),
+      tax: S * s.t,
+      net: S - S*feeEff - S*s.t - s.cleaningCost
     };
   }
 
@@ -376,43 +630,50 @@
     $('regimeHint').textContent = R.hint;
     $('irpefRow').hidden = (s.regime!=='irpef');
 
-    if(s.nightly<=0){
-      $('heroPrice').textContent='—';
-      $('heroSub').textContent='Inserisci il prezzo a notte per vedere il calcolo.';
-      $('chips').innerHTML='';
+    var S0 = s.nightly*s.nights + s.cleaning;
+    var k  = s.nightly>0 ? kFor(target, s) : NaN;
+    if(s.nightly<=0 || S0<=0 || !isFinite(k)){
+      // Azzerare TUTTO: prima restavano a schermo tabelle, avvisi e passi di calcolo
+      // del conto precedente, e il bottone Copia copiava ancora i numeri vecchi.
+      svuota(s.nightly<=0
+        ? 'Inserisci il prezzo a notte per vedere il calcolo.'
+        : 'Parametri non validi: commissione e imposte superano il 100% del prezzo.');
       return;
     }
-    var S0 = s.nightly*s.nights + s.cleaning;
-    if(S0<=0){ return; }
-
-    var k = kFor(target, s);
-    if(!isFinite(k)||isNaN(k)){ $('heroPrice').textContent='—'; $('heroSub').textContent='Parametri non validi: commissione + imposte superano il 100% del prezzo.'; return; }
 
     // prezzo consigliato arrotondato per eccesso (mai sotto il pareggio)
     var newNightly = Math.ceil(s.nightly*k);
     var newCleaning = s.cleaning>0 ? Math.ceil(s.cleaning*k) : 0;
     var S2 = newNightly*s.nights + newCleaning;
 
-    var oggi   = scenario(S0, s.fOldEff, 1+s.gOld, s.hasRitenuta, s.t);
-    var niente = scenario(S0, s.fNewEff, 1,        s.hasRitenuta, s.t);
-    var nuovo  = scenario(S2, s.fNewEff, 1,        s.hasRitenuta, s.t);
+    var oggi   = scenario(S0, s, s.fOldEff, s.fOldCash, 1+s.gOld, s.hasRitenuta);
+    var niente = scenario(S0, s, s.fNewEff, s.fNewCash, 1,        s.hasRitenuta);
+    var nuovo  = scenario(S2, s, s.fNewEff, s.fNewCash, 1,        s.hasRitenuta);
 
     // ---- HERO ----
     var pctUp = (newNightly/s.nightly - 1);
-    var goalLabels = {net:'Nuovo prezzo consigliato', payout:'Prezzo per mantenere il payout', guest:'Prezzo per mantenere il totale ospite'};
+    var goalLabels = {net:'Nuovo prezzo consigliato', airbnb:'Il prezzo che ti propone Airbnb', guest:'Prezzo per mantenere il totale ospite'};
     $('heroLbl').textContent = goalLabels[target];
     $('heroPrice').innerHTML = fmtEUR0.format(newNightly) + ' <small>/notte</small>';
     var subParts = ['<span class="badge up">+' + fmtPct.format(pctUp).replace('%',' %') + '</span>',
       'valore esatto ' + fmtEUR.format(s.nightly*k) + ' (moltiplicatore ×' + k.toFixed(4).replace('.',',') + ')'];
     if(s.cleaning>0) subParts.push('pulizie: ' + fmtEUR0.format(newCleaning));
     $('heroSub').innerHTML = subParts.join(' · ');
+    $('srLive').textContent = goalLabels[target] + ': ' + fmtEUR0.format(newNightly) +
+      ' a notte, più ' + fmtPct.format(pctUp) + ' rispetto a ' + fmtEUR0.format(s.nightly) + '.';
 
-    // chips: other goals
-    var chips = '';
-    [['net','Netto invariato'],['payout','Payout invariato'],['guest','Ospite paga come prima']].forEach(function(g){
+    // chip: quanto costa davvero Airbnb, poi gli altri obiettivi.
+    // Le percentuali sono ricavate dal prezzo arrotondato mostrato accanto, non dal
+    // moltiplicatore grezzo: prima hero e chip mostravano due valori diversi.
+    var chips = '<div class="chip">Airbnb ti costa<b>' + fmtPct.format(s.fNewEff) +
+      (s.fNewEff > s.fNewRaw + 1e-9 ? ' <small>(' + fmtPct.format(s.fNewRaw) + ' + IVA)</small>' : '') + '</b></div>';
+    [['net','Netto invariato'],['airbnb','Proposta di Airbnb'],['guest','Ospite paga come prima']].forEach(function(g){
       if(g[0]===target) return;
       var kk = kFor(g[0], s);
-      if(isFinite(kk)) chips += '<div class="chip">'+g[1]+'<b>'+fmtEUR0.format(Math.ceil(s.nightly*kk))+'/notte (+'+((kk-1)*100).toFixed(1).replace('.',',')+'%)</b></div>';
+      if(!isFinite(kk)) return;
+      var pp = Math.ceil(s.nightly*kk);
+      chips += '<div class="chip">'+g[1]+'<b>'+fmtEUR0.format(pp)+'/notte (+'+
+               fmtPct.format(pp/s.nightly-1)+')</b></div>';
     });
     $('chips').innerHTML = chips;
 
@@ -428,58 +689,86 @@
         (bookingsYear>0 ? ' — circa <b>' + fmtEUR0.format(lossBooking*bookingsYear) + ' all’anno</b>.' : '.');
     } else dn.hidden = true;
 
-    // Airbnb-suggestion warning (only meaningful for the "net" goal on taxed regimes)
+    // Avviso sul suggerimento di Airbnb: va calcolato col SUO moltiplicatore, che ignora
+    // la ritenuta italiana. Usare qui il k dell'obiettivo 'payout' attribuiva ad Airbnb
+    // una percentuale che Airbnb non propone.
     var aw = $('airbnbWarn');
-    var kPay = kFor('payout', s);
-    if(target==='net' && s.t>0 && isFinite(kPay)){
-      var Sa = S0*kPay;
-      var netA = Sa - Sa*s.fNewEff - Sa*s.t;
-      var lossA = oggi.net - netA;
+    var kA = kAirbnb(s), kN = kFor('net', s);
+    if(s.t>0 && isFinite(kA) && isFinite(kN) && (target==='net' || target==='airbnb')){
+      var prezzoA = Math.ceil(s.nightly*kA);
+      var Sa = prezzoA*s.nights + (s.cleaning>0?Math.ceil(s.cleaning*kA):0);
+      var lossA = oggi.net - (Sa - Sa*s.fNewEff - Sa*s.t - s.cleaningCost);
+      var prezzoN = Math.ceil(s.nightly*kN);
       if(lossA > 0.005){
         aw.hidden = false;
-        aw.innerHTML = '⚠️ <b>Attenzione al suggerimento di Airbnb</b> (+' + ((kPay-1)*100).toFixed(1).replace('.',',') +
-          '%, payout invariato): le imposte si calcolano sul nuovo prezzo più alto, quindi perderesti comunque ' +
-          fmtEUR.format(lossA) + ' di netto a prenotazione' +
-          (bookingsYear>0 ? ' (≈ ' + fmtEUR0.format(lossA*bookingsYear) + '/anno).' : '.');
+        aw.innerHTML = target==='airbnb'
+          ? '⚠️ <b>Questo è il prezzo di Airbnb, e non ti basta.</b> Il suo strumento protegge il compenso, ' +
+            'ma non sa nulla delle tue imposte sul reddito, che si calcolano sul nuovo prezzo più alto. ' +
+            'Fermandoti a ' + fmtEUR0.format(prezzoA) + ' perdi ' + fmtEUR.format(lossA) + ' di netto a prenotazione' +
+            (bookingsYear>0 ? ' (≈ ' + fmtEUR0.format(lossA*bookingsYear) + '/anno)' : '') +
+            '. Per non perdere nulla servono <b>' + fmtEUR0.format(prezzoN) + '/notte</b>.'
+          : '⚠️ <b>Airbnb ti proporrà ' + fmtEUR0.format(prezzoA) + '/notte</b> (+' + fmtPct.format(kA-1) + '), ' +
+            'meno di quanto ti serve: il suo strumento ignora le tue imposte sul reddito. Accettando quel prezzo ' +
+            'perderesti ' + fmtEUR.format(lossA) + ' a prenotazione' +
+            (bookingsYear>0 ? ' (≈ ' + fmtEUR0.format(lossA*bookingsYear) + '/anno).' : '.');
       } else aw.hidden = true;
     } else aw.hidden = true;
 
-    // guest-competitiveness note
+    // Quanto lavoro puoi permetterti di perdere prima che alzare il prezzo non convenga piu'.
+    var be = $('breakEven');
+    if(nuovo.net > niente.net + 0.005 && nuovo.net > 0){
+      var margine = 1 - niente.net/nuovo.net;
+      be.hidden = false;
+      be.innerHTML = '🎯 <b>Quanto puoi permetterti di perdere:</b> col prezzo consigliato puoi arrivare a ' +
+        '<b>' + fmtPct.format(margine) + ' di prenotazioni in meno</b>' +
+        (bookingsYear>0 ? ' (circa ' + Math.round(bookingsYear*margine) + ' soggiorni l’anno su ' + Math.round(bookingsYear) + ')' : '') +
+        ' e guadagnare comunque quanto guadagneresti lasciando il prezzo com’è. È il margine che il rincaro ti compra.';
+    } else be.hidden = true;
+
+    // Competitivita' per l'ospite. Se il totale sale, l'avviso non puo' restare verde.
     var gn = $('guestNote');
-    var guestDelta = nuovo.guestTotal/oggi.guestTotal - 1;
+    var guestDelta = oggi.guestTotal>0 ? nuovo.guestTotal/oggi.guestTotal - 1 : 0;
     gn.hidden = false;
     if(guestDelta <= 0.001){
+      gn.className = 'callout ok';
       gn.innerHTML = '✅ Col prezzo consigliato l’ospite paga ' + fmtEUR.format(nuovo.guestTotal) +
         ': <b>non più di prima</b> (' + fmtEUR.format(oggi.guestTotal) + ' con la vecchia commissione ospite).';
     } else {
-      gn.innerHTML = 'ℹ️ Col prezzo consigliato l’ospite paga ' + fmtEUR.format(nuovo.guestTotal) + ' contro ' +
-        fmtEUR.format(oggi.guestTotal) + ' di prima (<b>+' + (guestDelta*100).toFixed(1).replace('.',',') +
-        '%</b>): prima la commissione ospite era nascosta al checkout, ora è tutto nel tuo prezzo. Valuta la competitività della tua zona.';
+      gn.className = guestDelta > 0.05 ? 'callout warn' : 'callout info';
+      gn.innerHTML = (guestDelta > 0.05 ? '⚠️ ' : 'ℹ️ ') + 'Col prezzo consigliato l’ospite paga ' +
+        fmtEUR.format(nuovo.guestTotal) + ' contro ' + fmtEUR.format(oggi.guestTotal) + ' di prima (<b>+' +
+        fmtPct.format(guestDelta) + '</b>): prima una parte era commissione nascosta alla cassa, ora è tutto nel tuo prezzo. ' +
+        (guestDelta > 0.05 ? 'È un rincaro visibile: valuta la competitività della tua zona.' : 'La differenza è contenuta.');
     }
 
     // ---- COMPARISON TABLE ----
     var isImpresa = (s.regime==='impresa');
-    var netHdr = isImpresa ? 'Margine ante imposte' : 'Netto dopo tasse';
+    var netHdr = isImpresa ? 'Margine ante imposte' : (s.cleaningCost>0 ? 'Netto dopo tasse e pulizie' : 'Netto dopo tasse');
+    // Le ultime tre colonne sono per SOGGIORNO, la prima e' per notte: senza dirlo
+    // la riga sembrava tutta sulla stessa unita' di misura.
+    var perSogg = '<small style="font-weight:400;text-transform:none;">/soggiorno</small>';
     document.querySelector('#cmpTable thead').innerHTML =
-      '<tr><th>Scenario</th><th>Prezzo /notte</th><th>Totale ospite</th><th>Bonifico Airbnb</th><th>'+netHdr+'</th></tr>';
+      '<tr><th scope="col">Scenario</th><th scope="col">Prezzo /notte</th><th scope="col">Totale ospite '+perSogg+
+      '</th><th scope="col">Bonifico Airbnb '+perSogg+'</th><th scope="col">'+netHdr+' '+perSogg+'</th></tr>';
     function row(name, price, sc, ref){
       var d = ref ? sc.net - ref.net : null;
       var cls = d===null ? '' : (d < -0.005 ? 'neg' : 'pos');
-      return '<tr><td>'+name+'</td><td>'+fmtEUR.format(price)+'</td><td>'+fmtEUR.format(sc.guestTotal)+'</td><td>'+
+      return '<tr><th scope="row" style="font-weight:400;">'+name+'</th><td>'+fmtEUR.format(price)+'</td><td>'+fmtEUR.format(sc.guestTotal)+'</td><td>'+
         fmtEUR.format(sc.payout)+'</td><td class="'+cls+'">'+fmtEUR.format(sc.net)+
-        (d!==null ? ' <small>('+(d>=0?'+':'')+fmtEUR.format(d).replace('+','')+')</small>' : '')+'</td></tr>';
+        (d!==null ? ' <small>('+(d>=0?'+':'−')+fmtEUR.format(Math.abs(d)).replace('+','')+')</small>' : '')+'</td></tr>';
     }
     document.querySelector('#cmpTable tbody').innerHTML =
-      row('Oggi (commissione 3% + '+(s.gOld*100).toFixed(1).replace('.',',')+'% ospite)', s.nightly, oggi, null) +
+      row('Oggi (commissione '+fmtPct.format(s.fOldRaw)+' a te + '+fmtPct.format(s.gOld)+' all’ospite)', s.nightly, oggi, null) +
       row('Dopo il passaggio, prezzo invariato', s.nightly, niente, oggi) +
       row('Col prezzo consigliato', newNightly, nuovo, oggi);
-    $('ritenutaNote').textContent = s.hasRitenuta
-      ? 'Il «bonifico Airbnb» è già al netto della ritenuta d’acconto del 21% calcolata sul lordo (pulizie incluse, commissione esclusa dal conteggio della base solo per l’ospite). '+
-        (s.regime==='ced21' ? 'Con la cedolare 21% la ritenuta copre esattamente l’imposta.' :
-         s.regime==='ced26' ? 'Con la cedolare 26% il 5% restante si versa in dichiarazione.' :
-         'Il conguaglio (in più o in meno) avviene in dichiarazione dei redditi.')
-      : (isImpresa ? 'Con P.IVA comunicata alla piattaforma non si subisce la ritenuta del 21%. Le imposte dipendono dai costi reali: qui mostriamo il margine prima delle imposte.' :
-                     'Con P.IVA comunicata alla piattaforma non si subisce la ritenuta del 21%. Il netto include imposta sostitutiva e IVA non recuperabile sulla commissione; contributi INPS esclusi.');
+    $('ritenutaNote').innerHTML = (s.hasRitenuta
+      ? 'Il «bonifico Airbnb» è quello che ti arriva davvero in banca: già al netto della commissione e della ritenuta d’acconto del 21%, che Airbnb calcola sul corrispettivo lordo, pulizie comprese. '+
+        (s.regime==='ced21' ? 'Con la cedolare al 21% quella ritenuta copre esattamente l’imposta: non devi versare altro, ed è il motivo per cui qui «bonifico» e «netto» coincidono.' :
+         s.regime==='ced26' ? 'Con la cedolare al 26% il 5% restante lo versi in dichiarazione: per questo il netto è più basso del bonifico.' :
+         'Il conguaglio, in più o in meno, avviene in dichiarazione dei redditi: per questo netto e bonifico non coincidono.')
+      : (isImpresa ? 'Avendo comunicato la partita IVA ad Airbnb non subisci la ritenuta del 21%. Le imposte dipendono dai tuoi costi reali, quindi qui mostriamo il margine prima delle imposte.'
+                   : 'Avendo comunicato la partita IVA ad Airbnb non subisci la ritenuta del 21%. Il bonifico è al netto della sola commissione: l’IVA in reverse charge non te la trattiene Airbnb, la versi tu con l’F24, ed è già scalata dal netto. Contributi INPS esclusi.'))
+      + (s.cleaningCost>0 ? ' Dal netto sono già sottratti '+fmtEUR.format(s.cleaningCost)+' di costo reale delle pulizie.' : '');
 
     // ---- ANNUAL ----
     $('annualMeta').textContent = bookingsYear>0 ? '· '+s.nightsYear+' notti ≈ '+Math.round(bookingsYear)+' soggiorni' : '';
@@ -488,7 +777,7 @@
       function yrow(name, sc, ref){
         var v = sc.net*bookingsYear, d = ref ? (sc.net-ref.net)*bookingsYear : null;
         var cls = d===null?'':(d<-0.5?'neg':'pos');
-        return '<tr><td>'+name+'</td><td>'+fmtEUR0.format(v)+'</td><td class="'+cls+'">'+(d===null?'—':(d>=0?'+':'')+fmtEUR0.format(d).replace('+',''))+'</td></tr>';
+        return '<tr><th scope="row" style="font-weight:400;">'+name+'</th><td>'+fmtEUR0.format(v)+'</td><td class="'+cls+'">'+(d===null?'—':(d>=0?'+':'−')+fmtEUR0.format(Math.abs(d)).replace('+',''))+'</td></tr>';
       }
       yb = yrow('Oggi', oggi, null) + yrow('Dopo, senza ritocchi', niente, oggi) + yrow('Col prezzo consigliato', nuovo, oggi);
     } else {
@@ -499,57 +788,90 @@
     // ---- CALC STEPS ----
     var steps = [];
     function li(l,v,cls){ steps.push('<li class="'+(cls||'')+'"><span>'+l+'</span><span>'+v+'</span></li>'); }
+    // Ogni riga e' una sottrazione vera: il totale deve chiudere esattamente sul netto.
+    var ivaFee = S2*(s.fNewEff - s.fNewRaw);              // IVA sulla commissione, quando e' un costo
+    var ivaTrattenuta = (s.fNewCash > s.fNewRaw + 1e-9);  // ...e chi la trattiene
+    var baseImposta = s.regime==='irpef' ? '95% del lordo × aliquota'
+                    : s.regime.indexOf('forf')===0 ? 'lordo × 40% × '+(s.regime==='forf15'?'15%':'5%')
+                    : fmtPct.format(s.t)+' del lordo';
     li('Subtotale col prezzo consigliato: '+fmtEUR0.format(newNightly)+' × '+s.nights+' notti'+(newCleaning>0?' + '+fmtEUR0.format(newCleaning)+' pulizie':''), fmtEUR.format(S2));
-    li('− Commissione host '+(s.fNewRaw*100).toFixed(1).replace('.',',')+'%'+(s.fNewEff>s.fNewRaw+1e-9?' (+IVA 22% → '+(s.fNewEff*100).toFixed(2).replace('.',',')+'%)':''), '−'+fmtEUR.format(nuovo.fee));
+    li('− Commissione Airbnb '+fmtPct.format(s.fNewRaw), '−'+fmtEUR.format(S2*s.fNewRaw));
+    if(ivaFee > 0.005 && ivaTrattenuta) li('− IVA 22% sulla commissione (la trattiene Airbnb)', '−'+fmtEUR.format(ivaFee));
     if(s.hasRitenuta) li('− Ritenuta d’acconto 21% sul lordo', '−'+fmtEUR.format(nuovo.rit));
     li('= Bonifico Airbnb', fmtEUR.format(nuovo.payout));
+    if(ivaFee > 0.005 && !ivaTrattenuta) li('− IVA 22% sulla commissione (reverse charge: la versi tu con l’F24)', '−'+fmtEUR.format(ivaFee));
     if(!isImpresa){
-      li((s.hasRitenuta?'Imposta totale dovuta':'Imposta sostitutiva')+' ('+ (s.regime==='irpef' ? '95% del lordo × aliquota' : (s.regime.indexOf('forf')===0 ? 'lordo × 40% × '+(s.regime==='forf15'?'15%':'5%') : (s.t*100).toFixed(0)+'% del lordo')) +')', fmtEUR.format(nuovo.tax));
-      if(s.hasRitenuta) li('di cui già trattenuta da Airbnb', fmtEUR.format(nuovo.rit));
+      if(s.hasRitenuta){
+        var resto = nuovo.tax - nuovo.rit;
+        li(resto > 0.005 ? '− Imposta ancora da versare in dichiarazione ('+baseImposta+', meno la ritenuta già trattenuta)'
+                         : 'Imposta ancora da versare: nulla, la ritenuta copre tutto ✅',
+           resto > 0.005 ? '−'+fmtEUR.format(resto) : fmtEUR.format(0));
+      } else {
+        li('− Imposta sostitutiva ('+baseImposta+')', '−'+fmtEUR.format(nuovo.tax));
+      }
     }
-    li('NETTO FINALE '+(isImpresa?'(ante imposte)':''), fmtEUR.format(nuovo.net), 'total');
+    if(s.cleaningCost > 0.005) li('− Quanto paghi per le pulizie', '−'+fmtEUR.format(s.cleaningCost));
+    li('NETTO FINALE'+(isImpresa?' (ante imposte)':''), fmtEUR.format(nuovo.net), 'total');
     li('Netto che avevi oggi (vecchio modello)', fmtEUR.format(oggi.net));
     $('calcSteps').innerHTML = steps.join('');
 
     // ---- REGIME COMPARISON ----
     var rb = '';
+    var detr = $('ivaDetraibile').checked;
     Object.keys(REGIMES).forEach(function(rk){
-      var s2 = Object.assign({}, s);
-      s2.regime = rk;
-      s2.t = {ced21:0.21, ced26:0.26, irpef:IRPEF_BASE*((parseFloat($('irpefRate').value)||0.33)+(parseFloat($('addiz').value)||0)/100), forf15:0.06, forf5:0.02, impresa:0}[rk];
-      var f = s.fNewRaw, fo = s.fOldRaw;
-      var effN, effO;
-      if(rk==='forf15'||rk==='forf5'){ effN=f*(1+VAT); effO=fo*(1+VAT); }
-      else if(rk==='impresa'){ effN=f; effO=fo; }
-      else { effN = $('vatAdded').checked?f*(1+VAT):f; effO = $('vatAdded').checked?fo*(1+VAT):fo; }
-      s2.fNewEff=effN; s2.fOldEff=effO;
-      var kk = kFor(rk==='impresa'?'payout':'net', s2);
-      if(!isFinite(kk)){ return; }
+      var s2 = comeSe(s, rk, detr);
+      var kk = kFor('net', s2);
+      if(!isFinite(kk)) return;
       var pn = Math.ceil(s.nightly*kk), cn = s.cleaning>0?Math.ceil(s.cleaning*kk):0;
       var Sx = pn*s.nights + cn;
-      var netX = Sx - Sx*effN - Sx*s2.t;
-      rb += '<tr><td>'+REGIMES[rk].label+(rk===s.regime?' <b>(il tuo)</b>':'')+'</td><td>+'+((kk-1)*100).toFixed(1).replace('.',',')+'% → '+fmtEUR0.format(pn)+'/notte</td><td>'+
-            (bookingsYear>0 ? fmtEUR0.format(netX*bookingsYear) : fmtEUR.format(netX)+' /sogg.')+(rk==='impresa'?' <small>ante imposte</small>':'')+'</td></tr>';
+      var netX = Sx - Sx*s2.fNewEff - Sx*s2.t - s.cleaningCost;
+      rb += '<tr><th scope="row" style="font-weight:400;">'+REGIMES[rk].label+(rk===s.regime?' <b>(il tuo)</b>':'')+'</th>'+
+            '<td>+'+fmtPct.format(pn/s.nightly-1)+' → '+fmtEUR0.format(pn)+'/notte</td><td>'+
+            (bookingsYear>0 ? fmtEUR0.format(netX*bookingsYear) : fmtEUR.format(netX)+' /sogg.')+
+            (rk==='impresa'?' <small>ante imposte, non confrontabile</small>':'')+'</td></tr>';
     });
     document.querySelector('#regTable tbody').innerHTML = rb;
 
     // ---- COPY SUMMARY ----
+    var goalNames = {net:'proteggere il netto dopo le tasse', airbnb:'replicare la proposta di Airbnb', guest:'non far pagare di più all’ospite'};
     window.__summary =
       'SalvaGuadagno Host — calcolo del ' + new Date().toLocaleDateString('it-IT') + '\n' +
       'Regime: ' + R.label + '\n' +
+      'Obiettivo: ' + goalNames[target] + '\n' +
       'Prezzo attuale: ' + fmtEUR.format(s.nightly) + '/notte (' + s.nights + ' notti' + (s.cleaning>0?', pulizie '+fmtEUR.format(s.cleaning):'') + ')\n' +
-      'Nuova commissione unica Airbnb: ' + (s.fNewRaw*100).toFixed(1).replace('.',',') + '% a carico host\n' +
-      '➡ PREZZO CONSIGLIATO: ' + fmtEUR0.format(newNightly) + '/notte (+' + (pctUp*100).toFixed(1).replace('.',',') + '%)' + (newCleaning>0?' — pulizie '+fmtEUR0.format(newCleaning):'') + '\n' +
+      'Commissione Airbnb: ' + fmtPct.format(s.fNewRaw) + ' a carico host' +
+        (s.fNewEff > s.fNewRaw + 1e-9 ? ' → ' + fmtPct.format(s.fNewEff) + ' con l’IVA' : '') + '\n' +
+      '➡ PREZZO CONSIGLIATO: ' + fmtEUR0.format(newNightly) + '/notte (+' + fmtPct.format(pctUp) + ')' + (newCleaning>0?' — pulizie '+fmtEUR0.format(newCleaning):'') + '\n' +
       'Netto a prenotazione: oggi ' + fmtEUR.format(oggi.net) + ' → senza ritocchi ' + fmtEUR.format(niente.net) + ' → col nuovo prezzo ' + fmtEUR.format(nuovo.net) +
       (bookingsYear>0 ? '\nSe non fai nulla perdi ≈ ' + fmtEUR0.format((oggi.net-niente.net)*bookingsYear) + '/anno' : '') +
       '\n(Strumento indicativo, non è consulenza fiscale)';
   }
 
-  // events
-  ['nightly','nights','cleaning','nightsYear','regime','irpefRate','feeOld','guestFeeOld','feeNew','addiz','vatAdded'].forEach(function(id){
-    $(id).addEventListener('input', render);
-    $(id).addEventListener('change', render);
-  });
+  // Riporta il pannello allo stato vuoto. Senza questo, cancellando il prezzo restavano
+  // a schermo tabelle, avvisi e passi di calcolo del conto precedente.
+  function svuota(messaggio){
+    $('heroPrice').textContent = '—';
+    $('heroSub').textContent = messaggio;
+    $('chips').innerHTML = '';
+    $('srLive').textContent = messaggio;
+    ['airbnbWarn','doNothing','breakEven','guestNote'].forEach(function(id){
+      $(id).hidden = true; $(id).innerHTML = '';
+    });
+    ['#cmpTable tbody','#yearTable tbody','#regTable tbody'].forEach(function(sel){
+      document.querySelector(sel).innerHTML = '';
+    });
+    $('calcSteps').innerHTML = '';
+    $('ritenutaNote').textContent = '';
+    $('annualMeta').textContent = '';
+    window.__summary = '';
+  }
+
+  // events — 'input' per i campi di testo, 'change' per select e checkbox:
+  // registrarli entrambi su tutto faceva girare render() due volte a ogni interazione.
+  ['nightly','nights','cleaning','cleaningCost','nightsYear','feeOld','guestFeeOld','feeNew','addiz']
+    .forEach(function(id){ $(id).addEventListener('input', render); });
+  ['regime','irpefRate','ivaDetraibile']
+    .forEach(function(id){ $(id).addEventListener('change', render); });
   document.querySelectorAll('.seg button').forEach(function(b){
     b.addEventListener('click', function(){
       document.querySelectorAll('.seg button').forEach(function(x){ x.setAttribute('aria-pressed','false'); });
@@ -558,13 +880,36 @@
       render();
     });
   });
+  // Carica l'esempio del webinar Airbnb: 100 € a notte, una notte, niente pulizie.
+  // Con l'obiettivo «bonifico» il risultato e' 119 € (host senza P.IVA), con «Impresa» 115 € solo
+  // spuntando «La mia P.IVA scarica l'IVA» (di default l'IVA e' un costo anche per l'impresa: 119 €):
+  // gli stessi numeri detti da Airbnb. Serve a far vedere che il conto e' tarato bene.
+  $('presetBtn').addEventListener('click', function(){
+    $('nightly').value='100'; $('nights').value='1'; $('cleaning').value='0';
+    $('cleaningCost').value=''; $('feeOld').value='3'; $('feeNew').value='15.5';
+    $('guestFeeOld').value='15'; $('ivaDetraibile').checked=false; $('regime').value='ced21';
+    render();
+    $('srLive').textContent='Caricato l’esempio ufficiale del webinar Airbnb.';
+  });
+
   $('copyBtn').addEventListener('click', function(){
     var t = window.__summary || '';
-    function done(ok){ $('copyBtn').textContent = ok ? '✅ Copiato!' : '📋 Copia il riepilogo'; setTimeout(function(){ $('copyBtn').textContent='📋 Copia il riepilogo'; },2000); }
+    function done(ok){
+      $('copyBtn').textContent = ok ? '✅ Copiato!' : '📋 Copia il riepilogo';
+      // Prima un fallimento era indistinguibile da un successo: il bottone tornava
+      // semplicemente com'era e l'utente credeva di avere il testo negli appunti.
+      $('copyMsg').textContent = ok ? '' : 'Copia non riuscita: seleziona il riepilogo a mano, oppure usa il tasto Stampa del browser.';
+      setTimeout(function(){ $('copyBtn').textContent='📋 Copia il riepilogo'; },2000);
+    }
+    if(!t){ $('copyMsg').textContent='Non c’è ancora niente da copiare: inserisci il prezzo a notte.'; return; }
+    $('copyMsg').textContent='';
     if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(t).then(function(){done(true);},function(){done(false);}); }
     else {
-      var ta=document.createElement('textarea'); ta.value=t; document.body.appendChild(ta); ta.select();
-      try{ document.execCommand('copy'); done(true);}catch(e){done(false);} document.body.removeChild(ta);
+      var ta=document.createElement('textarea');
+      ta.value=t; ta.setAttribute('style','position:fixed;top:0;left:0;opacity:0');
+      document.body.appendChild(ta); ta.select();
+      try{ done(document.execCommand('copy')); }catch(e){ done(false); }
+      document.body.removeChild(ta);
     }
   });
 

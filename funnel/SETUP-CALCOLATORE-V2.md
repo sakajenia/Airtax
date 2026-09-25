@@ -7,9 +7,13 @@ File nuovo: **`funnel/calcolatore-v2.html`**.
 
 ## Cosa cambia
 
-Una sola aggiunta: la **domanda 4 — «📍 Dove si trova il tuo immobile?»**, subito
-dopo le tre domande esistenti, con lo stesso design (stessa card, stessi colori,
-stesso numero nel pallino rosso).
+Una sola aggiunta: la **domanda 3 — «📍 Dove si trova il tuo immobile?»**, con lo
+stesso design delle altre (stessa card, stessi colori, stesso numero nel pallino
+rosso).
+
+L'ordine delle domande è: 1 prezzo, 2 regime fiscale, **3 dati immobile**,
+4 obiettivo. I dati dell'immobile vengono chiesti *prima* di «Cosa conta di più
+per te?».
 
 | Campo | Tipo | Obbligatorio |
 |---|---|---|
@@ -23,7 +27,7 @@ stesso numero nel pallino rosso).
 consigliato continua ad aggiornarsi in tempo reale come prima, così il lead vede
 subito il valore. Bloccano invece il **pulsante «Ricevi il report»**: se manca
 qualcosa, la modale non si apre, compare l'avviso rosso, i campi mancanti si
-colorano di rosso e la pagina scorre da sola sulla domanda 4 mettendo il cursore
+colorano di rosso e la pagina scorre da sola sulla domanda 3 mettendo il cursore
 sul primo campo vuoto. Appena compili, l'errore sparisce da solo.
 
 > **Camere da letto e posti letto sono due cose diverse** e nel messaggio me le
@@ -46,18 +50,23 @@ sul primo campo vuoto. Appena compili, l'errore sparisce da solo.
 
 ## Da fare in GHL (in quest'ordine)
 
-### 1. Creare 5 custom field nuovi
+### 1. ~~Creare 5 custom field nuovi~~ ✅ GIÀ FATTO via API
 
-`Settings → Custom Fields → Add Field`, gruppo dove stanno già gli altri del
-calcolatore.
+Creati il 18/09/2026 nel sub-account `E1HO8PRyWf2yGaTFLuLC`, già nel gruppo
+`halXI5SE0wCXja3uZYIy` (quello degli altri campi calcolatore). **Le chiavi sono
+uscite corrette, nessuna storpiatura.** Non serve rifare niente.
 
-| Nome del campo | Tipo | fieldKey che deve risultare |
-|---|---|---|
-| `Citta Immobile` | Single Line Text | `contact.citta_immobile` |
-| `Zona Immobile` | Single Line Text | `contact.zona_immobile` |
-| `Via Immobile` | Single Line Text | `contact.via_immobile` |
-| `Camere Letto` | Number | `contact.camere_letto` |
-| `Posti Letto` | Number | `contact.posti_letto` |
+| Nome del campo | Tipo | fieldKey (verificata) | ID |
+|---|---|---|---|
+| `Citta Immobile` | TEXT | `contact.citta_immobile` | `2EPV8IRyO3UEbJsibJQA` |
+| `Zona Immobile` | TEXT | `contact.zona_immobile` | `aiovraZGkkS396EtydaU` |
+| `Via Immobile` | TEXT | `contact.via_immobile` | `3jhbti4RwiLq4totHvwI` |
+| `Camere Letto` | NUMERICAL | `contact.camere_letto` | `qjLlbKXfFaUq7Ekjmdt6` |
+| `Posti Letto` | NUMERICAL | `contact.posti_letto` | `5NTsbkA3yr6vYRPVyQgH` |
+
+> Conferma sul campo minato degli accenti: nel sub-account esistono davvero
+> `contact.quando__disponibile_il_tuo_immobile` (doppio underscore, da "è") e
+> `contact.in_che_condizioni_e_il_tuo_immobile`. L'avvertimento era fondato.
 
 > ⚠️ **Scrivi «Citta» senza accento.** GHL genera la chiave dal nome: con "Città"
 > rischi una chiave storpiata tipo `contact.citt_immobile` e poi non combacia con
@@ -144,10 +153,10 @@ Dopo aver pubblicato la pagina e aggiornato il form:
 Test del calcolatore v2.
 
 1. Apri la pagina del calcolatore v2.
-2. Senza compilare la domanda 4, clicca "Ricevi il report personalizzato".
+2. Senza compilare la domanda 3, clicca "Ricevi il report personalizzato".
    ATTESO: la finestra del form NON si apre, compare un avviso rosso e i campi
    mancanti diventano rossi. Dimmi se e' andata cosi'.
-3. Compila la domanda 4 con:
+3. Compila la domanda 3 con:
    Citta: Roma
    Zona: Trastevere
    Via: Via della Lungaretta 42
@@ -184,3 +193,158 @@ e 14 i campi sono arrivati. Poi si cancella il contatto di test.
 | Modale che si apre a campi pieni | ✅ e punta al form giusto (`Ompsev6jK1yZDrvBrKz8`) |
 | I 5 dati nuovi nella querystring del form | ✅ tutti e 5 presenti |
 | Overflow orizzontale a 320 / 390 / 768 / 1280 px | ✅ nessuno |
+
+---
+---
+
+# AUTOSAVE (v2.1) — tenere i dati anche senza il click
+
+## Il problema
+
+Nella v2 i dati della domanda 3 arrivavano in GHL **solo** se la persona
+cliccava «Ricevi il report» *e* poi compilava e inviava il form. Se compilava
+l'indirizzo e chiudeva la scheda, quei dati sparivano: vivevano in una variabile
+JavaScript (`window.__leadData`) e morivano con la pagina. Nel file non c'era
+nessun `localStorage`, nessun `fetch`, nessun webhook.
+
+## Perché adesso si può risolvere
+
+Perché **chi arriva sul calcolatore è già un contatto GHL**: sulla landing
+(`funnel/landing.html`) ha già lasciato nome, email, telefono e consensi, è
+finito allo stage 🔵 Registrato, e solo dopo è stato reindirizzato qui.
+Mancava solo che la pagina sapesse *chi* ha davanti.
+
+> ⚠️ **Il limite, detto chiaro:** chi apre il calcolatore con un link diretto
+> senza passare dalla landing resta anonimo. Nessun `cid`, nessun contatto a cui
+> attaccare i dati, nessun invio. Per lui resta solo il `localStorage`.
+> Si copre chi viene dal funnel, non il 100% dei visitatori.
+
+## Come funziona
+
+1. La landing reindirizza al calcolatore con **`?cid=<id contatto>`**.
+2. Il calcolatore legge il `cid` e se lo ricorda (sopravvive a un refresh).
+3. Mentre la persona compila, i dati partono verso un **Inbound Webhook GHL**,
+   con 800 ms di debounce (non a ogni tasto: a 800 ms di pausa).
+4. Alla chiusura della scheda o al cambio app parte un ultimo invio con
+   **`navigator.sendBeacon`**, che il browser consegna anche mentre la pagina muore.
+5. Tutto finisce anche in `localStorage`: se torna, ritrova i campi compilati.
+
+Nota tecnica: si usa `Content-Type: text/plain` perché è "safelisted" e non
+scatena il preflight CORS `OPTIONS`, che `sendBeacon` non sa gestire. Il corpo
+resta JSON e GHL lo interpreta come tale.
+
+## Cosa NON fa (di proposito)
+
+- **Non invia nulla senza `cid`.** Niente dati orfani.
+- **Non fa partire il report.** Il workflow del report resta agganciato al form:
+  chi non chiede il report non lo riceve. Auto-inviare il form in silenzio
+  avrebbe mandato l'email a gente che non l'ha chiesta — scartato.
+- **Non tocca il calcolo.** Verificato: 100 → 120 €/notte, le 8 chiavi intatte.
+
+---
+
+## Da fare a mano in GHL (l'API non basta)
+
+> I workflow in GHL sono **read-only via API**: esistono solo `get-workflow` e
+> `add-contact-to-workflow`, non c'è `create-workflow`. Il webhook va creato
+> nella UI.
+
+### A. Creare l'Inbound Webhook
+
+`Automation → Workflows → Create Workflow → Start from scratch`
+
+1. Trigger: **Inbound Webhook**.
+2. Salva e **copia l'URL** che GHL genera.
+3. Manda un payload di prova (vedi sotto) per far imparare a GHL lo schema.
+4. Azione: **Update Contact**, con `Contact ID` mappato su `contact_id` del payload.
+5. Mappa i 5 campi: `citta_immobile`, `zona_immobile`, `via_immobile`,
+   `camere_letto`, `posti_letto`.
+6. Consigliato: aggiungi l'azione **Add Tag** → `calcolatore-compilato`, così in
+   una Smart List vedi subito chi ha compilato l'immobile **senza** chiedere il
+   report. È proprio la lista che serviva.
+7. Pubblica il workflow.
+
+Payload di prova da mandare al webhook per far imparare lo schema a GHL:
+
+```json
+{
+  "contact_id": "METTI_UN_ID_CONTATTO_VERO",
+  "fonte": "calcolatore-v2-autosave",
+  "citta_immobile": "Roma",
+  "zona_immobile": "Trastevere",
+  "via_immobile": "Via della Lungaretta 42",
+  "camere_letto": 2,
+  "posti_letto": 4,
+  "prezzo_attuale": 100,
+  "prezzo_consigliato": 120,
+  "aumento_pct": 20,
+  "regime_calc": "una casa (cedolare 21%)",
+  "obiettivo_calc": "Guadagnare come oggi",
+  "netto_oggi": 76,
+  "netto_nuovo": 76,
+  "perdita_anno": 1625
+}
+```
+
+### B. Incollare l'URL del webhook nella pagina
+
+In `funnel/calcolatore-v2.html`, cerca:
+
+```js
+var AUTOSAVE_WEBHOOK_URL = 'INCOLLA_QUI_URL_INBOUND_WEBHOOK_GHL';
+```
+
+e sostituisci il placeholder con l'URL del punto A. **Finché resta il
+placeholder l'autosave è inerte**: non invia nulla e non dà errori.
+
+### C. Far passare il `cid` dalla landing al calcolatore
+
+Form della landing → `Settings → On Submit → Redirect URL`. Da:
+
+```
+https://tools.affittibreviaroma.com/calcolatore
+```
+
+a:
+
+```
+https://tools.affittibreviaroma.com/calcolatore?cid={{contact.id}}
+```
+
+> **Questo è il passaggio che regge tutto.** Senza `cid` il calcolatore non sa
+> chi ha davanti e l'autosave non parte mai. Se qualcosa non funziona, controlla
+> questo per primo.
+
+### D. I 5 campi nascosti nel form report
+
+Resta valido il punto 2 della sezione precedente: servono comunque, perché il
+report continua a passare dal form.
+
+---
+
+## Verifiche fatte (Playwright, browser vero — 17/17)
+
+Server locale che faceva sia da pagina sia da finto webhook GHL.
+
+| Controllo | Esito |
+|---|---|
+| I dati arrivano **senza** click su «Ricevi il report» | ✅ |
+| `contact_id` corretto nel payload | ✅ `TEST_CONTACT_123` |
+| I 5 campi immobile nel payload | ✅ Roma / Trastevere / Via della Lungaretta 42 / 2 / 4 |
+| Invio finale alla chiusura della scheda (`pagehide`) | ✅ col valore aggiornato all'ultimo istante |
+| Debounce: non un invio per tasto | ✅ 1 invio per 5 campi |
+| Calcolo invariato | ✅ 100 → 120 €/notte, 8 chiavi intatte |
+| Campi ripristinati al ritorno sulla pagina | ✅ |
+| `cid` ricordato anche senza querystring | ✅ |
+| Senza `cid`: nessun invio | ✅ 0 invii |
+| Eccezioni JavaScript | ✅ zero |
+
+## Test da fare tu, dopo A–D
+
+1. Apri il calcolatore **passando dalla landing** (non con link diretto).
+2. Controlla che l'URL contenga `?cid=...`.
+3. Compila solo la domanda 3. **Non cliccare «Ricevi il report».**
+4. Aspetta 2 secondi e chiudi la scheda.
+5. In GHL apri quel contatto: i 5 campi immobile devono essere valorizzati e
+   deve esserci il tag `calcolatore-compilato`.
+6. Controlla che **non** sia partita nessuna email di report.

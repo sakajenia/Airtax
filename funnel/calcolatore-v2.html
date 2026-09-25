@@ -46,10 +46,10 @@
     min-height:56px; text-align:center;
   }
   input[type=number]:focus{outline:3px solid var(--coral); outline-offset:1px; border-color:var(--coral);}
-  .row2{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px;}
+  .row2{display:grid; grid-template-columns:repeat(auto-fit,minmax(118px,1fr)); gap:10px; margin-top:14px;}
   .row2 label{font-size:.78rem; font-weight:700; display:block; margin-bottom:5px; text-align:center;}
   .row2 input{font-size:1.1rem; min-height:46px; padding:8px;}
-  /* ---- STEP 4: dati immobile (aggiunta v2) ---- */
+  /* ---- STEP 3: dati immobile (aggiunta v2) ---- */
   .fl{font-size:.82rem; font-weight:700; display:block; margin:14px 0 6px;}
   .fl:first-of-type{margin-top:0;}
   .fl .req{color:var(--coral);}
@@ -104,6 +104,16 @@
     display:inline-block; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.35);
     border-radius:999px; padding:3px 12px; font-weight:700; font-size:.78rem; margin:8px 2px 0;
   }
+  .result .range{
+    margin-top:12px; text-align:left;
+    background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3);
+    border-radius:14px; padding:10px 13px;
+  }
+  .result .range .rtop{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap;}
+  .result .range .rl{font-size:.72rem; font-weight:800; opacity:.9; letter-spacing:.04em; text-transform:uppercase;}
+  .result .range .rv{font-family:'Poppins','Inter',sans-serif; font-size:1.3rem; font-weight:900;}
+  .result .range .rd{font-size:.75rem; opacity:.9; font-weight:600;}
+  .result .range .rnote{display:block; font-size:.73rem; opacity:.88; font-weight:600; line-height:1.35; margin-top:6px;}
   .result .clean{font-size:.92rem; margin-top:10px; font-weight:700;}
   .result .verdict{
     background:rgba(255,255,255,.16); border-radius:12px; padding:9px 12px;
@@ -171,11 +181,143 @@
   .modal-head p{font-size:.88rem; color:var(--ink-soft);}
   .modal iframe{width:100%; min-height:560px; border:0; border-radius:14px; display:block;}
 </style>
-<header style="position:sticky;top:0;z-index:50;width:100%;box-sizing:border-box;background:#fcf9f8;border-bottom:1px solid #e5e2e1;">
-  <div style="max-width:1060px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;">
-    <a href="https://tools.affittibreviaroma.com/" aria-label="ProProManager"><img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/b99a11a9-9a35-410d-a09f-3f9d026b22fd.webp" alt="ProProManager" height="34" style="height:34px;width:auto;display:block;"></a>
+<!-- PPM-HEADER-START (generato da tools/applica-header.py) -->
+<!-- ==========================================================================
+     STICKY HEADER PROPROMANAGER  ·  logo a sinistra + CTA "shiny" a destra
+     --------------------------------------------------------------------------
+     Sorgente unica: funnel/parti/sticky-header.html
+     Viene iniettato dentro calcolatore-v2.html e avanzato.html fra i due marcatori generati
+     in cima e in fondo al blocco: non modificarlo dentro quelle pagine,
+     modificalo qui e rilancia  tools/applica-header.py .
+
+     Il pulsante riprende lo "shiny button" di 21st.dev / magicui: la scritta e
+     il bordo vengono attraversati da una lama di luce che scorre. Li' e' React
+     + framer-motion; qui e' solo CSS, perche' dentro un blocco codice di GHL
+     non gira React. L'animazione muove la custom property --ppm-shine, che va
+     registrata con @property: e' l'unico modo di far interpolare una
+     percentuale dentro un gradiente. inherits:true e' obbligatorio, altrimenti
+     lo pseudo-elemento della lama e la cornice non vedono il valore animato e
+     il pulsante resta immobile. Dove @property non esiste resta fermo ma
+     perfettamente leggibile (il valore di fallback e' 100%).
+     ========================================================================== -->
+<style>
+  @property --ppm-shine{ syntax:'<percentage>'; inherits:true; initial-value:100%; }
+
+  .ppmhdr{
+    --ppm-coral:#801820; --ppm-coral-hi:#9a2029; --ppm-coral-lo:#5f000e;
+    position:sticky; top:0; z-index:9999; width:100%; box-sizing:border-box;
+    background:rgba(252,249,248,.86);
+    -webkit-backdrop-filter:saturate(180%) blur(14px);
+            backdrop-filter:saturate(180%) blur(14px);
+    border-bottom:1px solid rgba(28,27,27,.08);
+  }
+  /* Filo di colore sotto la riga: fa "prodotto", non "template". */
+  .ppmhdr::after{
+    content:''; position:absolute; left:0; right:0; bottom:-1px; height:1px;
+    background:linear-gradient(90deg, transparent, rgba(128,24,32,.35), transparent);
+    pointer-events:none;
+  }
+  .ppmhdr *{box-sizing:border-box;}
+  .ppmhdr-in{
+    max-width:1060px; margin:0 auto; padding:10px 16px;
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+  }
+  .ppmhdr-logo{display:block; flex:0 0 auto; line-height:0;}
+  .ppmhdr-logo img{height:32px; width:auto; display:block;}
+
+  /* ---------- shiny button ---------- */
+  .ppm-shiny{
+    --ppm-shine:100%;                       /* fallback senza @property */
+    position:relative; flex:0 0 auto;
+    display:inline-flex; align-items:center; justify-content:center;
+    padding:11px 18px; border:0; border-radius:999px;
+    background:linear-gradient(180deg, var(--ppm-coral-hi) 0%, var(--ppm-coral) 52%, var(--ppm-coral-lo) 100%);
+    color:#fff; text-decoration:none; white-space:nowrap; cursor:pointer;
+    font-family:inherit; font-size:.88rem; font-weight:700; line-height:1; letter-spacing:.005em;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.22), 0 6px 16px -5px rgba(128,24,32,.55);
+    transition:transform .18s cubic-bezier(.2,.8,.3,1), box-shadow .18s ease;
+    animation:ppm-shine-run 3.6s linear infinite;
+    -webkit-tap-highlight-color:transparent;
+  }
+  @keyframes ppm-shine-run{
+    0%{--ppm-shine:100%} 55%{--ppm-shine:-100%} 100%{--ppm-shine:-100%}
+  }
+  /* la lama di luce sulla superficie */
+  .ppm-shiny::before{
+    content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+    background:linear-gradient(-75deg,
+      transparent            calc(var(--ppm-shine) + 14%),
+      rgba(255,255,255,.10)  calc(var(--ppm-shine) + 22%),
+      rgba(255,255,255,.55)  calc(var(--ppm-shine) + 27%),
+      rgba(255,255,255,.10)  calc(var(--ppm-shine) + 32%),
+      transparent            calc(var(--ppm-shine) + 42%));
+  }
+  /* il bordo che si illumina: due maschere in xor = solo la cornice di 1px */
+  .ppm-shiny-ring{
+    position:absolute; inset:0; border-radius:inherit; padding:1px; pointer-events:none;
+    background:linear-gradient(-75deg,
+      rgba(255,255,255,.14) calc(var(--ppm-shine) + 20%),
+      rgba(255,255,255,.90) calc(var(--ppm-shine) + 25%),
+      rgba(255,255,255,.14) calc(var(--ppm-shine) + 100%));
+    -webkit-mask:linear-gradient(#000,#000) content-box, linear-gradient(#000,#000);
+            mask:linear-gradient(#000,#000) content-box, linear-gradient(#000,#000);
+    -webkit-mask-composite:xor; mask-composite:exclude;
+  }
+  /* la scritta attraversata dalla stessa lama */
+  .ppm-shiny-lbl{
+    position:relative; z-index:1; display:inline-flex; align-items:center; gap:.45rem;
+    -webkit-mask-image:linear-gradient(-75deg,
+      #000                calc(var(--ppm-shine) + 18%),
+      rgba(0,0,0,.62)     calc(var(--ppm-shine) + 27%),
+      #000                calc(var(--ppm-shine) + 38%));
+            mask-image:linear-gradient(-75deg,
+      #000                calc(var(--ppm-shine) + 18%),
+      rgba(0,0,0,.62)     calc(var(--ppm-shine) + 27%),
+      #000                calc(var(--ppm-shine) + 38%));
+  }
+  .ppm-shiny-lbl svg{flex:none; width:15px; height:15px;}
+  .ppm-shiny:hover{transform:translateY(-1px); box-shadow:inset 0 1px 0 rgba(255,255,255,.28), 0 10px 22px -6px rgba(128,24,32,.6);}
+  .ppm-shiny:active{transform:translateY(0) scale(.985);}
+  .ppm-shiny:focus-visible{outline:3px solid var(--ppm-coral); outline-offset:3px;}
+  .ppm-only-wide{display:inline;}
+  .ppm-only-narrow{display:none;}
+
+  @media (max-width:560px){
+    .ppmhdr-in{padding:9px 12px;}
+    .ppmhdr-logo img{height:26px;}
+    .ppm-shiny{padding:10px 14px; font-size:.82rem;}
+    .ppm-only-wide{display:none;}
+    .ppm-only-narrow{display:inline;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .ppm-shiny{animation:none;}
+    .ppm-shiny::before{background:none;}
+  }
+</style>
+
+<header class="ppmhdr">
+  <div class="ppmhdr-in">
+    <a class="ppmhdr-logo" href="https://tools.affittibreviaroma.com/" aria-label="ProProManager, torna alla home">
+      <img src="https://assets.cdn.filesafe.space/E1HO8PRyWf2yGaTFLuLC/media/b99a11a9-9a35-410d-a09f-3f9d026b22fd.webp"
+           alt="ProProManager" height="32" decoding="async">
+    </a>
+
+    <!-- Dove porta la CTA: la pagina VSL. Cambia solo questo href se un domani
+         le dai un indirizzo dedicato (es. /meno-tasse). -->
+    <a class="ppm-shiny" href="https://tools.affittibreviaroma.com/grazie">
+      <span class="ppm-shiny-lbl">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M22 17 13.5 8.5l-5 5L2 7"></path><path d="M16 17h6v-6"></path>
+        </svg>
+        <span class="ppm-only-wide">Scopri come pagare meno tasse</span>
+        <span class="ppm-only-narrow">Paga meno tasse</span>
+      </span>
+      <span class="ppm-shiny-ring" aria-hidden="true"></span>
+    </a>
   </div>
 </header>
+<!-- PPM-HEADER-END -->
 <div class="wrap">
 
   <h1>Airbnb passa al 15,5%.<br>Ecco il tuo nuovo prezzo <span class="accent">a notte</span>.</h1>
@@ -195,11 +337,15 @@
         <input type="number" id="cleaning" inputmode="decimal" min="0" step="1" placeholder="es. 40">
       </div>
       <div>
+        <label for="nights">🌙 Notti per soggiorno</label>
+        <input type="number" id="nights" inputmode="numeric" min="1" step="1" value="3">
+      </div>
+      <div>
         <label for="nightsYear">📅 Notti affittate in un anno</label>
-        <input type="number" id="nightsYear" inputmode="numeric" min="0" step="5" value="130">
+        <input type="number" id="nightsYear" inputmode="numeric" min="0" step="5" value="200">
       </div>
     </div>
-    <p class="hint">Facoltativi. Non sai le notti? Lascia 130, è la media italiana.</p>
+    <p class="hint">Airbnb trattiene la commissione <b>anche sulle pulizie</b>, e le tasse si pagano pure su quelle: per questo servono le notti per soggiorno, così le ripartiamo. Non le sai? Lascia i valori già scritti: 3 notti a soggiorno e 200 notti l'anno.</p>
   </div>
 
   <!-- STEP 2: REGIME -->
@@ -253,31 +399,9 @@
     <p class="hint" id="regimeHint"></p>
   </div>
 
-  <!-- STEP 3: OBIETTIVO -->
-  <div class="card">
-    <span class="q"><span class="n">3</span>🎯 Cosa conta di più per te?</span>
-    <div class="choices" id="goalChoices" role="group" aria-label="Obiettivo">
-      <button type="button" data-goal="net" aria-pressed="true">
-        <span class="e">💰</span>
-        <span><span class="t">Guadagnare come oggi</span>
-        <span class="d">Consigliato: in tasca ti resta lo stesso</span></span>
-      </button>
-      <button type="button" data-goal="guest" aria-pressed="false">
-        <span class="e">🛌</span>
-        <span><span class="t">Non far spendere di più agli ospiti</span>
-        <span class="d">Loro pagano come oggi, tu guadagni un po' meno</span></span>
-      </button>
-      <button type="button" data-goal="payout" aria-pressed="false">
-        <span class="e">🤖</span>
-        <span><span class="t">Fare il minimo indispensabile</span>
-        <span class="d">Ricevi da Airbnb gli stessi soldi, ma paghi più tasse</span></span>
-      </button>
-    </div>
-  </div>
-
-  <!-- STEP 4: DATI IMMOBILE (aggiunta v2 — servono per il report) -->
+  <!-- STEP 3: DATI IMMOBILE (aggiunta v2 — servono per il report) -->
   <div class="card" id="propCard">
-    <span class="q"><span class="n">4</span>📍 Dove si trova il tuo immobile?</span>
+    <span class="q"><span class="n">3</span>📍 Dove si trova il tuo immobile?</span>
 
     <label class="fl" for="citta">Città <span class="req">*</span></label>
     <input type="text" id="citta" name="citta" autocomplete="address-level2" placeholder="es. Roma" value="Roma">
@@ -324,11 +448,33 @@
     <p class="hint">Ci servono per preparare il report sul tuo caso reale. Non pubblichiamo nulla e non li diamo a nessuno.</p>
   </div>
 
+  <!-- STEP 4: OBIETTIVO -->
+  <div class="card">
+    <span class="q"><span class="n">4</span>🎯 Cosa conta di più per te?</span>
+    <div class="choices" id="goalChoices" role="group" aria-label="Obiettivo">
+      <button type="button" data-goal="net" aria-pressed="true">
+        <span class="e">💰</span>
+        <span><span class="t">Guadagnare come oggi</span>
+        <span class="d">Consigliato: in tasca ti resta lo stesso</span></span>
+      </button>
+      <button type="button" data-goal="guest" aria-pressed="false">
+        <span class="e">🛌</span>
+        <span><span class="t">Non far spendere di più agli ospiti</span>
+        <span class="d">Loro pagano come oggi, tu guadagni un po' meno</span></span>
+      </button>
+      <button type="button" data-goal="payout" aria-pressed="false">
+        <span class="e">🤖</span>
+        <span><span class="t">Fare il minimo indispensabile</span>
+        <span class="d">Ricevi da Airbnb gli stessi soldi, ma paghi più tasse</span></span>
+      </button>
+    </div>
+  </div>
+
   <!-- EMPTY STATE -->
   <div class="box warn" id="emptyBox" hidden>👆 Scrivi il tuo prezzo a notte nella domanda 1 e il conto appare qui.</div>
 
-  <!-- Avviso se manca qualcosa nello step 4 al momento di chiedere il report -->
-  <div class="box bad" id="propWarn">⚠️ Per ricevere il report completa la <b>domanda 4</b> qui sopra: città, zona, via, camere e posti letto.</div>
+  <!-- Avviso se manca qualcosa nello step 3 al momento di chiedere il report -->
+  <div class="box bad" id="propWarn">⚠️ Per ricevere il report completa la <b>domanda 3</b> qui sopra: città, zona, via, camere e posti letto.</div>
 
   <!-- RESULTS -->
   <div id="resultsArea" aria-live="polite">
@@ -337,6 +483,7 @@
       <div class="big" id="newPrice">—</div>
       <span class="up" id="pct"></span>
       <span class="chip" id="taxChip"></span>
+      <div class="range" id="priceRange" hidden></div>
       <p class="clean" id="cleanLine" hidden></p>
       <p class="verdict" id="verdict"></p>
       <p class="note" id="weekNote"></p>
@@ -394,7 +541,7 @@
     <a href="https://www.airbnb.com/help/article/3527" rel="noopener">fonte ritenuta 21%</a><br><br>
     <a href="https://tools.affittibreviaroma.com/privacypolicy" rel="noopener">Privacy Policy</a> ·
     <a href="https://tools.affittibreviaroma.com/cookiepolicy" rel="noopener">Cookie Policy</a><br>
-    Titolare del trattamento: M2B SRLS
+    Titolare del trattamento: M2AB SRLS
   </footer>
 
 </div>
@@ -424,6 +571,12 @@
 (function(){
   'use strict';
   var VAT=0.22, RIT=0.21, F_OLD=0.03, F_NEW=0.155, G_OLD=0.141, ADDIZ=0.017;
+  /* Quanto il prezzo consigliato sta sopra il pareggio.
+     8% perche' il conto NON modella gli sconti settimanali e mensili, che quasi
+     tutti gli host applicano: chi da' il 10% sulla settimana, al prezzo di
+     pareggio, su quelle prenotazioni finisce sotto il pareggio. Questo margine
+     copre quel buco. Non e' un ricarico arbitrario. */
+  var MARGINE_MAX=0.08;
   var regime='ced21', goal='net', irpefM=0.33, forfRate=0.15;
 
   var HINTS={
@@ -448,8 +601,13 @@
   var lastNp=null;
 
   function params(){
-    var effO=F_OLD, effN=F_NEW;
-    if(regime==='forf'){ effO=F_OLD*(1+VAT); effN=F_NEW*(1+VAT); }
+    /* IVA 22% sulla commissione Airbnb: applicata a TUTTI i regimi, nessuno escluso.
+       In teoria una P.IVA ordinaria iscritta al VIES riceve fatture esenti e non la
+       subisce, ma l'iscrizione al VIES e la gestione del reverse charge sono tutt'altro
+       che scontate: la maggior parte degli host non ce l'ha in regola. Assumere che
+       l'IVA sia sempre un costo tiene il conto prudenziale e non promette sconti che
+       l'host poi non ottiene. Cambiare qui se un giorno si vuole distinguere. */
+    var effO=F_OLD*(1+VAT), effN=F_NEW*(1+VAT);
     var t = regime==='ced21'?0.21 : regime==='ced26'?0.26 :
             regime==='irpef'?0.95*(irpefM+ADDIZ) :
             regime==='forf'?forfRate*0.40 : 0;
@@ -471,6 +629,7 @@
 
     var price=parseFloat($('price').value)||0;
     var cleaning=Math.max(0,parseFloat($('cleaning').value)||0);
+    var nights=Math.max(1,Math.round(parseFloat($('nights').value)||1));
     var nightsYear=Math.max(0,parseFloat($('nightsYear').value)||0);
 
     var k=kFor(goal,p);
@@ -485,21 +644,74 @@
     $('emptyBox').hidden=true;
 
     // ---- tutto A NOTTE ----
-    var np=Math.ceil(price*k);
-    var nc=cleaning>0?Math.ceil(cleaning*k):0;
+    /* Il pareggio secco, calcolato sempre sull'obiettivo "guadagnare come oggi":
+       e' la soglia sotto la quale l'host ci rimette, qualunque obiettivo scelga. */
+    var pMin=Math.ceil(price*kFor('net',p));
+    /* Sul "guadagnare come oggi" il prezzo mostrato e' il pareggio piu' il margine.
+       Sugli altri due obiettivi no: li' l'host ha chiesto un bersaglio preciso
+       (l'ospite non spende di piu' / ricevo gli stessi soldi) e il margine lo
+       tradirebbe. */
+    var kEff = (goal==='net') ? k*(1+MARGINE_MAX) : k;
+    var np=Math.ceil(price*kEff);
+    var nc=cleaning>0?Math.ceil(cleaning*kEff):0;
     var pct=Math.round((np/price-1)*100);
     var isImp=(regime==='impresa');
 
+    /* Airbnb trattiene commissione + IVA sul SUBTOTALE, pulizie incluse, e anche
+       le tasse si pagano sul lordo pulizie comprese. Prima qui entrava solo il
+       prezzo della notte: la perdita risultava sottostimata per chiunque avesse
+       una voce pulizie. Ripartiamo le pulizie sulle notti del soggiorno, cosi'
+       resta tutto "a notte" come nel resto della pagina ma il conto e' quello
+       giusto: su base annua e' identico a calcolare per soggiorno e moltiplicare
+       per il numero di soggiorni. */
+    var cpnOld = cleaning/nights;      // quota pulizie per notte, prezzo di oggi
+    var cpnNew = nc/nights;            // quota pulizie per notte, prezzo nuovo
+    var baseOld = price + cpnOld;      // imponibile a notte, oggi
+    var baseNew = np    + cpnNew;      // imponibile a notte, col nuovo prezzo
+
     function net(P,eff){ return P - P*eff - P*p.t; }   // ti restano, a notte
-    var netOld=net(price,p.effO), netNothing=net(price,p.effN), netNew=net(np,p.effN);
+    var netOld=net(baseOld,p.effO), netNothing=net(baseOld,p.effN), netNew=net(baseNew,p.effN);
     var loss=netOld-netNothing;
 
+    /* ---- il conto su base annua, quello che racconta l'email del report ----
+       Oggi le imposte si pagano sul lordo pieno: commissione Airbnb e pulizie
+       comprese, cioe' anche su soldi che all'host non arrivano mai. Col sostituto
+       d'imposta si versa solo su quello che gli arriva davvero.
+       baseNew e' gia' "imponibile a notte col nuovo prezzo" (pulizie spalmate
+       sulle notti del soggiorno), quindi basta moltiplicarlo per le notti/anno.
+       FEE_GESTIONE deve restare uguale a quella della pagina VSL
+       (funnel/vsl/grazie-vsl.html, blocco ppm:015b-caso): se cambia li', cambiala
+       anche qui, altrimenti email e pagina raccontano due conti diversi. */
+    var FEE_GESTIONE = 0.20 * 1.22;   // 20% di gestione + IVA 22%, come nella VSL
+    var lordoAnno    = baseNew * nightsYear;
+    var pulizieAnno  = cpnNew  * nightsYear;
+    var tasseAnnoOggi = lordoAnno * p.t;
+    var tuaAnno       = lordoAnno * (1 - p.effN - FEE_GESTIONE) - pulizieAnno;
+    var tasseAnnoNoi  = tuaAnno * p.t;
+    /* Si mandano solo quando il conto ha senso: niente notti/anno, regime azienda
+       (che non paga sul lordo, quindi il discorso non lo riguarda) o quota che
+       resta negativa lasciano i campi vuoti, e l'email non va spedita. */
+    var contoAnnoValido = (nightsYear > 0 && p.t > 0 && tuaAnno > 0);
+
     // HERO
-    var lbls={net:'👉 Metti il prezzo a', guest:'👉 Per non far spendere di più gli ospiti:', payout:'👉 Per ricevere gli stessi soldi:'};
+    var lbls={net:'👉 Il prezzo che ti consigliamo', guest:'👉 Per non far spendere di più gli ospiti:', payout:'👉 Per ricevere gli stessi soldi:'};
     $('heroLbl').textContent=lbls[goal];
     $('newPrice').innerHTML=fmt0.format(np)+'<small> /notte</small>';
     $('pct').textContent='+'+pct+'%';
     $('taxChip').textContent=CHIPS[regime];
+
+    // riga minimo/massimo: il pareggio secco e il pareggio con un margine.
+    // Il minimo e' sempre calcolato sull'obiettivo "guadagnare come oggi":
+    // e' la soglia sotto la quale l'host ci rimette, qualunque obiettivo abbia scelto.
+    $('priceRange').hidden=false;
+    $('priceRange').innerHTML=
+      '<div class="rtop"><span class="rl">Minimo</span>'+
+      '<span class="rv">'+fmt0.format(pMin)+'</span>'+
+      '<span class="rd">sotto questo ci rimetti</span></div>'+
+      (goal==='net'
+        ? '<span class="rnote">Ti consigliamo un '+Math.round(MARGINE_MAX*100)+'% in più del minimo: '+
+          'copre gli sconti settimanali e mensili, che questo conto non calcola.</span>'
+        : '');
     $('cleanLine').hidden=(nc<=0);
     if(nc>0) $('cleanLine').textContent='🧹 E alza anche le pulizie a '+fmt0.format(nc);
     var vOld=Math.round(netOld), vNew=Math.round(netNew);
@@ -570,12 +782,12 @@
       var segs=[['you',you],['fee',fee]]; if(tax>0.005) segs.push(['tax',tax]);
       var html='<div class="barrow"><div class="barlbl">'+label+'</div><div class="bar">';
       segs.forEach(function(s){
-        var wPct=s[1]/np*100;
+        var wPct=s[1]/baseNew*100;
         html+='<div class="seg '+s[0]+'" style="width:'+wPct.toFixed(2)+'%">'+(wPct>=14?fmt0.format(Math.round(s[1])):'')+'</div>';
       });
       return html+'</div></div>';
     }
-    $('bars').innerHTML = bar('Oggi · '+fmt0.format(price), price, p.effO) + bar('Nuovo · '+fmt0.format(np), np, p.effN);
+    $('bars').innerHTML = bar('Oggi · '+fmt0.format(price), baseOld, p.effO) + bar('Nuovo · '+fmt0.format(np), baseNew, p.effN);
     $('barCap').textContent = goal==='net'
       ? 'La parte verde — la tua — resta uguale 💚'
       : (diff>0.005 ? 'La parte verde — la tua — si accorcia un po’: è quello a cui rinunci.' : 'La parte verde — la tua — resta uguale 💚');
@@ -613,9 +825,13 @@
     function li(l,v,c){ st.push('<li class="'+(c||'')+'"><span>'+l+'</span><span>'+v+'</span></li>'); }
     li('Una notte al nuovo prezzo', fmt.format(np));
     li('− Airbnb si prende il 15,5%', '−'+fmt.format(np*F_NEW));
+    // il privato l'IVA se la vede trattenere subito; il forfettario la versa lui dopo
+    var ivaComm = np*F_NEW*VAT;
+    var ivaTrattenuta = (regime!=='impresa' && regime!=='forf');
+    if(ivaTrattenuta) li('− IVA 22% sulla commissione', '−'+fmt.format(ivaComm));
     if(p.hasRit) li('− Tasse tolte subito da Airbnb (21%)', '−'+fmt.format(np*RIT));
-    li('= Soldi che ti arrivano', fmt.format(np - np*F_NEW - (p.hasRit?np*RIT:0)));
-    if(regime==='forf') li('− IVA sulla commissione (la versi tu dopo)', '−'+fmt.format(np*F_NEW*VAT));
+    li('= Soldi che ti arrivano', fmt.format(np - np*F_NEW - (ivaTrattenuta?ivaComm:0) - (p.hasRit?np*RIT:0)));
+    if(!ivaTrattenuta) li('− IVA sulla commissione (la versi tu dopo)', '−'+fmt.format(ivaComm));
     if(!isImp){
       var extra=np*p.t-(p.hasRit?np*RIT:0);
       if(p.hasRit){
@@ -648,6 +864,10 @@
       netto_oggi: vOld,
       netto_nuovo: vNew,
       perdita_anno: nightsYear>0 ? Math.round(loss*nightsYear) : '',
+      // il conto annuo per l'email del report
+      notti_anno:      contoAnnoValido ? nightsYear : '',
+      tasse_anno_oggi: contoAnnoValido ? Math.round(tasseAnnoOggi) : '',
+      tasse_anno_noi:  contoAnnoValido ? Math.round(tasseAnnoNoi)  : '',
       // ---- dati immobile (v2) ----
       citta_immobile: propVal('citta'),
       zona_immobile: propVal('zona'),
@@ -655,9 +875,35 @@
       camere_letto: propVal('camere'),
       posti_letto: propVal('postiletto')
     };
+
+    /* Caso studio per la pagina VSL.
+       Stesso dominio, stesso browser: la VSL rilegge questi numeri e rifa'
+       il conto della cedolare sui dati veri di chi sta guardando, invece che
+       sull'esempio inventato. Salviamo gli ingredienti (prezzo, pulizie,
+       notti, aliquota, commissione effettiva), non il risultato: il conto
+       della barra non esiste qui e farlo in due posti lo farebbe divergere,
+       com'e' gia' successo fra repo e pagina online.
+       Resta tutto nel browser: non esce niente verso nessuno. */
+    try{
+      localStorage.setItem('airtax_caso', JSON.stringify({
+        v: 1,
+        ts: Date.now(),
+        price: Math.round(price),
+        cleaning: Math.round(cleaning),
+        nights: nights,
+        nightsYear: nightsYear,
+        regime: regime,
+        regimeLabel: REG_LABEL[regime],
+        effN: p.effN,            // commissione Airbnb + IVA, dal 13/10/2026
+        t: p.t,                  // aliquota sul lordo, secondo il regime scelto
+        np: np,
+        pct: pct,
+        citta: propVal('citta')
+      }));
+    }catch(e){}
   }
 
-  /* ====== STEP 4 — DATI IMMOBILE (aggiunta v2) ======
+  /* ====== STEP 3 — DATI IMMOBILE (aggiunta v2) ======
      Obbligatori per aprire il form report. Non toccano il calcolo:
      il prezzo consigliato resta identico alla versione precedente. */
   function propVal(id){ var el=$(id); return el ? String(el.value||'').trim() : ''; }
@@ -697,6 +943,183 @@
     return ok;
   }
 
+  /* ====== AUTOSAVE (v2.1) — i dati restano anche SENZA click su "Ricevi il report" ======
+
+     Il problema che risolve: prima, se la persona compilava la domanda 3 e poi
+     chiudeva la scheda senza inviare il form, quei dati sparivano. Restavano in
+     una variabile JavaScript e morivano con la pagina.
+
+     Come funziona adesso:
+     1. la landing GHL reindirizza qui con ?cid=<id del contatto>, quindi sappiamo
+        gia' CHI e' (ha lasciato email e consensi sulla landing, prima di arrivare);
+     2. mentre compila, i dati partono verso l'Inbound Webhook GHL con 800ms di
+        debounce (non a ogni tasto: a 800ms di pausa dalla digitazione);
+     3. quando chiude la scheda o cambia app parte un ultimo invio con sendBeacon,
+        che il browser consegna anche mentre la pagina muore;
+     4. in piu' tutto finisce in localStorage: se torna, ritrova i campi compilati.
+
+     Senza cid NON si invia nulla al webhook: contatto sconosciuto, nessun posto
+     dove scrivere. In quel caso resta solo il localStorage (comodita' per lui).
+
+     Nota CORS: si usa Content-Type text/plain perche' e' "safelisted" e non
+     scatena il preflight OPTIONS, che sendBeacon non sa gestire. Il corpo resta
+     JSON e GHL lo interpreta come tale. */
+
+  var AUTOSAVE_WEBHOOK_URL = 'https://ghl-autosave-airtax.blionbg.workers.dev/';
+  var LS_KEY   = 'airtax_calc_v2';
+  var CID_KEY  = 'airtax_cid';
+  var EMAIL_KEY= 'airtax_em';
+  var NOME_KEY = 'airtax_nome';   /* serve alla pagina VSL per il titolo */
+  var SAVE_DELAY = 800;
+  var LS_INPUTS = ['price','cleaning','nights','nightsYear','citta','zona','via','camere','postiletto'];
+  var CALC_KEYS = ['prezzo_attuale','prezzo_consigliato','aumento_pct','regime_calc',
+                   'obiettivo_calc','netto_oggi','netto_nuovo','perdita_anno',
+                   'notti_anno','tasse_anno_oggi','tasse_anno_noi'];
+  var saveTimer = null, lastSent = '', restoring = false;
+
+  // id del contatto: dalla querystring, poi memorizzato (sopravvive a un refresh)
+  // legge un parametro dalla querystring, provando piu' nomi possibili
+  function qsParam(names){
+    var v = '';
+    try{
+      var s = window.location.search || '';
+      names.forEach(function(k){
+        if(v) return;
+        var m = s.match(new RegExp('[?&]'+k+'=([^&#]*)'));
+        if(m) v = decodeURIComponent(m[1].replace(/\+/g,' '));
+      });
+    }catch(e){}
+    return v;
+  }
+
+  // ricorda un valore, cosi' sopravvive a un refresh senza querystring
+  function remembered(key, value){
+    try{
+      if(value) localStorage.setItem(key, value);
+      else      value = localStorage.getItem(key) || '';
+    }catch(e){}
+    return value;
+  }
+
+  function getCid(){
+    return remembered(CID_KEY, qsParam(['cid','contact_id','contactId','contact-id']));
+  }
+
+  /* RIPIEGO — usare SOLO se l'Inbound Webhook GHL non riesce a identificare il
+     contatto dal contact_id e pretende email o telefono.
+     In quel caso, nel redirect della landing aggiungi &em={{contact.email}}.
+     Costo: l'email finisce nell'URL, quindi nella cronologia del browser e nei
+     referrer verso terze parti. Con il solo contact_id (stringa opaca) questo
+     non succede. Se il contact_id basta, NON passare l'email. */
+  function getEmail(){
+    return remembered(EMAIL_KEY, qsParam(['em','email','contact_email']));
+  }
+
+  function hasAnyProp(){
+    return PROP_FIELDS.filter(function(f){ return propVal(f.id)!==''; }).length > 0;
+  }
+
+  function buildPayload(){
+    var d = window.__leadData || {};
+    var em = getEmail();
+    var p = {
+      contact_id:     getCid(),
+      fonte:          'calcolatore-v2-autosave',
+      citta_immobile: propVal('citta'),
+      zona_immobile:  propVal('zona'),
+      via_immobile:   propVal('via'),
+      camere_letto:   propVal('camere'),
+      posti_letto:    propVal('postiletto')
+    };
+    if(em) p.email = em;   // solo col ripiego attivo (vedi getEmail)
+    CALC_KEYS.forEach(function(k){
+      if(d[k] !== undefined && d[k] !== '') p[k] = d[k];
+    });
+    return p;
+  }
+
+  // useBeacon=true solo in chiusura pagina: sendBeacon sopravvive all'unload
+  function sendPayload(p, useBeacon){
+    if(!AUTOSAVE_WEBHOOK_URL || AUTOSAVE_WEBHOOK_URL.indexOf('INCOLLA')===0) return false;
+    if(!p.contact_id) return false;                 // contatto sconosciuto: non si invia
+    var body = JSON.stringify(p);
+    if(body === lastSent) return false;             // niente di cambiato: non risvegliare GHL
+    lastSent = body;
+    try{
+      if(useBeacon && navigator.sendBeacon){
+        navigator.sendBeacon(AUTOSAVE_WEBHOOK_URL, new Blob([body], {type:'text/plain;charset=UTF-8'}));
+        return true;
+      }
+      fetch(AUTOSAVE_WEBHOOK_URL, {
+        method:'POST', mode:'no-cors', keepalive:true,
+        headers:{'Content-Type':'text/plain;charset=UTF-8'},
+        body: body
+      })['catch'](function(){});
+      return true;
+    }catch(e){ return false; }
+  }
+
+  function saveLocal(){
+    try{
+      var o = {};
+      LS_INPUTS.forEach(function(id){ var el=$(id); if(el) o[id]=el.value; });
+      o._regime = regime; o._goal = goal;
+      localStorage.setItem(LS_KEY, JSON.stringify(o));
+    }catch(e){}
+  }
+
+  function restoreLocal(){
+    var o = null;
+    try{ o = JSON.parse(localStorage.getItem(LS_KEY)||'null'); }catch(e){ return; }
+    if(!o) return;
+    restoring = true;
+    try{
+      LS_INPUTS.forEach(function(id){
+        var el = $(id);
+        if(el && o[id]!==undefined && o[id]!=='') el.value = o[id];
+      });
+      if(o._regime){
+        var rb = document.querySelector('#regimeChoices > button[data-regime="'+o._regime+'"]');
+        if(rb) rb.click();
+      }
+      if(o._goal){
+        var gb = document.querySelector('#goalChoices > button[data-goal="'+o._goal+'"]');
+        if(gb) gb.click();
+      }
+    }catch(e){}
+    restoring = false;
+  }
+
+  function onChange(){
+    if(restoring) return;
+    saveLocal();
+    if(saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(function(){
+      if(hasAnyProp()) sendPayload(buildPayload(), false);
+    }, SAVE_DELAY);
+  }
+
+  function flushNow(){
+    if(restoring) return;
+    saveLocal();
+    if(saveTimer){ clearTimeout(saveTimer); saveTimer = null; }
+    if(hasAnyProp()) sendPayload(buildPayload(), true);
+  }
+
+  function initAutosave(){
+    LS_INPUTS.forEach(function(id){
+      var el = $(id); if(!el) return;
+      el.addEventListener(el.tagName==='SELECT' ? 'change' : 'input', onChange);
+    });
+    document.querySelectorAll('#regimeChoices > button, #goalChoices > button')
+      .forEach(function(b){ b.addEventListener('click', onChange); });
+    // pagehide copre chiusura e navigazione; visibilitychange copre il cambio app su mobile
+    window.addEventListener('pagehide', flushNow);
+    document.addEventListener('visibilitychange', function(){
+      if(document.visibilityState === 'hidden') flushNow();
+    });
+  }
+
   // wiring
   ['price','cleaning','nightsYear'].forEach(function(id){ $(id).addEventListener('input',render); });
   function wireGroup(sel,attr,fn){
@@ -714,7 +1137,7 @@
   wireGroup('#irpefSub .pillrow button','irpef',function(v){irpefM=parseFloat(v);});
   wireGroup('#forfSub .pillrow button','forf',function(v){forfRate=parseFloat(v);});
 
-  // step 4: aggiorna __leadData mentre scrive e toglie l'errore appena compila
+  // step 3: aggiorna __leadData mentre scrive e toglie l'errore appena compila
   PROP_FIELDS.forEach(function(f){
     var el = $(f.id);
     if(!el) return;
@@ -765,6 +1188,19 @@
   var _lc=document.getElementById('leadClose'); if(_lc) _lc.addEventListener('click', function(){ document.getElementById('leadModal').classList.remove('open'); });
   var _lm=document.getElementById('leadModal'); if(_lm) _lm.addEventListener('click', function(e){ if(e.target===this) this.classList.remove('open'); });
 
+  /* Il nome non serve qui, serve alla pagina dopo: se passa in querystring
+     lo mettiamo da parte adesso, cosi' la VSL ce l'ha anche se ci arriva
+     senza parametri. Resta nel browser, non va da nessuna parte. */
+  (function ricordaNome(){
+    var v = qsParam(['nome','first_name','firstname','name']);
+    if(!v) return;
+    v = v.split(/[\s,]+/)[0];
+    if(!v || v.length>20 || v.indexOf('{')>-1) return;
+    try{ localStorage.setItem(NOME_KEY, v); }catch(e){}
+  })();
+
+  restoreLocal();   // ripristina i campi se la persona era gia' passata di qui
   render();
+  initAutosave();   // da qui in poi ogni modifica viene salvata da sola
 })();
 </script>
